@@ -1,0 +1,9 @@
+################################################################################
+##
+## NCBI mapview database files: BUILD.36.2
+## Source URL: ftp://ftp.ncbi.nlm.nih.gov/genomes/H_sapiens/mapview/
+## Place the folowing two files into this directory (ideogram/data)
+## Hint: The data format changed from BUILD 35 to BUILD 36
+##
+ideogram.gz
+seq_gene.md.gz

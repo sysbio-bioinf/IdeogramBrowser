@@ -1,0 +1,183 @@
+/*
+   IdeogramBrowser style sheet.
+
+   Written by Andre Mueller, University of Ulm, Germany.
+
+   Version 2006-10-10
+*/
+
+
+
+body
+{
+  background-color: #ffffff;
+  color: #000000;
+  font-family: verdana, arial, sans-serif;
+  padding-left: 5%;
+  padding-right: 5%;
+  }
+
+li
+{
+  padding-top: 0.2em;
+  padding-bottom: 0.2em;
+  }
+
+a:hover
+{
+  background-color: #FF8400;
+  color: #000066;
+  }
+
+h1, h2, h3, h4, h5
+{
+  background-color: transparent;
+  color: #990066;
+  }
+
+
+h1
+{
+  padding-top: 0.2em;
+  padding-bottom: 0.2em;
+  padding-left: 0.2em;
+  padding-right: 0.2em;
+  text-align: left;
+  font-size: 170%;
+  font-weight: normal;
+  counter-increment: chapter;
+  counter-reset: section subsection;
+  background-color: #eeeeee;
+  /*
+     border-top: 1px solid #000066;
+     border-bottom: 1px solid #000066
+     */
+  }
+
+h2
+{
+  font-size: 150%;
+  font-weight:normal;
+  counter-reset: subsection;
+  counter-increment: section;
+  background-color: #eeeeee;
+  }
+
+h3
+{
+  font-size: 125%;
+  font-weight: normal;
+  counter-increment: subsection;
+  }
+
+
+h1:before
+{
+  content: counter(chapter) ". ";
+  }
+
+
+h2:before
+{
+  content: counter(chapter) "." counter(section) " ";
+  }
+
+h3:before
+{
+  content: counter(subsection,upper-alpha) ". ";
+  }
+
+
+em
+{
+  font-weight: bold;
+  color: #1a149e;
+  background-color: transparent;
+  }
+
+td
+{
+  vertical-align: top;
+  }
+
+table.param
+{
+  font-size: 80%;
+  background-color: #f0f0ff;
+  border: 1px solid;
+  }
+
+table.param td
+{
+
+  border-right: 1px solid;
+  border-bottom: 1px solid;
+  vertical-align: text-top;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+  padding-top: 0.2em;
+  padding-bottom: 0.2em;
+  }
+
+address
+{
+  padding-top: 1em;
+  padding-bottom: 1em;
+  }
+
+.modified
+{
+  color: #999999;
+  background-color: transparent;
+  padding-top: 0.5em;
+  font-size: 80%;
+
+  }
+
+.ideo
+{
+  color: #990066;
+  background-color: transparent;
+  font-weight: bold;
+  }
+
+img
+{
+  padding: 1em;
+  border:0px;
+  }
+
+.sep
+{
+  border-top: 1px solid #990066;
+  }
+
+
+.back
+{
+  background: #f0f0f0;
+  color: #990066;
+  width: 100%;
+  padding-left: 1em;
+  padding-right: 1em;
+  padding-top: 0.2em;
+  padding-bottom: 0.2em;
+  }
+
+
+div.title
+{
+  margin-top: 1em;
+  background-color: transparent;
+  color: #990066;
+  font-size: 170%;
+  font-weight: bold;
+  padding-bottom: 0.5em;
+  text-align: center;
+  }
+
+
+dt
+{
+  font-weight: bold;
+  }
