@@ -17,5 +17,5 @@ First checkout with Subversion:
 8. wait for checkout
 
 Use Subversion:
-1. update local version: File -> Team -> update
-2. commit changes (always update befor commit): File -> Team -> commit
+1. update local version: right click -> Team -> update
+2. commit changes (always update befor commit): right click -> Team -> commit
