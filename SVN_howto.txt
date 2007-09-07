@@ -1,0 +1,21 @@
+IdeogramBrowser with Eclipse 3.3.0 and Subversion
+
+Install Eclipse and Subversion plugin:
+1. Help -> Software Updates -> Find and Install
+2. Search for new features to install -> Next
+3. New remote site -> Name: Subclipse, URL: http://subclipse.tigris.org/update_1.2.x
+4. Select Subversion plugin and finish
+
+First checkout with Subversion:
+1. Ask administrator for access to svm2
+2. New -> SVN -> Checkout Projects from SVN
+3. create new repository location -> URL: svn+ssh://username@svm2/mnt/hdd750/subversion/java_repos
+4. password: yourpasswordonsvm2
+5. select folder IdeogramBrowser -> Next
+6. may change local project name -> Next
+7. may change local workspace location -> Finish
+8. wait for checkout
+
+Use Subversion:
+1. update local version: File -> Team -> update
+2. commit changes (always update befor commit): File -> Team -> commit
