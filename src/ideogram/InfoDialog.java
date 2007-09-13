@@ -42,7 +42,7 @@ public class InfoDialog extends JDialog implements ActionListener
 		area.setText("IdeogramBrowser "+IdeogramMainWindow.VERSION_MAJOR+"."+IdeogramMainWindow.VERSION_MINOR+"."+
 				IdeogramMainWindow.VERSION_SUB+
                      "  ("+IdeogramMainWindow.VERSION_DATE+")\n" +
-					 "Developed by Hans A. Kestler, Andre Mueller and Matthias Schmid\n" +
+					 "Developed by Hans A. Kestler, Andre Mueller, Matthias Schmid and Johann Kraus\n" +
 					 "University of Ulm, Germany\n" +
 					 "\n"+
 					 "This product includes software developed by\n" +
