@@ -404,8 +404,8 @@ public class AffymetrixCntReaderModel extends AbstractIdeogramDataModel
 			}
 			
 			String v[] = line.split("=");
-			if( v.length != 2 )
-				throw new FileFormatException("Illegal [Header] entry in CNT file at line "+in.getLineNumber()+" : \n'"+line+"'");
+//			if( v.length != 2 )
+//				throw new FileFormatException("Illegal [Header] entry in CNT file at line "+in.getLineNumber()+" : \n'"+line+"'");
 			header.put(v[0], v[1]);
     	}
     	
