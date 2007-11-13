@@ -243,7 +243,8 @@ implements ActionListener, ComponentListener, ChangeListener
         {
         	//e.printStackTrace();
         	MainApp.getLogger().throwing(getClass().getName(),"IdeogramMainWindow", e);
-        	System.out.println("Using default options, option file '"+OPTIONFILE_NAME+"' not found.");
+        	//System.out.println("Using default options, option file '"+OPTIONFILE_NAME+"' not found.");
+        	System.out.println("Using default options.");
         }
         catch (Exception e) 
         {
