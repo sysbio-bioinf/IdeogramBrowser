@@ -258,7 +258,10 @@ public class CopyNumberMerger extends AbstractCopyNumberDataModel implements  Ch
 			} else
 			{
 				if( models.size() > 0 )
+				{
+					copy_numbers.clear();
 					copy_numbers.addAll( models.get(0).toCollection() );
+				}
 			}
 			valid = true;
 		}
