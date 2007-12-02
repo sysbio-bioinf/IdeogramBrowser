@@ -16,6 +16,11 @@ import ideogram.input.CopyNumberTransformer;
 import ideogram.input.DataSlot;
 import ideogram.input.TabbedTextReaderModel;
 import ideogram.input.AffymetrixCntReaderModel.FileVersion;
+import ideogram.r.JRIVersionException;
+import ideogram.r.RController;
+import ideogram.r.RException;
+import ideogram.r.RGuiWindow;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
@@ -340,6 +345,8 @@ implements ActionListener, ComponentListener, ChangeListener
 		menubar.add(createFileMenu());
 		menubar.add(createViewMenu());
 		menubar.add(createOptionsMenu());
+		// [Ferdinand Hofherr]
+		menubar.add(createRMenu());
 		menubar.add(createHelpMenu());
 		setJMenuBar(menubar);
 		
@@ -533,6 +540,22 @@ implements ActionListener, ComponentListener, ChangeListener
         menu.add(item);
         
 		return menu;
+	}
+	
+	/*
+	 * [Ferdinand Hofherr]
+	 */
+	private JMenu createRMenu() {
+	    //MENU: R
+	    JMenu menu = new JMenu("R");
+	    menu.setMnemonic('R');
+	    
+	    menu.addActionListener(this);
+	    JMenuItem item = new JMenuItem("Connect to R");
+	    item.addActionListener(this);
+	    menu.add(item);
+	    
+	    return menu;
 	}
 	
 	private JMenu createHelpMenu()
@@ -732,6 +755,22 @@ implements ActionListener, ComponentListener, ChangeListener
         if (cmd.equalsIgnoreCase("export markerlist")) {
         	exportMarkerList();
         	return;
+        }
+        
+        /*
+         * [Ferdinand Hofherr]: R Menu
+         */
+        if (cmd.equalsIgnoreCase("Connect to R")) {
+            try {
+                RController.checkVersion();
+                new RGuiWindow();
+                RController.getInstance().startEngine();
+            } catch (JRIVersionException e) {
+                JOptionPane.showMessageDialog(this, e.getMessage());
+            } catch (RException e) {
+                e.printStackTrace();
+            }
+            return;
         }
 
         MainApp.getLogger().logp(Level.INFO, getClass().getName(), "actionPerformed", "unhandled action: "+cmd);
