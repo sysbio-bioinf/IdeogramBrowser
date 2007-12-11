@@ -19,7 +19,7 @@ import ideogram.input.AffymetrixCntReaderModel.FileVersion;
 import ideogram.r.JRIVersionException;
 import ideogram.r.RController;
 import ideogram.r.RException;
-import ideogram.r.RGuiWindow;
+import ideogram.r.gui.RGuiWindow;
 
 import java.awt.Color;
 import java.awt.Component;
