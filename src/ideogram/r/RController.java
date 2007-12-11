@@ -5,6 +5,15 @@
  */
 package ideogram.r;
 
+import ideogram.r.rlibwrappers.RLibraryWrapper;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
+
 import org.rosuda.JRI.REXP;
 import org.rosuda.JRI.Rengine;
 
@@ -21,15 +30,33 @@ public class RController {
     private Rengine rEngine;
     private RMainLoopModel mainLoopModel;
     private boolean running;
+    private HashMap<String, String> availableLibraries;
+    private RLibraryWrapper loadedWrapper;
 
     private RController() {
         rEngine = null;
         mainLoopModel = new RMainLoopModel();
         running = false;
+        availableLibraries = new HashMap<String, String>();
+        loadedWrapper = null;
+        // add available Libraries
+        
+        // TODO Externalize this, so that nobody has to mess arround with this
+        // code.
+        registerRLibraryWrapper("GLAD", "ideogram.r.rlibwrappers.GLADWrapper");
     }
 
     private static class InstanceHolder {
         private final static RController INSTANCE = new RController();
+    }
+    
+    public static String asRBoolString(int i) {
+        switch (i) {
+            case 0:  return("FALSE");
+            case 1:  return("TRUE");
+            case 2:  return("NA");
+            default: return("FALSE");
+        }
     }
 
     /**
@@ -88,7 +115,7 @@ public class RController {
      *
      * @return The only instance of Rengine, or null if it is not running.
      */
-    protected Rengine getEngine() {
+    public Rengine getEngine() {
         return engineRunning() ? rEngine : null;
     }
     
@@ -144,6 +171,7 @@ public class RController {
      * 
      * @throws RException if R is not available.
      */
+    @Deprecated
     protected boolean stopEngine() throws RException {
         if (engineRunning()) {
             Rengine e = getEngine();
@@ -157,18 +185,148 @@ public class RController {
     /** 
      * Allows to load the specified R library. 
      *
-     * @param pkgName
+     * @param libName
      * @return true if package was loaded, false if package could not be found.
-     * @throws RException if R is not availiable.
+     * @throws RException if R is not running.
      */
-    protected boolean loadRLibrary(String pkgName) throws RException {
+    public void loadRLibrary(String libName) throws RException {
         if (engineRunning()) {
             /* require() is used, as it returns true on success and false on
              * error. */
-            REXP re = getEngine().eval("require('" + pkgName + "')");
-            return re.asBool().isTRUE(); // Returns true if package was loaded.
+            REXP re = getEngine().eval("require('" + libName + "')");
+            if (!re.asBool().isTRUE()) {
+                throw new RException("Error loading the library" + 
+                        libName +  "!");
+            }
         }
-        return false;
+        else {
+            throw new RException("R not running");
+        }
+    }
+    
+    /**
+     *
+     * INSERT DOCUMENTATION HERE!
+     *
+     * @param libName
+     * @throws RException
+     */
+    public void unloadRLibrary(String libName) throws RException {
+        if (engineRunning()) {
+            getEngine().eval("detach('package:" + libName + "')");
+        }
+        else {
+            throw new RException("R not running!");
+        }
+    }
+    
+    /**
+     * 
+     * INSERT DOCUMENTATION HERE!
+     *
+     * @param dsName
+     * @throws RException When R is not running, or when an error occured, while
+     *                    loading the package.
+     */
+    public void loadDataSet(String dsName) throws RException {
+        if (engineRunning()) {
+            REXP res = getEngine().eval("data('" + dsName + "')");
+            if (!res.asString().equalsIgnoreCase(dsName)) {
+                throw new RException("Error loading data set " + dsName + "!");
+            }
+        }
+        else {
+            throw new RException("R not running!");
+        }
+    }
+    
+//    protected void unloadDataSet(String dsName) throws RException {
+//        if (engineRunning()) {
+//            getEngine().eval("detach('" + dsName + "')");
+//        }
+//        else {
+//            throw new RException("R not running!");
+//        }
+//    }
+    
+    /* TODO Provide a way to find all available packages.
+     * This involves, that the packages must somehow register themselves and 
+     * provide a way to communicate there available procedures.
+     */
+    
+    /**
+     * Register a wrapper for a R library.
+     * @param libName Name of the library, e.g. GLAD
+     * @param fullyQualifiedName Fully quialified Name of the wrapper class, e.g
+     *        ideogram.r.GLADWrapper
+     */
+    public void registerRLibraryWrapper(String libName, String fullyQualifiedName) {
+        availableLibraries.put(libName, fullyQualifiedName);
+    }
+    
+    /**
+     * 
+     * INSERT DOCUMENTATION HERE!
+     *
+     * @param name
+     * @return
+     * @throws ClassNotFoundException
+     * @throws IllegalArgumentException
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     * @throws InvocationTargetException
+     * @throws RException
+     */
+    public RLibraryWrapper loadRLibraryWrapper(String name) 
+    throws ClassNotFoundException, IllegalArgumentException, 
+    InstantiationException, IllegalAccessException, InvocationTargetException, RException {
+        String selClass = availableLibraries.get(name);
+        System.out.println(selClass);
+        Class<?> c = Class.forName(availableLibraries.get(name));
+        Constructor<?> ctor = getEmptyConstructor(c);
+        if (ctor == null) {
+            throw new IllegalArgumentException(c.toString() + " must implement an empty constructor!");
+        }
+        loadedWrapper = (RLibraryWrapper)ctor.newInstance();
+        loadedWrapper.loadLibrary();
+        
+        return loadedWrapper;
+    }
+    
+    /**
+     * Returns null if no wrapper loaded!
+     * INSERT DOCUMENTATION HERE!
+     *
+     * @return
+     */
+    public RLibraryWrapper getLoadedWrapper() {
+        return loadedWrapper;
+    }
+    
+    /*
+     * Find the empty public constructor.
+     */
+    private Constructor<?> getEmptyConstructor(Class<?> c) {
+        Constructor<?>[] allConstructors = c.getConstructors();
+        Constructor<?> ret = null;
+        for (Constructor<?> ctor: allConstructors) {
+            if (ctor.getParameterTypes().length == 0) {
+                ret = ctor;
+                break;
+            }
+        }
+        
+        return ret;
     }
 
+    /**
+     * List all available library wrappers.
+     *
+     * @return
+     */
+    public Object[] listLibraryWrappers() {
+        Object[] keys = availableLibraries.keySet().toArray();
+        Arrays.sort(keys); // OK, as strings implement Comparable.
+        return keys;
+    }
 }

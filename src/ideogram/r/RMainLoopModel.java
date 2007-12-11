@@ -52,9 +52,9 @@ public class RMainLoopModel extends Observable implements RMainLoopCallbacks {
      * @see org.rosuda.JRI.RMainLoopCallbacks#rFlushConsole(org.rosuda.JRI.Rengine)
      */
     public void rFlushConsole(Rengine arg0) {
-        rConsole.delete(0, rConsole.length());
-        setChanged();
-        notifyObservers();
+        //rConsole.delete(0, rConsole.length());
+        //setChanged();
+        //notifyObservers();
     }
 
     /* (non-Javadoc)
@@ -93,11 +93,12 @@ public class RMainLoopModel extends Observable implements RMainLoopCallbacks {
      * @see org.rosuda.JRI.RMainLoopCallbacks#rWriteConsole(org.rosuda.JRI.Rengine, java.lang.String, int)
      */
     public void rWriteConsole(Rengine re, String text, int oType) {
-        int tlen = text.length(), cap = rConsole.capacity();
-        if (cap < tlen) {
-            rConsole.delete(0, tlen - cap);
-        }
+//        int tlen = text.length(), cap = rConsole.capacity();
+//        if (cap < tlen) {
+//            rConsole.delete(0, tlen - cap);
+//        }
         rConsole.append(text);
+        //System.out.println(text);
         // Mark RMainLoopModel as changed and notify observers.
         setChanged(); 
         notifyObservers();
