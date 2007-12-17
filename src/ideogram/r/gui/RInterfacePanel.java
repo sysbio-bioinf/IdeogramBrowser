@@ -5,6 +5,7 @@
  */
 package ideogram.r.gui;
 
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.Raster;
@@ -35,7 +36,7 @@ public class RInterfacePanel extends JPanel implements ActionListener{
     private static final String OTHER_DATA = "other data";
         
     private RLibraryWrapper wrapper;
-    private JPanel inputFields;
+    private JPanel analysisFields;
     private JComboBox sampleDataCombo;
     private MessageDisplay mdp;
     
@@ -53,20 +54,20 @@ public class RInterfacePanel extends JPanel implements ActionListener{
         this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
         this.add(createSampleDataPanel());
         
-        inputFields = new JPanel();
-        this.add(inputFields);
+        analysisFields = new JPanel();
+        this.add(analysisFields);
     }
     
     /**
      * Add a JPanel containing the input fields. This method assures, that 
      * there are many different layout possibilities.
      *
-     * @param inputFields
+     * @param analysisInterface
      */
-    public void addInputFields(JPanel inputFields) {
-        this.inputFields.removeAll();
-        this.inputFields.add(inputFields);
-        this.inputFields.validate();
+    public void addAnalysisInterface(Component analysisInterface) {
+        this.analysisFields.removeAll();
+        this.analysisFields.add(analysisInterface);
+        this.analysisFields.validate();
         this.validate();
     }
     

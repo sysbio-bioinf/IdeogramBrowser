@@ -11,9 +11,8 @@ public interface RInterfacePanelBuilder {
      * Tell the Builder that it shall start to create a new Interface panel.
      *
      * @param model
-     * @param mdp TODO
      */
-    public void createNewRInterfacePanel(RLibraryWrapper model, MessageDisplay mdp);
+    public void createNewRInterfacePanel(RLibraryWrapper model);
 
     /**
      * Create an interface to an new analysis method. All successive calls to
@@ -30,13 +29,11 @@ public interface RInterfacePanelBuilder {
      *
      * @param label
      * @param mandatory TODO
-     * @param mdp TODO
-     * @param wrapper TODO
      * @param defaultValue
      * @param paramNo TODO
      */
     public void buildRBoolInput(String label, Field field, 
-            boolean mandatory, MessageDisplay mdp, RLibraryWrapper wrapper);
+            boolean mandatory);
     
     /**
      * 
@@ -45,11 +42,9 @@ public interface RInterfacePanelBuilder {
      * @param label
      * @param defaultValue
      * @param mandatory TODO
-     * @param mdp TODO
      * @param paramNo TODO
      */
-    public void buildRDsNameInput(String label, Field field, 
-            boolean mandatory, MessageDisplay mdp);
+    public void buildRDsNameInput(String label, Field field, boolean mandatory);
     
     /**
      * 
@@ -58,11 +53,10 @@ public interface RInterfacePanelBuilder {
      * @param label
      * @param defaultValue
      * @param mandatory TODO
-     * @param mdp TODO
      * @param paramNo TODO
      */
     public void buildRNumericInput(String label, Field field, 
-            boolean mandatory, MessageDisplay mdp);
+            boolean mandatory);
     
     /**
      * 
@@ -71,11 +65,10 @@ public interface RInterfacePanelBuilder {
      * @param label
      * @param defaultValue
      * @param mandatory TODO
-     * @param mdp TODO
      * @param paramNo TODO
      */
     public void buildRStringInput(String label, Field field, 
-            boolean mandatory, MessageDisplay mdp);
+            boolean mandatory);
     
     /**
      * 
@@ -84,5 +77,21 @@ public interface RInterfacePanelBuilder {
      * @return
      */
     public Component getRInterfacePanel();
+    
+    /**
+     * 
+     * INSERT DOCUMENTATION HERE!
+     *
+     * @param mdp
+     */
+    public void setMessageDisplay(MessageDisplay mdp);
+    
+    /**
+     * 
+     * INSERT DOCUMENTATION HERE!
+     *
+     * @return
+     */
+    public MessageDisplay getMessageDisplay();
 
 }

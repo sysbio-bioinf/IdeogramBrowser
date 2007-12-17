@@ -42,6 +42,7 @@ public class RBoolInputField extends AbstractRInputField implements FocusListene
             setMdpText(e.getLocalizedMessage());
             e.printStackTrace();
         }
+        //addFocusListener(this);
         resetToDefault();
     }
 
@@ -58,7 +59,8 @@ public class RBoolInputField extends AbstractRInputField implements FocusListene
     public void focusLost(FocusEvent e) {
         if (validateInput()) {
             try {
-                getField().set(getWrapper(), this.getText());
+                getField().set(getWrapper(), convertInput(getText()));
+                setBackground(Color.WHITE);
             } catch (IllegalArgumentException e1) {
                 setMdpText(e1.getLocalizedMessage());
                 e1.printStackTrace();
@@ -91,8 +93,10 @@ public class RBoolInputField extends AbstractRInputField implements FocusListene
      */
     @Override
     public boolean validateInput() {
-        if (!(this.getText().equals("FALSE") ||
-                this.getText().equals("TRUE") ||
+        if (!(this.getText().equalsIgnoreCase("FALSE") || 
+                this.getText().equalsIgnoreCase("F") ||
+                this.getText().equalsIgnoreCase("TRUE") ||
+                this.getText().equalsIgnoreCase("T") ||
                 this.getText().equals("NA"))) {
             setMdpText("Set this field to either " +
                 		"'TRUE', 'FALSE', or 'NA'!");
@@ -102,4 +106,21 @@ public class RBoolInputField extends AbstractRInputField implements FocusListene
         return true;
     }
 
+    private static String convertInput(String text) {
+        if (text.equalsIgnoreCase("FALSE") || text.equalsIgnoreCase("F")) {
+            return "FALSE";
+        }
+        else if (text.equalsIgnoreCase("TRUE") || text.equalsIgnoreCase("t")) {
+            return "TRUE";
+        }
+        else {
+            return "NA";
+        }
+    }
+
+    @Override
+    public boolean isEmpty() {
+        // Concerned empty on invalid input.
+        return validateInput();
+    }
 }

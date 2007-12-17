@@ -184,7 +184,7 @@ implements Observer, ActionListener, MessageDisplay {
             try {
                 RLibraryWrapper wr = 
                     RController.getInstance().loadRLibraryWrapper(selLib);
-                reader.setBuilder(new InterfaceBuilder());
+                reader.setBuilder(new StandardInterfaceBuilder(this, wr));
                 setLibSpecInterf(reader.createInputPanel(wr));
             } catch (IllegalArgumentException e1) {
                 // TODO Auto-generated catch block

@@ -20,6 +20,7 @@ import javax.swing.JPanel;
 public class EmptyInterfaceBuilder implements RInterfacePanelBuilder {
 
     private RInterfacePanel interfacePanel;
+    private MessageDisplay mdp;
 
     /**
      * Pass null for mdp if there does not exist one.
@@ -27,7 +28,8 @@ public class EmptyInterfaceBuilder implements RInterfacePanelBuilder {
      * @param mdp
      */
     public EmptyInterfaceBuilder(MessageDisplay mdp) {
-        createNewRInterfacePanel(null, mdp);
+        this.mdp = mdp;
+        createNewRInterfacePanel(null);
     }
 
     /*
@@ -36,8 +38,7 @@ public class EmptyInterfaceBuilder implements RInterfacePanelBuilder {
      * @see ideogram.r.gui.RInterfacePanelBuilder#buildRBoolInput(java.lang.String,
      *      int)
      */
-    public void buildRBoolInput(String label, Field f, boolean mandatory,
-            MessageDisplay mdp, RLibraryWrapper wrapper) {
+    public void buildRBoolInput(String label, Field f, boolean mandatory) {
         // nothing todo
     }
 
@@ -48,7 +49,7 @@ public class EmptyInterfaceBuilder implements RInterfacePanelBuilder {
      *      java.lang.String)
      */
     public void buildRDsNameInput(String label, Field f,
-            boolean mandatory, MessageDisplay mdp) {
+            boolean mandatory) {
         // nothing todo
     }
 
@@ -59,7 +60,7 @@ public class EmptyInterfaceBuilder implements RInterfacePanelBuilder {
      *      double)
      */
     public void buildRNumericInput(String label, Field f,
-            boolean mandatory, MessageDisplay mdp) {
+            boolean mandatory) {
         // nothing todo
     }
 
@@ -70,7 +71,7 @@ public class EmptyInterfaceBuilder implements RInterfacePanelBuilder {
      *      java.lang.String)
      */
     public void buildRStringInput(String label, Field f,
-            boolean mandatory, MessageDisplay mdp) {
+            boolean mandatory) {
         // nothing todo
     }
 
@@ -88,11 +89,11 @@ public class EmptyInterfaceBuilder implements RInterfacePanelBuilder {
      * 
      * @see ideogram.r.gui.RInterfacePanelBuilder#createNewRInterfacePanel(ideogram.r.rlibwrappers.RLibraryWrapper)
      */
-    public void createNewRInterfacePanel(RLibraryWrapper wrapper, MessageDisplay mdp) {
+    public void createNewRInterfacePanel(RLibraryWrapper wrapper) {
         JPanel p = new JPanel();
         p.add(new JLabel("No library selected!"));
         interfacePanel = new RInterfacePanel(wrapper, mdp);
-        interfacePanel.addInputFields(p);
+        interfacePanel.addAnalysisInterface(p);
     }
 
     /*
@@ -102,6 +103,14 @@ public class EmptyInterfaceBuilder implements RInterfacePanelBuilder {
      */
     public Component getRInterfacePanel() {
         return interfacePanel;
+    }
+
+    public void setMessageDisplay(MessageDisplay mdp) {
+        this.mdp = mdp;
+    }
+    
+    public MessageDisplay getMessageDisplay() {
+        return mdp;
     }
 
 }

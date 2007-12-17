@@ -26,8 +26,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 
-
-
 /**
  * INSERT DOCUMENTATION HERE!
  *
@@ -45,7 +43,7 @@ public class RLibWrapperReader {
     }
     
     public RLibWrapperReader(MessageDisplay mdp) {
-        this(new EmptyInterfaceBuilder(null), mdp);
+        this(new EmptyInterfaceBuilder(mdp), mdp);
     }
     
     public RLibWrapperReader(RInterfacePanelBuilder builder, MessageDisplay mdp) {
@@ -92,7 +90,7 @@ public class RLibWrapperReader {
             RInterfacePanelBuilder b;
             if (builder instanceof EmptyInterfaceBuilder) b = builder;
             else b = new EmptyInterfaceBuilder(null);
-            b.createNewRInterfacePanel(null, mdp);
+            b.createNewRInterfacePanel(null);
             return b.getRInterfacePanel();
         }
         c = wrapper.getClass();
@@ -113,7 +111,7 @@ public class RLibWrapperReader {
             		"@Analysis!");
         }
         
-            builder.createNewRInterfacePanel(wrapper, mdp);
+            builder.createNewRInterfacePanel(wrapper);
             annotatedFields = getAnnotatedFields(c);
 
             for(Method m: analysisMethods) {
@@ -168,16 +166,16 @@ public class RLibWrapperReader {
             aString = f.getAnnotation(RStringParam.class);
             
             if (aBool != null) {
-                builder.buildRBoolInput(aBool.name(), f, aBool.mandatory(), mdp, wrapper);
+                builder.buildRBoolInput(aBool.name(), f, aBool.mandatory());
             }
             else if (aDsName != null) {
-                builder.buildRDsNameInput(aDsName.name(), f, aDsName.mandatory(), mdp);
+                builder.buildRDsNameInput(aDsName.name(), f, aDsName.mandatory());
             }
             else if (aNumeric != null) {
-                builder.buildRNumericInput(aNumeric.name(), f, aNumeric.mandatory(), mdp);
+                builder.buildRNumericInput(aNumeric.name(), f, aNumeric.mandatory());
             }
             else if (aString != null) {
-                builder.buildRStringInput(aString.name(), f, aString.mandatory(), mdp);
+                builder.buildRStringInput(aString.name(), f, aString.mandatory());
             }
             
             // Remove f from annotated fields.

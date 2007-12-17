@@ -7,6 +7,7 @@ package ideogram.r.gui;
 
 import ideogram.r.rlibwrappers.RLibraryWrapper;
 
+import java.awt.event.FocusListener;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
@@ -18,7 +19,8 @@ import javax.swing.JTextField;
  * @author Ferdinand Hofherr
  *
  */
-public abstract class AbstractRInputField extends JTextField {
+public abstract class AbstractRInputField extends JTextField 
+implements FocusListener {
     
     private boolean mandatory;
     private MessageDisplay mdp;
@@ -30,6 +32,16 @@ public abstract class AbstractRInputField extends JTextField {
         this.mdp = null;
         this.field = field;
         this.wrapper = wrapper;
+        addFocusListener(this);
+    }
+    
+    /**
+     * Returns true, if input to this field is mandatory.
+     *
+     * @return
+     */
+    public boolean isMandatory() {
+        return mandatory;
     }
     
     /**
@@ -58,9 +70,17 @@ public abstract class AbstractRInputField extends JTextField {
         if (mdp != null) {
             mdp.setMessage(text);
         }
+        else {
+            System.out.println(text);
+        }
     }
     
     public abstract boolean validateInput() throws InvalidInputException;
     
     public abstract void resetToDefault();
+    
+    /**
+     * Returns true, when the field is not set to a value.
+     */
+    public abstract boolean isEmpty();
 }
