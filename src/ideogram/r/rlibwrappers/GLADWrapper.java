@@ -19,7 +19,6 @@ import java.util.List;
 
 import org.rosuda.JRI.REXP;
 
-import static ideogram.r.RController.asRBoolString;
 /**
  * INSERT DOCUMENTATION HERE!
  *

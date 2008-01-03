@@ -9,7 +9,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * INSERT DOCUMENTATION HERE!
+ * Use this annotation to mark the field, where the name of the currently loaded
+ * data set will be stored.
  *
  * @author Ferdinand Hofherr
  *
@@ -17,24 +18,11 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface RDsNameParam {
     
-//    /**
-//     * Name of the R function the input field belongs to.
-//     *
-//     * @return
-//     */
-//    String funcname();
-    
     /**
      * Label the corresponding input field in the GUI shall have.
      * Default: RBool.
      */
     String name();
-
-//    /**
-//     * Default value of the parameter.
-//     * Default: ""
-//     */
-//    String value() default "";
     
     /**
      * Specify whether the user has to fill out this field.

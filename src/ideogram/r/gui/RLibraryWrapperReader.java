@@ -1,5 +1,5 @@
 /*
- * File:	RLibWrapperReader.java
+ * File:	RLibaryWrapperReader.java
  * Created: 10.12.2007
  * Author:	Ferdinand Hofherr <ferdinand.hofherr@uni-ulm.de>
  */
@@ -27,35 +27,65 @@ import java.util.Comparator;
 import java.util.Iterator;
 
 /**
- * INSERT DOCUMENTATION HERE!
+ * Inspect the given {@link RLibraryWrapper} using reflection. Call the 
+ * specified interface builder's build methods. 
  *
  * @author Ferdinand Hofherr
  *
  */
-public class RLibWrapperReader {
+public class RLibraryWrapperReader {
     
-    private RInterfacePanelBuilder builder;
+    private RInterfaceBuilder builder;
     private Class<?> rLibraryWrapperClass;
     private MessageDisplay mdp;
     
-    public RLibWrapperReader() {
+    /**
+     * Create a new {@link RLibraryWrapperReader} with an 
+     * {@link EmptyInterfaceBuilder} as builder and no {@link MessageDisplay} 
+     * specified.
+     *
+     */
+    public RLibraryWrapperReader() {
         this(new EmptyInterfaceBuilder(null), null);
     }
     
-    public RLibWrapperReader(MessageDisplay mdp) {
+    /**
+     * Create a new {@link RLibraryWrapperReader} with an 
+     * {@link EmptyInterfaceBuilder} and the specified {@link MessageDisplay}.
+     *
+     * @param mdp
+     */
+    public RLibraryWrapperReader(MessageDisplay mdp) {
         this(new EmptyInterfaceBuilder(mdp), mdp);
     }
-    
-    public RLibWrapperReader(RInterfacePanelBuilder builder, MessageDisplay mdp) {
+
+    /**
+     * Create a new {@link RLibraryWrapperReader} with the specified 
+     * {@link RInterfaceBuilder} and {@link MessageDisplay}.
+     *
+     * @param builder
+     * @param mdp
+     */
+    public RLibraryWrapperReader(RInterfaceBuilder builder, MessageDisplay mdp) {
         rLibraryWrapperClass = RLibraryWrapper.class;
         this.builder = builder;
         this.mdp = mdp;
     }
     
-    public void setBuilder(RInterfacePanelBuilder builder) {
+    /**
+     * Set the {@link RInterfaceBuilder} used to build the interface panel.
+     *
+     * @param builder
+     */
+    public void setBuilder(RInterfaceBuilder builder) {
         this.builder = builder;
     }
-        
+
+    /**
+     * Create an empty input panel.
+     *
+     * @return
+     */
     public Component createInputPanel() {
         Component ret = null;
         try {
@@ -87,7 +117,7 @@ public class RLibWrapperReader {
          * Create an empty panel if no wrapper class is specified!
          */
         if (wrapper == null) {
-            RInterfacePanelBuilder b;
+            RInterfaceBuilder b;
             if (builder instanceof EmptyInterfaceBuilder) b = builder;
             else b = new EmptyInterfaceBuilder(null);
             b.createNewRInterfacePanel(null);
@@ -181,6 +211,9 @@ public class RLibWrapperReader {
             // Remove f from annotated fields.
             it.remove();
         }
+        
+        builder.buildPerformButton(funcname);
+        builder.buildResetButton();
     }
     
     
@@ -200,38 +233,38 @@ public class RLibWrapperReader {
         return ret;
     }
     
-    /*
-     * Check whether c or one of its super classes implement the interface
-     * RLibraryWrapper.
-     */
-    private boolean isPropperWrapper(Class<?> c) {
-        while (c != null) {
-            Type[] intfs = c.getGenericInterfaces();
-            if (contains(intfs, rLibraryWrapperClass)) {
-                return true;
-            }
-            c = c.getSuperclass();
-        }
-        return false;
-    }
+//    /*
+//     * Check whether c or one of its super classes implement the interface
+//     * RLibraryWrapper.
+//     */
+//    private boolean isPropperWrapper(Class<?> c) {
+//        while (c != null) {
+//            Type[] intfs = c.getGenericInterfaces();
+//            if (contains(intfs, rLibraryWrapperClass)) {
+//                return true;
+//            }
+//            c = c.getSuperclass();
+//        }
+//        return false;
+//    }
     
-    /*
-     * Check whether arr contains t.
-     */
-    private boolean contains(Type[] arr, Type t) {
-        if (arr.length != 0) {
-            /* arr is not sorted. Sorting arr would be of 
-             * complexity O(n * log n). Performing a binary search then would
-             * be of complexity O(log n). As a search for t is only needed 
-             * once, it is cheaper to perform a linear search with complexity
-             * O(n).
-             */
-            for (Type t1: arr) {
-                if (t1.equals(t)) return true;
-            }
-        }
-        return false;
-    }
+//    /*
+//     * Check whether arr contains t.
+//     */
+//    private boolean contains(Type[] arr, Type t) {
+//        if (arr.length != 0) {
+//            /* arr is not sorted. Sorting arr would be of 
+//             * complexity O(n * log n). Performing a binary search then would
+//             * be of complexity O(log n). As a search for t is only needed 
+//             * once, it is cheaper to perform a linear search with complexity
+//             * O(n).
+//             */
+//            for (Type t1: arr) {
+//                if (t1.equals(t)) return true;
+//            }
+//        }
+//        return false;
+//    }
     
     private class AnnotationComparator<T extends AnnotatedElement> 
     implements Comparator<T> {

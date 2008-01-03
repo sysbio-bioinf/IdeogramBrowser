@@ -22,24 +22,26 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JTabbedPane;
 
 /**
- * INSERT DOCUMENTATION HERE!
+ * Stub class for R interface panels.
  *
  * @author Ferdinand Hofherr
  *
  */
 public class RInterfacePanel extends JPanel implements ActionListener{
 
+    // Action commands.
     private static final String SAMPLE_DATA = "sample data";
     private static final String SAMPLE_DATA_SEL = "sample data sel";
     private static final String OTHER_DATA = "other data";
-        
+
     private RLibraryWrapper wrapper;
     private JPanel analysisFields;
     private JComboBox sampleDataCombo;
     private MessageDisplay mdp;
-    
+
     /**
      * Create a new RInterfacePanel with the specified wrapper as model. If
      * there is no wrapper until now, pass null. If there exists no 
@@ -50,17 +52,19 @@ public class RInterfacePanel extends JPanel implements ActionListener{
     public RInterfacePanel(RLibraryWrapper wrapper, MessageDisplay mdp) {
         this.wrapper = wrapper;
         this.mdp = mdp;
-        
+
         this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
         this.add(createSampleDataPanel());
-        
+
         analysisFields = new JPanel();
         this.add(analysisFields);
     }
-    
+
     /**
-     * Add a JPanel containing the input fields. This method assures, that 
-     * there are many different layout possibilities.
+     * Add a {@link Component} containing the input fields. As an R library may
+     * provide more than one analysis function this Component itself might 
+     * provide one or more analysis interfaces.
+     * {@see RInterfaceBuilder#createAnalysisInterface(String)}
      *
      * @param analysisInterface
      */
@@ -70,53 +74,53 @@ public class RInterfacePanel extends JPanel implements ActionListener{
         this.analysisFields.validate();
         this.validate();
     }
-    
+
     private JPanel createSampleDataPanel() {
         JPanel ret =  new JPanel();
         if (wrapper != null) {
             ret.setLayout(new BoxLayout(ret, BoxLayout.LINE_AXIS));
-            
+
             JPanel p = new JPanel();
-            
+
             p.setLayout(new BoxLayout(p, BoxLayout.PAGE_AXIS));
             JLabel l = new JLabel("Select sample data:");
             p.add(l);
-            
+
             sampleDataCombo = wrapper.hasSampleData() ? 
                     new JComboBox(wrapper.listSampleData().toArray()) : new JComboBox();
-            sampleDataCombo.setActionCommand(SAMPLE_DATA_SEL);
-            sampleDataCombo.setEnabled(false);
-            sampleDataCombo.setSelectedIndex(-1);
-            sampleDataCombo.addActionListener(this);
-            p.add(sampleDataCombo);
-            ret.add(p);
-            
-            ret.add(Box.createHorizontalGlue());
-            
-            JRadioButton sampleData = new JRadioButton("Use sample data");
-            sampleData.setActionCommand(SAMPLE_DATA);
-            sampleData.addActionListener(this);
-            sampleData.setEnabled(wrapper.hasSampleData());
-            
-            JRadioButton otherData = new JRadioButton("Use other data");
-            otherData.setActionCommand(OTHER_DATA);
-            otherData.addActionListener(this);
-            otherData.setSelected(true);
-            
-            ButtonGroup bGroup = new ButtonGroup();
-            bGroup.add(sampleData);
-            bGroup.add(otherData);
-            
-            p = new JPanel();
-            p.setLayout(new BoxLayout(p, BoxLayout.PAGE_AXIS));
-            p.add(sampleData);
-            p.add(otherData);
-            
-            ret.add(p);
+                    sampleDataCombo.setActionCommand(SAMPLE_DATA_SEL);
+                    sampleDataCombo.setEnabled(false);
+                    sampleDataCombo.setSelectedIndex(-1);
+                    sampleDataCombo.addActionListener(this);
+                    p.add(sampleDataCombo);
+                    ret.add(p);
+
+                    ret.add(Box.createHorizontalGlue());
+
+                    JRadioButton sampleData = new JRadioButton("Use sample data");
+                    sampleData.setActionCommand(SAMPLE_DATA);
+                    sampleData.addActionListener(this);
+                    sampleData.setEnabled(wrapper.hasSampleData());
+
+                    JRadioButton otherData = new JRadioButton("Use other data");
+                    otherData.setActionCommand(OTHER_DATA);
+                    otherData.addActionListener(this);
+                    otherData.setSelected(true);
+
+                    ButtonGroup bGroup = new ButtonGroup();
+                    bGroup.add(sampleData);
+                    bGroup.add(otherData);
+
+                    p = new JPanel();
+                    p.setLayout(new BoxLayout(p, BoxLayout.PAGE_AXIS));
+                    p.add(sampleData);
+                    p.add(otherData);
+
+                    ret.add(p);
         }
         return ret;
     }
-    
+
     /* (non-Javadoc)
      * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
      */
@@ -132,14 +136,14 @@ public class RInterfacePanel extends JPanel implements ActionListener{
             RDataSetWrapper ds = (RDataSetWrapper)((JComboBox)e.getSource()).getSelectedItem();
             try {
                 wrapper.loadSampleData(ds);
-                setMdpText("Sample data set \"" + ds.getName() + "\" loaded!");
+                setMessageDisplayText("Sample data set \"" + ds.getName() + "\" loaded!");
             } catch (RException e1) {
-                setMdpText(e1.getMessage());
+                setMessageDisplayText(e1.getMessage());
             }
         }
     }
-    
-    private void setMdpText(String text) {
+
+    private void setMessageDisplayText(String text) {
         if (mdp != null) {
             mdp.setMessage(text);
         }

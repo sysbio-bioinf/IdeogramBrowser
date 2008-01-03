@@ -9,7 +9,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * INSERT DOCUMENTATION HERE!
+ * Use this annotaion to mark fields storing string parameters to R functions.
  *
  * @author Ferdinand Hofherr
  *

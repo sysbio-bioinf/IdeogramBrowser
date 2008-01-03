@@ -5,6 +5,7 @@
  */
 package ideogram.r;
 
+import ideogram.r.exceptions.RLibraryWrapperException;
 import ideogram.r.rlibwrappers.RLibraryWrapper;
 
 import java.lang.reflect.Constructor;
@@ -18,8 +19,10 @@ import org.rosuda.JRI.REXP;
 import org.rosuda.JRI.Rengine;
 
 /**
- * INSERT DOCUMENTATION HERE!
- *
+ * Central controlling class for interaction with R. This class is implemented
+ * as a singleton. It ensures that only one running R thread exists.
+ * 
+ * <strong>TODO: Fill bug report about stopEngine. JRI seems to have a bug there. </strong>
  * @author Ferdinand Hofherr
  *
  */
@@ -41,7 +44,7 @@ public class RController {
         loadedWrapper = null;
         // add available Libraries
         
-        // TODO Externalize this, so that nobody has to mess arround with this
+        // TODO Externalize this, so that nobody has to mess around with this
         // code.
         registerRLibraryWrapper("GLAD", "ideogram.r.rlibwrappers.GLADWrapper");
     }
@@ -50,14 +53,14 @@ public class RController {
         private final static RController INSTANCE = new RController();
     }
     
-    public static String asRBoolString(int i) {
-        switch (i) {
-            case 0:  return("FALSE");
-            case 1:  return("TRUE");
-            case 2:  return("NA");
-            default: return("FALSE");
-        }
-    }
+//    public static String asRBoolString(int i) {
+//        switch (i) {
+//            case 0:  return("FALSE");
+//            case 1:  return("TRUE");
+//            case 2:  return("NA");
+//            default: return("FALSE");
+//        }
+//    }
 
     /**
      * Check whether the versions of JRI.jar and the JRI native library match.
@@ -120,7 +123,8 @@ public class RController {
     }
     
     /**
-     * Start the Rengine. 
+     * Start the Rengine. The Rengine must be started, before any interaction 
+     * with R is possible.
      *
      * @return true if starting the Rengine succeeded, else false.
      * @throws RException
@@ -132,7 +136,7 @@ public class RController {
         }
         
         if (!engineRunning()) {
-            // TODO This is only an intermediate version! Add possibility to set commandline arguments for R and create Model seperately!
+            // TODO This is only an intermediate version! Add possibility to set command line arguments for R and create Model seperately!
             rEngine = new Rengine(new String[] {"--vanilla"}, 
                     false, mainLoopModel);
             /*
@@ -149,7 +153,8 @@ public class RController {
     }
     
     /**
-     * Get the Rengine's RMainLoopModel, if the engine is running.
+     * Get the Rengine's RMainLoopModel. If the Rengine is not running, the 
+     * RMainLoopModel will be returned anyway.
      *
      * @return The Rengine's RMainLoopModel even though the engine might not be
      *         running.
@@ -205,8 +210,7 @@ public class RController {
     }
     
     /**
-     *
-     * INSERT DOCUMENTATION HERE!
+     * Unload the specified R library.
      *
      * @param libName
      * @throws RException
@@ -221,10 +225,12 @@ public class RController {
     }
     
     /**
+     * Load the specified data set into R. An R library must provide this data
+     * set already.
      * 
-     * INSERT DOCUMENTATION HERE!
+     * TODO: Add possibility to load data from files.
      *
-     * @param dsName
+     * @param dsName Name of the data set to load.
      * @throws RException When R is not running, or when an error occured, while
      *                    loading the package.
      */
@@ -255,7 +261,9 @@ public class RController {
      */
     
     /**
-     * Register a wrapper for a R library.
+     * Register a wrapper for a R library. All {@link RLibraryWrapper}s must 
+     * implement an empty Constructor.
+     * 
      * @param libName Name of the library, e.g. GLAD
      * @param fullyQualifiedName Fully quialified Name of the wrapper class, e.g
      *        ideogram.r.GLADWrapper
@@ -265,11 +273,11 @@ public class RController {
     }
     
     /**
-     * 
-     * INSERT DOCUMENTATION HERE!
+     * Load the selected R library. The corresponding {@link RLibraryWrapper}
+     * must be registered with {@link RController}, else loading it will fail.
      *
      * @param name
-     * @return
+     * @return Instance of the freshly loaded {@link RLibraryWrapper}
      * @throws ClassNotFoundException
      * @throws IllegalArgumentException
      * @throws InstantiationException
@@ -279,13 +287,17 @@ public class RController {
      */
     public RLibraryWrapper loadRLibraryWrapper(String name) 
     throws ClassNotFoundException, IllegalArgumentException, 
-    InstantiationException, IllegalAccessException, InvocationTargetException, RException {
+    InstantiationException, IllegalAccessException, InvocationTargetException, 
+    RException {
         String selClass = availableLibraries.get(name);
-        System.out.println(selClass);
-        Class<?> c = Class.forName(availableLibraries.get(name));
+        if (selClass == null) throw new ClassNotFoundException("The " +
+                "RLibraryWrapper " + name + " must be registered with the " +
+                "RController");
+        Class<?> c = Class.forName(selClass);
         Constructor<?> ctor = getEmptyConstructor(c);
         if (ctor == null) {
-            throw new IllegalArgumentException(c.toString() + " must implement an empty constructor!");
+            throw new IllegalArgumentException(c.toString() + 
+                    " must implement an empty constructor!");
         }
         loadedWrapper = (RLibraryWrapper)ctor.newInstance();
         loadedWrapper.loadLibrary();
@@ -294,8 +306,8 @@ public class RController {
     }
     
     /**
-     * Returns null if no wrapper loaded!
-     * INSERT DOCUMENTATION HERE!
+     * Returns null if no wrapper is loaded, else a reference to the instance 
+     * of the loaded wrapper is returned.
      *
      * @return
      */
@@ -320,12 +332,15 @@ public class RController {
     }
 
     /**
-     * List all available library wrappers.
-     *
-     * @return
+     * List all available library wrappers. The returned array is sorted 
+     * into alphabetically ascending order.
+     * 
+     * @return Sorted array containing the names of all available 
+     *         {@link RLibraryWrapper}s.
      */
-    public Object[] listLibraryWrappers() {
-        Object[] keys = availableLibraries.keySet().toArray();
+    public String[] listLibraryWrappers() {
+        String[] keys = new String[availableLibraries.size()];
+        keys = availableLibraries.keySet().toArray(keys);
         Arrays.sort(keys); // OK, as strings implement Comparable.
         return keys;
     }

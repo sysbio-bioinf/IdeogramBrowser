@@ -1,11 +1,12 @@
 /*
- * File:	RLibWrapperReaderTest.java
+ * File:	RLibraryWrapperReaderTest.java
  * Created: 10.12.2007
  * Author:	Ferdinand Hofherr <ferdinand.hofherr@uni-ulm.de>
  */
 package ideogram.r.gui;
 
 import static org.junit.Assert.*;
+import ideogram.r.exceptions.RLibraryWrapperException;
 import ideogram.r.rlibwrappers.GLADWrapper;
 
 import org.junit.After;
@@ -20,9 +21,9 @@ import org.junit.Test;
  * @author Ferdinand Hofherr
  *
  */
-public class RLibWrapperReaderTest {
+public class RLibraryWrapperReaderTest {
 
-    private static RLibWrapperReader rd;
+    private static RLibraryWrapperReader rd;
     /**
      * INSERT DOCUMENTATION HERE!
      *
@@ -30,7 +31,7 @@ public class RLibWrapperReaderTest {
      */
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
-        rd = new RLibWrapperReader();
+        rd = new RLibraryWrapperReader();
     }
 
     /**
@@ -61,7 +62,7 @@ public class RLibWrapperReaderTest {
     }
 
     /**
-     * Test method for {@link ideogram.r.gui.RLibWrapperReader#createInputPanel(java.lang.String)}.
+     * Test method for {@link ideogram.r.gui.RLibraryWrapperReader#createInputPanel(java.lang.String)}.
      * @throws ClassNotFoundException 
      * @throws RLibraryWrapperException 
      */

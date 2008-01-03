@@ -1,9 +1,9 @@
 /*
- * File:	InvalidInputException.java
+ * File:	RLibraryWrapperException.java
  * Created: 10.12.2007
  * Author:	Ferdinand Hofherr <ferdinand.hofherr@uni-ulm.de>
  */
-package ideogram.r.gui;
+package ideogram.r.exceptions;
 
 /**
  * INSERT DOCUMENTATION HERE!
@@ -11,13 +11,13 @@ package ideogram.r.gui;
  * @author Ferdinand Hofherr
  *
  */
-public class InvalidInputException extends Exception {
+public class RLibraryWrapperException extends Exception {
 
     /**
      * INSERT DOCUMENTATION HERE!
      *
      */
-    public InvalidInputException() {
+    public RLibraryWrapperException() {
         // TODO Auto-generated constructor stub
     }
 
@@ -26,7 +26,7 @@ public class InvalidInputException extends Exception {
      *
      * @param message
      */
-    public InvalidInputException(String message) {
+    public RLibraryWrapperException(String message) {
         super(message);
         // TODO Auto-generated constructor stub
     }
@@ -36,7 +36,7 @@ public class InvalidInputException extends Exception {
      *
      * @param cause
      */
-    public InvalidInputException(Throwable cause) {
+    public RLibraryWrapperException(Throwable cause) {
         super(cause);
         // TODO Auto-generated constructor stub
     }
@@ -47,7 +47,7 @@ public class InvalidInputException extends Exception {
      * @param message
      * @param cause
      */
-    public InvalidInputException(String message, Throwable cause) {
+    public RLibraryWrapperException(String message, Throwable cause) {
         super(message, cause);
         // TODO Auto-generated constructor stub
     }

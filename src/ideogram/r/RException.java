@@ -6,7 +6,7 @@
 package ideogram.r;
 
 /**
- * Parentclass for all exceptions related to IdeogramBrowser's R interface.
+ * Parent class for all exceptions related to IdeogramBrowser's R interface.
  *
  * @author Ferdinand Hofherr
  *
@@ -17,21 +17,17 @@ public class RException extends Exception {
     
     public RException() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
     public RException(String message, Throwable cause) {
         super(message, cause);
-        // TODO Auto-generated constructor stub
     }
 
     public RException(String message) {
         super(message);
-        // TODO Auto-generated constructor stub
     }
 
     public RException(Throwable cause) {
         super(cause);
-        // TODO Auto-generated constructor stub
     }
 }

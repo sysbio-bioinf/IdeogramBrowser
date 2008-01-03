@@ -9,7 +9,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Used this annotation to:
+ * Use this annotation to:
  * a) Mark the methods that perform an analysis in R.
  * b) Mark the fields that store parameters for an analysis in R.
  * 

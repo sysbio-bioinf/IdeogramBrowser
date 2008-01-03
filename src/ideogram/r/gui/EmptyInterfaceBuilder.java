@@ -13,17 +13,20 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 /**
- * INSERT DOCUMENTATION HERE!
+ * Interface builder which builds empty interfaces. This interface builder 
+ * is needed, when there is still no R library selected, and thus no interface
+ * needs to be built. It can be used, to display some default information.
  * 
  * @author Ferdinand Hofherr
  */
-public class EmptyInterfaceBuilder implements RInterfacePanelBuilder {
+public class EmptyInterfaceBuilder implements RInterfaceBuilder {
 
     private RInterfacePanel interfacePanel;
     private MessageDisplay mdp;
 
     /**
-     * Pass null for mdp if there does not exist one.
+     * Pass null for mdp if there does not exist one. However this might lead 
+     * to undefined results. 
      *
      * @param mdp
      */
@@ -39,7 +42,7 @@ public class EmptyInterfaceBuilder implements RInterfacePanelBuilder {
      *      int)
      */
     public void buildRBoolInput(String label, Field f, boolean mandatory) {
-        // nothing todo
+        // nothing to do
     }
 
     /*
@@ -48,9 +51,8 @@ public class EmptyInterfaceBuilder implements RInterfacePanelBuilder {
      * @see ideogram.r.gui.RInterfacePanelBuilder#buildRDsNameInput(java.lang.String,
      *      java.lang.String)
      */
-    public void buildRDsNameInput(String label, Field f,
-            boolean mandatory) {
-        // nothing todo
+    public void buildRDsNameInput(String label, Field f, boolean mandatory) {
+        // nothing to do
     }
 
     /*
@@ -59,9 +61,8 @@ public class EmptyInterfaceBuilder implements RInterfacePanelBuilder {
      * @see ideogram.r.gui.RInterfacePanelBuilder#buildRNumericInput(java.lang.String,
      *      double)
      */
-    public void buildRNumericInput(String label, Field f,
-            boolean mandatory) {
-        // nothing todo
+    public void buildRNumericInput(String label, Field f, boolean mandatory) {
+        // nothing to do
     }
 
     /*
@@ -70,9 +71,8 @@ public class EmptyInterfaceBuilder implements RInterfacePanelBuilder {
      * @see ideogram.r.gui.RInterfacePanelBuilder#buildRStringInput(java.lang.String,
      *      java.lang.String)
      */
-    public void buildRStringInput(String label, Field f,
-            boolean mandatory) {
-        // nothing todo
+    public void buildRStringInput(String label, Field f, boolean mandatory) {
+        // nothing to do
     }
 
     /*
@@ -81,7 +81,7 @@ public class EmptyInterfaceBuilder implements RInterfacePanelBuilder {
      * @see ideogram.r.gui.RInterfacePanelBuilder#createAnalysisInterface(java.lang.String)
      */
     public void createAnalysisInterface(String methodName) {
-        // nothing todo
+        // nothing to do
     }
 
     /*
@@ -96,8 +96,7 @@ public class EmptyInterfaceBuilder implements RInterfacePanelBuilder {
         interfacePanel.addAnalysisInterface(p);
     }
 
-    /*
-     * (non-Javadoc)
+    /* (non-Javadoc)
      * 
      * @see ideogram.r.gui.RInterfacePanelBuilder#getRInterfacePanel()
      */
@@ -105,12 +104,32 @@ public class EmptyInterfaceBuilder implements RInterfacePanelBuilder {
         return interfacePanel;
     }
 
+    /* (non-Javadoc)
+     * @see ideogram.r.gui.RInterfacePanelBuilder#setMessageDisplay(ideogram.r.gui.MessageDisplay)
+     */
     public void setMessageDisplay(MessageDisplay mdp) {
         this.mdp = mdp;
     }
     
+    /* (non-Javadoc)
+     * @see ideogram.r.gui.RInterfacePanelBuilder#getMessageDisplay()
+     */
     public MessageDisplay getMessageDisplay() {
         return mdp;
+    }
+
+    /* (non-Javadoc)
+     * @see ideogram.r.gui.RInterfaceBuilder#buildPerformButton()
+     */
+    public void buildPerformButton(String funcname) {
+        // nothing to do        
+    }
+
+    /* (non-Javadoc)
+     * @see ideogram.r.gui.RInterfaceBuilder#buildResetButton()
+     */
+    public void buildResetButton() {
+        // nothing to do        
     }
 
 }

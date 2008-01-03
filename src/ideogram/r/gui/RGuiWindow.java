@@ -36,6 +36,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.WindowConstants;
 // TODO THREAD SAFETY!!
+// TODO Comment
 /**
  * INSERT DOCUMENTATION HERE!
  *
@@ -61,7 +62,7 @@ implements Observer, ActionListener, MessageDisplay {
     private JLabel statusLabel; // Displays status information.
     private JPanel libSpecInterfPan; // Library specific interface.
     private Container contentPane;
-    private RLibWrapperReader reader;
+    private RLibraryWrapperReader reader;
     
     /**
      * INSERT DOCUMENTATION HERE!
@@ -73,7 +74,7 @@ implements Observer, ActionListener, MessageDisplay {
         rConsole = new JTextArea(); rConsole.setEditable(false);
         statusLabel = new JLabel();
         contentPane = getContentPane();
-        reader = new RLibWrapperReader(this);
+        reader = new RLibraryWrapperReader(this);
         libSpecInterfPan = new JPanel();
         
         contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.PAGE_AXIS));

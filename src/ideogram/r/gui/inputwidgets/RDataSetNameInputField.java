@@ -3,8 +3,9 @@
  * Created: 15.12.2007
  * Author:	Ferdinand Hofherr <ferdinand.hofherr@uni-ulm.de>
  */
-package ideogram.r.gui;
+package ideogram.r.gui.inputwidgets;
 
+import ideogram.r.exceptions.InvalidInputException;
 import ideogram.r.rlibwrappers.RLibraryWrapper;
 
 import java.awt.event.FocusEvent;
@@ -27,10 +28,10 @@ public class RDataSetNameInputField extends AbstractRInputField {
             defaultValue = (String)field.get(getWrapper());
             setText(defaultValue);
         } catch (IllegalArgumentException e) {
-            setMdpText(e.getLocalizedMessage());
+            setMessageDisplayText(e.getLocalizedMessage());
             e.printStackTrace();
         } catch (IllegalAccessException e) {
-            setMdpText(e.getLocalizedMessage());
+            setMessageDisplayText(e.getLocalizedMessage());
             e.printStackTrace();
         }
     }
@@ -44,10 +45,10 @@ public class RDataSetNameInputField extends AbstractRInputField {
             getField().set(getWrapper(), defaultValue);
             setText(defaultValue);
         } catch (IllegalArgumentException e) {
-            setMdpText(e.getLocalizedMessage());
+            setMessageDisplayText(e.getLocalizedMessage());
             e.printStackTrace();
         } catch (IllegalAccessException e) {
-            setMdpText(e.getLocalizedMessage());
+            setMessageDisplayText(e.getLocalizedMessage());
             e.printStackTrace();
         }
     }
@@ -67,17 +68,17 @@ public class RDataSetNameInputField extends AbstractRInputField {
     }
 
     public void focusGained(FocusEvent e) {
-        setMdpText("Please enter the name of the data set you intend to use!");
+        setMessageDisplayText("Please enter the name of the data set you intend to use!");
     }
 
     public void focusLost(FocusEvent e) {
         try {
             getField().set(getWrapper(), getText());
         } catch (IllegalArgumentException e1) {
-            setMdpText(e1.getLocalizedMessage());
+            setMessageDisplayText(e1.getLocalizedMessage());
             e1.printStackTrace();
         } catch (IllegalAccessException e1) {
-            setMdpText(e1.getLocalizedMessage());
+            setMessageDisplayText(e1.getLocalizedMessage());
             e1.printStackTrace();
         }
     }

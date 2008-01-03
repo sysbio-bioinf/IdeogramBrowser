@@ -9,7 +9,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * INSERT DOCUMENTATION HERE!
+ * Use this annotation to mark fields storing numeric parameters (i.e. int,
+ * double ...) to R functions.
  *
  * @author Ferdinand Hofherr
  *
@@ -17,25 +18,12 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface RNumericParam {
     
-//    /**
-//     * Name of the R function the input field belongs to.
-//     *
-//     * @return
-//     */
-//    String funcname();
-    
     /**
      * Labels the corresponding input fields in the GUI shall have.
      * Default: RNumeric.
      */
     String name() default "RNumeric";
-    
-//    /**
-//     * Default value of the parameter.
-//     * Default: 0.0
-//     */
-//    double value() default 0.0;
-    
+        
     /**
      * Specify whether the user has to fill out this field.
      *

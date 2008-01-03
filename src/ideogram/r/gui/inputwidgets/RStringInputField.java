@@ -3,7 +3,7 @@
  * Created: 15.12.2007
  * Author:	Ferdinand Hofherr <ferdinand.hofherr@uni-ulm.de>
  */
-package ideogram.r.gui;
+package ideogram.r.gui.inputwidgets;
 
 import ideogram.r.rlibwrappers.RLibraryWrapper;
 
@@ -31,10 +31,10 @@ public class RStringInputField extends AbstractRInputField {
             defaultValue = (String) field.get(wrapper);
             setText(defaultValue);
         } catch (IllegalArgumentException e) {
-            setMdpText(e.getLocalizedMessage());
+            setMessageDisplayText(e.getLocalizedMessage());
             e.printStackTrace();
         } catch (IllegalAccessException e) {
-            setMdpText(e.getLocalizedMessage());
+            setMessageDisplayText(e.getLocalizedMessage());
             e.printStackTrace();
         }
     }
@@ -55,10 +55,10 @@ public class RStringInputField extends AbstractRInputField {
         try {
             getField().set(getWrapper(), defaultValue);
         } catch (IllegalArgumentException e) {
-            setMdpText(e.getLocalizedMessage());
+            setMessageDisplayText(e.getLocalizedMessage());
             e.printStackTrace();
         } catch (IllegalAccessException e) {
-            setMdpText(e.getLocalizedMessage());
+            setMessageDisplayText(e.getLocalizedMessage());
             e.printStackTrace();
         }
         setText(defaultValue);
@@ -77,7 +77,7 @@ public class RStringInputField extends AbstractRInputField {
      * @see java.awt.event.FocusListener#focusGained(java.awt.event.FocusEvent)
      */
     public void focusGained(FocusEvent e) {
-        setMdpText(MDP_TEXT);
+        setMessageDisplayText(MDP_TEXT);
     }
 
     /* (non-Javadoc)
@@ -89,16 +89,16 @@ public class RStringInputField extends AbstractRInputField {
             try {
                 getField().set(getWrapper(), getText());
             } catch (IllegalArgumentException e1) {
-                setMdpText(e1.getLocalizedMessage());
+                setMessageDisplayText(e1.getLocalizedMessage());
                 e1.printStackTrace();
             } catch (IllegalAccessException e1) {
-                setMdpText(e1.getLocalizedMessage());
+                setMessageDisplayText(e1.getLocalizedMessage());
                 e1.printStackTrace();
             }
         }
         else {
             setBackground(Color.RED);
-            setMdpText(MDP_TEXT);
+            setMessageDisplayText(MDP_TEXT);
         }
     }
 

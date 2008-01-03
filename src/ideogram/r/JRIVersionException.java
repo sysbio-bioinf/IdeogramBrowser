@@ -15,21 +15,17 @@ public class JRIVersionException extends RException {
 
     public JRIVersionException() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
     public JRIVersionException(String message, Throwable cause) {
         super(message, cause);
-        // TODO Auto-generated constructor stub
     }
 
     public JRIVersionException(String message) {
         super(message);
-        // TODO Auto-generated constructor stub
     }
 
     public JRIVersionException(Throwable cause) {
         super(cause);
-        // TODO Auto-generated constructor stub
     }
 }

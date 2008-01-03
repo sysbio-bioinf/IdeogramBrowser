@@ -9,33 +9,20 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * INSERT DOCUMENTATION HERE!
- *
+ * Use this annotation to annotate an boolean parameter expected by an R
+ * function.
  * @author Ferdinand Hofherr
  *
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface RBoolParam {
-    
-//    /**
-//     * Name of the R function the input field belongs to.
-//     *
-//     * @return
-//     */
-//    String funcname();
-    
+        
     /**
      * Label which the corresponding input fields in the GUI shall have.
      * Default: RBool.
      */
     String name() default "RBool";
-        
-//    /**
-//     * Default value of the parameter.
-//     * Default: false 
-//     */
-//    String value() default "FALSE";
-    
+            
     /**
      * Specify whether the user has to fill out this field.
      *

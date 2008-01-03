@@ -3,8 +3,10 @@
  * Created: 10.12.2007
  * Author:	Ferdinand Hofherr <ferdinand.hofherr@uni-ulm.de>
  */
-package ideogram.r.gui;
+package ideogram.r.gui.inputwidgets;
 
+import ideogram.r.exceptions.InvalidInputException;
+import ideogram.r.gui.MessageDisplay;
 import ideogram.r.rlibwrappers.RLibraryWrapper;
 
 import java.awt.event.FocusListener;
@@ -20,7 +22,7 @@ import javax.swing.JTextField;
  *
  */
 public abstract class AbstractRInputField extends JTextField 
-implements FocusListener {
+implements FocusListener, RInputWidget {
     
     private boolean mandatory;
     private MessageDisplay mdp;
@@ -35,38 +37,53 @@ implements FocusListener {
         addFocusListener(this);
     }
     
-    /**
-     * Returns true, if input to this field is mandatory.
-     *
-     * @return
+    /* (non-Javadoc)
+     * @see ideogram.r.gui.inputwidgets.RInputWidget#isMandatory()
      */
     public boolean isMandatory() {
         return mandatory;
     }
     
-    /**
-     * Reference to a class, which is able to display status messages. Set
-     * to null, if no such class exists.
-     *
-     * @param mdp
+    /* (non-Javadoc)
+     * @see ideogram.r.gui.inputwidgets.RInputWidget#setMessageDisplay(ideogram.r.gui.MessageDisplay)
      */
     public void setMessageDisplay(MessageDisplay mdp) {
         this.mdp = mdp;
     }
     
+    /* (non-Javadoc)
+     * @see ideogram.r.gui.inputwidgets.RInputWidget#getMessageDisplay()
+     */
     public MessageDisplay getMessageDisplay() {
         return mdp;
     }
     
+    /**
+     * Get the {@link RLibraryWrapper}'s public field associated with this 
+     * input field.
+     *
+     * @return
+     */
     protected Field getField() {
         return field;
     }
     
+    /**
+     * Get the {@link RLibraryWrapper} for which this input field provides a
+     * part of an interface.
+     *
+     * @return
+     */
     protected RLibraryWrapper getWrapper() {
         return wrapper;
     }
     
-    protected void setMdpText(String text) {
+    /**
+     * Set the {@link MessageDisplay}'s text.
+     *
+     * @param text
+     */
+    protected void setMessageDisplayText(String text) {
         if (mdp != null) {
             mdp.setMessage(text);
         }
@@ -75,12 +92,18 @@ implements FocusListener {
         }
     }
     
+    /* (non-Javadoc)
+     * @see ideogram.r.gui.inputwidgets.RInputWidget#validateInput()
+     */
     public abstract boolean validateInput() throws InvalidInputException;
     
+    /* (non-Javadoc)
+     * @see ideogram.r.gui.inputwidgets.RInputWidget#resetToDefault()
+     */
     public abstract void resetToDefault();
     
-    /**
-     * Returns true, when the field is not set to a value.
+    /* (non-Javadoc)
+     * @see ideogram.r.gui.inputwidgets.RInputWidget#isEmpty()
      */
     public abstract boolean isEmpty();
 }
