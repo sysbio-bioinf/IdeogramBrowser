@@ -74,7 +74,7 @@ public class RInterfacePanel extends JPanel implements ActionListener{
         this.analysisFields.validate();
         this.validate();
     }
-
+    
     private JPanel createSampleDataPanel() {
         JPanel ret =  new JPanel();
         if (wrapper != null) {

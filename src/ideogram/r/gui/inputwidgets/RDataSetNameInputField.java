@@ -58,7 +58,9 @@ public class RDataSetNameInputField extends AbstractRInputField {
      */
     @Override
     public boolean validateInput() throws InvalidInputException {
-        // Is very hard to validate!
+        if (isMandatory() && isEmpty()) {
+            throw new InvalidInputException("You must specify a data set!");
+        }
         return true;
     }
 

@@ -267,7 +267,8 @@ public class GLADWrapper extends AbstractRWrapper {
                 ", verbose = " + gladVerbose +
         ")");
         if (res == null) {
-            throw new RException("Function glad() returned with null!");
+            throw new RException("Function glad() returned with null! " +
+            		"Is the data set's name correct?");
         }
         return res;
     }

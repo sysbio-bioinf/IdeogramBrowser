@@ -22,7 +22,7 @@ public @interface RStringParam {
 //     *
 //     * @return
 //     */
-//    String funcname();
+//    String analysisFunction();
     
     /**
      * Label which the corresponding input field in the GUI shall have.

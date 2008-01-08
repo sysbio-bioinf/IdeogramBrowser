@@ -14,15 +14,19 @@ import ideogram.r.gui.inputwidgets.RStringInputField;
 import ideogram.r.rlibwrappers.RLibraryWrapper;
 
 import java.awt.Component;
+import java.awt.ComponentOrientation;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
@@ -46,10 +50,13 @@ public class StandardInterfaceBuilder implements RInterfaceBuilder {
     private JPanel inputFields, buttonPanel;
     private MessageDisplay mdp;
     private RLibraryWrapper wrapper;
+    
+    private int noInputFields;
 
     public StandardInterfaceBuilder(MessageDisplay mdp, RLibraryWrapper wrapper) {
         this.mdp = mdp;
         this.wrapper = wrapper;
+        noInputFields = 0;
     }
 
     /* (non-Javadoc)
@@ -104,14 +111,16 @@ public class StandardInterfaceBuilder implements RInterfaceBuilder {
         p.add(label);
         p.add(iField);
         inputFields.add(p);
+        noInputFields++;
     }
 
     /* (non-Javadoc)
      * @see ideogram.r.gui.RInterfaceBuilder#createAnalysisInterface(java.lang.String)
      */
     public void createAnalysisInterface(String methodName) {
+        noInputFields = 0;
         inputFields = new JPanel();
-        inputFields.setLayout(new BoxLayout(inputFields, BoxLayout.PAGE_AXIS));
+        //inputFields.setLayout(new BoxLayout(inputFields, BoxLayout.PAGE_AXIS));
         analysisInterface.addTab(methodName, inputFields);
     }
 
@@ -133,6 +142,8 @@ public class StandardInterfaceBuilder implements RInterfaceBuilder {
      * @see ideogram.r.gui.RInterfaceBuilder#getRInterfacePanel()
      */
     public Component getRInterfacePanel() {
+        inputFields.setLayout(new GridLayout(noInputFields / 3 + 1, 3,
+                GLOB_HORIZ_GAP, 0));
         return interfacePanel;
     }
 
@@ -150,10 +161,10 @@ public class StandardInterfaceBuilder implements RInterfaceBuilder {
         this.mdp = mdp;
     }
 
-    public void buildPerformButton(String funcname) {
+    public void buildPerformButton(Method analysisFunction) {
         JButton b = new JButton("Perform analysis");
         b.setActionCommand(PERFORM_ANALYSIS);
-        b.addActionListener(new ButtonActionListener(funcname));
+        b.addActionListener(new ButtonActionListener(analysisFunction));
         buttonPanel.add(b);
         buttonPanel.add(Box.createHorizontalGlue());
     }
@@ -166,14 +177,14 @@ public class StandardInterfaceBuilder implements RInterfaceBuilder {
     }
     
     private class ButtonActionListener implements ActionListener {
-        String funcname;
+        Method analysisFunction;
         
         public ButtonActionListener() {
-            funcname = null;
+            analysisFunction = null;
         }
         
-        public ButtonActionListener(String funcname) {
-            this.funcname = funcname;
+        public ButtonActionListener(Method analysisFunction) {
+            this.analysisFunction = analysisFunction;
         }
 
         public void actionPerformed(ActionEvent e) {
@@ -183,33 +194,42 @@ public class StandardInterfaceBuilder implements RInterfaceBuilder {
             for (Component c: p.getComponents()) {
                 // Cast OK, as each subcomponent of p is a JPanel again!
                 ri = findInputWidget((JPanel)c);
-                // TODO This can be done nicer! The second Component is always the input widget.
-                if (ri != null) {
-                    if (e.getActionCommand().equalsIgnoreCase(RESET_FIELDS)) {
-                        ri.resetToDefault();
-                    }
-                    else {
-                        try {
-                            ri.validateInput();
-                        } catch (InvalidInputException e1) {
-                            return;
+                if (e.getActionCommand().equalsIgnoreCase(RESET_FIELDS)) {
+                    ri.resetToDefault();
+                }
+                else {
+                    try {
+                        ri.validateInput();
+                    } catch (InvalidInputException e1) {
+                        if (mdp != null) {
+                            mdp.setMessage(e1.getLocalizedMessage());
                         }
+                        return; // If some input is invalid the action can't be performed.
                     }
                 }
             }
             if (e.getActionCommand().equalsIgnoreCase(PERFORM_ANALYSIS) &&
-                    funcname != null) {
-                // TODO call analysis method.
+                    analysisFunction != null) {
+                try {
+                    analysisFunction.invoke(wrapper, (Object[])null);
+                } catch (IllegalArgumentException e1) {
+                    e1.printStackTrace();
+                } catch (IllegalAccessException e1) {
+                    e1.printStackTrace();
+                } catch (InvocationTargetException e1) {
+                    if (mdp != null) {
+                        mdp.setMessage(e1.getCause().getLocalizedMessage());
+                    }
+                    else {
+                        System.out.println(e1.getCause().getLocalizedMessage());
+                    }
+                    //e1.printStackTrace();
+                }
             }
         }
         
         private RInputWidget findInputWidget(JPanel p) {
-            for (Component c: p.getComponents()) {
-                if (c instanceof RInputWidget) {
-                    return (RInputWidget)c;
-                }
-            }
-            return null;
+            return (RInputWidget) p.getComponent(1);
         }
     }
 }

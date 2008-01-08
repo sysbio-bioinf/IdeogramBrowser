@@ -87,7 +87,6 @@ public class RMainLoopModel extends Observable implements RMainLoopCallbacks {
      */
     public void rShowMessage(Rengine arg0, String arg1) {
         // TODO Auto-generated method stub
-
     }
 
     /* (non-Javadoc)

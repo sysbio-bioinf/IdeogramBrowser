@@ -4,6 +4,7 @@ import ideogram.r.rlibwrappers.RLibraryWrapper;
 
 import java.awt.Component;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 import javax.swing.JTabbedPane;
 
@@ -71,10 +72,10 @@ public interface RInterfaceBuilder {
     /**
      * Build an button, which allows to perform the selected analysis.
      * 
-     * @param funcname Name of the analysis function.
+     * @param analysisFunction Name of the analysis function.
      *
      */
-    public void buildPerformButton(String funcname);
+    public void buildPerformButton(Method analysisFunction);
     
     /**
      * Build an button, which allows to reset all fields to their default 

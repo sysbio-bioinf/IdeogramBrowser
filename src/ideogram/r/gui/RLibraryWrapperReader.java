@@ -147,7 +147,7 @@ public class RLibraryWrapperReader {
             for(Method m: analysisMethods) {
                 aAnalysis = (Analysis)m.getAnnotation(Analysis.class);
                 builder.createAnalysisInterface(aAnalysis.value());
-                callBuildMethods(annotatedFields, aAnalysis.value(), wrapper);
+                callBuildMethods(annotatedFields, aAnalysis.value(), wrapper, m);
             }
         
         return builder.getRInterfacePanel();
@@ -174,7 +174,7 @@ public class RLibraryWrapperReader {
      * Call the RInterfacePanelBuilder's build methods.
      */
     private void callBuildMethods(ArrayList<Field> annotatedFields, 
-            String funcname, RLibraryWrapper wrapper) 
+            String funcname, RLibraryWrapper wrapper, Method analysisMethod) 
     throws IllegalArgumentException {
         Analysis aAnalysis;
         RBoolParam aBool;
@@ -212,7 +212,7 @@ public class RLibraryWrapperReader {
             it.remove();
         }
         
-        builder.buildPerformButton(funcname);
+        builder.buildPerformButton(analysisMethod);
         builder.buildResetButton();
     }
     
@@ -221,7 +221,7 @@ public class RLibraryWrapperReader {
      * Get all methods annotated with @Analysis. Sort the list according to 
      * the function names.
      */
-    private ArrayList<Method> getAnalysisMethods(Class c) {
+    private ArrayList<Method> getAnalysisMethods(Class<?> c) {
         Method[] allMethods = c.getDeclaredMethods();
         ArrayList<Method> ret = new ArrayList<Method>();
         for (Method m: allMethods) {

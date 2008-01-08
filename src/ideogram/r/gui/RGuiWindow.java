@@ -33,6 +33,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.WindowConstants;
 // TODO THREAD SAFETY!!
@@ -63,6 +64,7 @@ implements Observer, ActionListener, MessageDisplay {
     private JPanel libSpecInterfPan; // Library specific interface.
     private Container contentPane;
     private RLibraryWrapperReader reader;
+    private JSplitPane splitPane;
     
     /**
      * INSERT DOCUMENTATION HERE!
@@ -76,26 +78,29 @@ implements Observer, ActionListener, MessageDisplay {
         contentPane = getContentPane();
         reader = new RLibraryWrapperReader(this);
         libSpecInterfPan = new JPanel();
+        splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+        splitPane.setDividerLocation(300);
         
-        contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.PAGE_AXIS));
+        //contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.PAGE_AXIS));
         
         // Register with RMainLoopModel.
         RController.getInstance().getRMainLoopModel().addObserver(this);
         
-        contentPane.add(createRStatusPanel());
         
         JPanel p = new JPanel();
+        p.add(createRStatusPanel());
+        p.add(Box.createRigidArea(new Dimension(0,5)));
         p.setLayout(new BoxLayout(p, BoxLayout.PAGE_AXIS));
         p.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         p.add(createCommonRLibraryInterface());
-        contentPane.add(p);
-        contentPane.add(Box.createVerticalGlue());
+        contentPane.add(p, BorderLayout.NORTH);
         
-        contentPane.add(libSpecInterfPan);
+        splitPane.setTopComponent(libSpecInterfPan);
         setLibSpecInterf(reader.createInputPanel());
                 
-        contentPane.add(createRConsolePanel());
+        splitPane.setBottomComponent(createRConsolePanel());
         
+        contentPane.add(splitPane, BorderLayout.CENTER);
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setVisible(true);
         setSize(810, 600);

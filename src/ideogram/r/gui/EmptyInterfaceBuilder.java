@@ -8,6 +8,7 @@ import ideogram.r.rlibwrappers.RLibraryWrapper;
 
 import java.awt.Component;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -121,7 +122,7 @@ public class EmptyInterfaceBuilder implements RInterfaceBuilder {
     /* (non-Javadoc)
      * @see ideogram.r.gui.RInterfaceBuilder#buildPerformButton()
      */
-    public void buildPerformButton(String funcname) {
+    public void buildPerformButton(Method analysisFunction) {
         // nothing to do        
     }
 
