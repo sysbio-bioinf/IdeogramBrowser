@@ -6,6 +6,8 @@
 package ideogram.r;
 
 import static org.junit.Assert.*;
+import ideogram.r.exceptions.JRIVersionException;
+import ideogram.r.exceptions.RException;
 import ideogram.r.gui.RGuiWindow;
 
 import javax.swing.JFrame;

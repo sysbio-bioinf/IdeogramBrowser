@@ -5,6 +5,7 @@
  */
 package ideogram.r;
 
+import ideogram.r.exceptions.RException;
 import ideogram.r.gui.RGuiWindow;
 
 import javax.swing.JFrame;

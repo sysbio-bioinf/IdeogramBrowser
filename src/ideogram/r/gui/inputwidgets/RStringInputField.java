@@ -5,6 +5,7 @@
  */
 package ideogram.r.gui.inputwidgets;
 
+import ideogram.r.RController;
 import ideogram.r.rlibwrappers.RLibraryWrapper;
 
 import java.awt.Color;
@@ -69,7 +70,9 @@ public class RStringInputField extends AbstractRInputField {
      */
     @Override
     public boolean validateInput() {
-        if (isMandatory() && getText().length() == 0) return false; // TODO really a good idea?
+        if(isMandatory() && getText().length() == 0) return false;
+        // TODO think about string vectors!
+        if (!RController.isValidRString(getText())) return false;
         return true;
     }
 

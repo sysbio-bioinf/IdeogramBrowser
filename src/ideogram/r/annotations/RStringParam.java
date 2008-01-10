@@ -10,6 +10,7 @@ import java.lang.annotation.RetentionPolicy;
 
 /**
  * Use this annotaion to mark fields storing string parameters to R functions.
+ * Valid R strings must be enclosed in single hyphens!
  *
  * @author Ferdinand Hofherr
  *

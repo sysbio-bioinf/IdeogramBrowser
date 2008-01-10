@@ -5,6 +5,8 @@
  */
 package ideogram.r;
 
+import ideogram.r.exceptions.JRIVersionException;
+import ideogram.r.exceptions.RException;
 import ideogram.r.exceptions.RLibraryWrapperException;
 import ideogram.r.rlibwrappers.RLibraryWrapper;
 
@@ -53,15 +55,64 @@ public class RController {
         private final static RController INSTANCE = new RController();
     }
     
-//    public static String asRBoolString(int i) {
-//        switch (i) {
-//            case 0:  return("FALSE");
-//            case 1:  return("TRUE");
-//            case 2:  return("NA");
-//            default: return("FALSE");
-//        }
-//    }
-
+    /**
+     * Test whether the passed string can be casted to a valid R numeric
+     * value. This is achieved by a call to {@link Double#parseDouble(String)}.
+     *
+     * @param s
+     * @return true if s is a valid R numeric value.
+     */
+    public static boolean isValidRNumeric(String s) {
+        try {
+            Double.parseDouble(s.trim());
+        } catch (NumberFormatException e) {
+            return false;
+        }
+        return true;
+    }
+    
+    /**
+     * Test whether the passed string is a valid R identifier. See the
+     * <a href="http://cran.r-project.org/doc/manuals/R-lang.html#Identifiers">
+     * R Language Definition </a> for details.
+     *
+     * @param s
+     * @return true if s is a valid R identifier.
+     */
+    public static boolean isValidRIdentifier(String s) {
+        char[] cArr = s.toCharArray();
+        
+        if (!Character.isLetter(cArr[0])) {
+            // The first character must be a letter!
+            return false;
+        }
+        for (char c: cArr) {
+            if (c != '.' && c != '_' && !Character.isLetterOrDigit(c)) {
+                /* The others may be letters, digits, the underscore, or the 
+                 * colon. */
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    /**
+     * Test whether the passed String is a valid R String. This method just 
+     * tests, wheter the first an the last character of the passed String 
+     * are equal to ' or ".
+     *
+     * @param s
+     * @return true if s is a valid R string.
+     */
+    public static boolean isValidRString(String s) {
+        char first = s.charAt(0);
+        char last = s.charAt(s.length() - 1);
+        if (first != last && (first != '\'' || first != '"')) {
+            return false;
+        }
+        return true;
+    }
+    
     /**
      * Check whether the versions of JRI.jar and the JRI native library match.
      * Throw an JRIVersionException if they do not. If they match mark
@@ -191,7 +242,6 @@ public class RController {
      * Allows to load the specified R library. 
      *
      * @param libName
-     * @return true if package was loaded, false if package could not be found.
      * @throws RException if R is not running.
      */
     public void loadRLibrary(String libName) throws RException {
@@ -309,7 +359,8 @@ public class RController {
      * Returns null if no wrapper is loaded, else a reference to the instance 
      * of the loaded wrapper is returned.
      *
-     * @return
+     * @return Reference to instance of loaded wrapper, or null if no wrapper is
+     * loaded.
      */
     public RLibraryWrapper getLoadedWrapper() {
         return loadedWrapper;

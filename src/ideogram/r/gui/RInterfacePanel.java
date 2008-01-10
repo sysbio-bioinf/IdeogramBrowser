@@ -11,7 +11,7 @@ import java.awt.event.ActionListener;
 import java.awt.image.Raster;
 
 import ideogram.r.RDataSetWrapper;
-import ideogram.r.RException;
+import ideogram.r.exceptions.RException;
 import ideogram.r.rlibwrappers.RLibraryWrapper;
 
 import javax.swing.Box;

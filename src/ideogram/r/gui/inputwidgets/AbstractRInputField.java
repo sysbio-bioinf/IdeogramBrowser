@@ -16,7 +16,7 @@ import java.lang.reflect.Method;
 import javax.swing.JTextField;
 
 /**
- * INSERT DOCUMENTATION HERE!
+ * TODO INSERT DOCUMENTATION HERE!
  *
  * @author Ferdinand Hofherr
  *
@@ -28,13 +28,21 @@ implements FocusListener, RInputWidget {
     private MessageDisplay mdp;
     private Field field;
     private RLibraryWrapper wrapper;
+    private boolean expectVector;
     
-    public AbstractRInputField(boolean mandatory, Field field, RLibraryWrapper wrapper) {
+    public AbstractRInputField(boolean mandatory, Field field, 
+            RLibraryWrapper wrapper, boolean expectVector) {
         this.mandatory = mandatory;
         this.mdp = null;
         this.field = field;
         this.wrapper = wrapper;
+        this.expectVector = expectVector;
         addFocusListener(this);
+    }
+    
+    public AbstractRInputField(boolean mandatory, Field field, 
+            RLibraryWrapper wrapper) {
+        this(mandatory, field, wrapper, false);
     }
     
     /* (non-Javadoc)
@@ -90,6 +98,15 @@ implements FocusListener, RInputWidget {
         else {
             System.out.println(text);
         }
+    }
+    
+    /**
+     * Returns true, if this field expects values for an R vector as input.
+     *
+     * @return
+     */
+    protected boolean vectorExpected() {
+        return expectVector;
     }
     
     /* (non-Javadoc)

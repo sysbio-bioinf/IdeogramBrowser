@@ -124,31 +124,31 @@ public class RLibraryWrapperReader {
             return b.getRInterfacePanel();
         }
         c = wrapper.getClass();
-        
+
         /*
          * DO NOT THROW ANY EXCEPTIONS BEFORE THIS LINE!
          */
-        
-//        if (!isPropperWrapper(c)) {
-//            throw new IllegalArgumentException(c.toString() + 
-//                    "does not implement the interface " + 
-//                    rLibraryWrapperClass.toString());
-//        }
-                
+
+//      if (!isPropperWrapper(c)) {
+//      throw new IllegalArgumentException(c.toString() + 
+//      "does not implement the interface " + 
+//      rLibraryWrapperClass.toString());
+//      }
+
         if((analysisMethods = getAnalysisMethods(c)).isEmpty()) {
             throw new IllegalArgumentException(c.toString() + "" +
-            		"must implement at least one method annotated with " +
-            		"@Analysis!");
+                    "must implement at least one method annotated with " +
+            "@Analysis!");
         }
-        
-            builder.createNewRInterfacePanel(wrapper);
-            annotatedFields = getAnnotatedFields(c);
 
-            for(Method m: analysisMethods) {
-                aAnalysis = (Analysis)m.getAnnotation(Analysis.class);
-                builder.createAnalysisInterface(aAnalysis.value());
-                callBuildMethods(annotatedFields, aAnalysis.value(), wrapper, m);
-            }
+        builder.createNewRInterfacePanel(wrapper);
+        annotatedFields = getAnnotatedFields(c);
+
+        for(Method m: analysisMethods) {
+            aAnalysis = (Analysis)m.getAnnotation(Analysis.class);
+            builder.createAnalysisInterface(aAnalysis.value());
+            callBuildMethods(annotatedFields, aAnalysis.value(), wrapper, m);
+        }
         
         return builder.getRInterfacePanel();
     }
@@ -211,7 +211,6 @@ public class RLibraryWrapperReader {
             // Remove f from annotated fields.
             it.remove();
         }
-        
         builder.buildPerformButton(analysisMethod);
         builder.buildResetButton();
     }

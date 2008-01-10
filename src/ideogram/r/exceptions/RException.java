@@ -3,7 +3,7 @@
  * Created: 29.11.2007
  * Author:	Ferdinand Hofherr <ferdinand.hofherr@uni-ulm.de>
  */
-package ideogram.r;
+package ideogram.r.exceptions;
 
 /**
  * Parent class for all exceptions related to IdeogramBrowser's R interface.

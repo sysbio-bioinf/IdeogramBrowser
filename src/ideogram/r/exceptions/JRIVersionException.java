@@ -3,7 +3,8 @@
  * Created: 29.11.2007
  * Author:	Ferdinand Hofherr <ferdinand.hofherr@uni-ulm.de>
  */
-package ideogram.r;
+package ideogram.r.exceptions;
+
 
 /**
  * Thrown when the version of JRI.jar and the native JRI library do not match.

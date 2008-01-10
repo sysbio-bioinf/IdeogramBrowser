@@ -16,9 +16,9 @@ import ideogram.input.CopyNumberTransformer;
 import ideogram.input.DataSlot;
 import ideogram.input.TabbedTextReaderModel;
 import ideogram.input.AffymetrixCntReaderModel.FileVersion;
-import ideogram.r.JRIVersionException;
 import ideogram.r.RController;
-import ideogram.r.RException;
+import ideogram.r.exceptions.JRIVersionException;
+import ideogram.r.exceptions.RException;
 import ideogram.r.gui.RGuiWindow;
 
 import java.awt.Color;

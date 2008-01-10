@@ -5,6 +5,8 @@
  */
 package ideogram.r.gui.inputwidgets;
 
+import ideogram.r.RController;
+import ideogram.r.exceptions.InvalidInputException;
 import ideogram.r.rlibwrappers.RLibraryWrapper;
 
 import java.awt.Color;
@@ -22,16 +24,37 @@ public class RNumericInputField extends AbstractRInputField {
     private static final String MDP_TEXT = 
         "This fields accepts only numeric values!";
     
-    double defaultValue;
-    private double currentInput; // will be set by the validateInput() method!!
+    String defaultValue;
     
+    /**
+     * 
+     * TODO INSERT DOCUMENTATION HERE!
+     *
+     * @param mandatory
+     * @param field
+     * @param wrapper
+     */
     public RNumericInputField(boolean mandatory, Field field,
             RLibraryWrapper wrapper) {
-        super(mandatory, field, wrapper);
+        this(mandatory, field, wrapper, false);
+    }
+    
+    /**
+     * 
+     * TODO INSERT DOCUMENTATION HERE!
+     *
+     * @param mandatory
+     * @param field
+     * @param wrapper
+     * @param expectVector
+     */
+    public RNumericInputField(boolean mandatory, Field field,
+            RLibraryWrapper wrapper, boolean expectVector) {
+        super(mandatory, field, wrapper, expectVector);
         
         try {
-            defaultValue = field.getDouble(getWrapper());
-            setText(Double.toString(defaultValue));
+            defaultValue = (String)field.get(getWrapper());
+            setText(defaultValue);
         } catch (IllegalArgumentException e) {
             setMessageDisplayText(e.getLocalizedMessage());
             e.printStackTrace();
@@ -55,8 +78,8 @@ public class RNumericInputField extends AbstractRInputField {
     @Override
     public void resetToDefault() {
         try {
-            getField().setDouble(getWrapper(), defaultValue);
-            setText(Double.toString(defaultValue));
+            getField().set(getWrapper(), defaultValue);
+            setText(defaultValue);
         } catch (IllegalArgumentException e) {
             setMessageDisplayText(e.getLocalizedMessage());
             e.printStackTrace();
@@ -66,19 +89,40 @@ public class RNumericInputField extends AbstractRInputField {
         }
     }
 
-    /* (non-Javadoc)
-     * @see ideogram.r.gui.AbstractRInputField#validateInput()
-     * 
-     * Sets the currentInput field as a side effect!
+    /**
+     * Validates the user input into the {@link RNumericInputField}. Valid user
+     * input consists either of:
+     * <ul>
+     *  <li>a single numeric value, such as 1, or 1.0.</li>
+     *  <li>a comma separated list of numeric values, if the underlying 
+     *      R function expects an vector</li>
+     * </ul>   
+     * If a vector is expected, its items may be named (e.g. d=6).
      */
     @Override
     public boolean validateInput() {
-        try {
-            currentInput = Double.parseDouble(getText());
-            return true;
-        } catch (NumberFormatException e) {
-            return false;
+        String[] splitInput = getText().split(",");
+        String[] tmp;
+
+        for (String s: splitInput) {
+            /* Check for each entry of splitInput if it is a valid numeric
+             * value. If splitInput contains a "="-sign, check whether the
+             * substring after it is a valid double.
+             */
+            tmp = s.split("=");
+            if (tmp.length == 1) {
+                if (!RController.isValidRNumeric(tmp[0])) {
+                    return false;
+                }
+            }
+            else {
+                if (!RController.isValidRIdentifier(tmp[0]) && 
+                        !RController.isValidRNumeric(tmp[1])) {
+                    return false;
+                }
+            }
         }
+        return true;
     }
 
     /* (non-Javadoc)
@@ -96,7 +140,7 @@ public class RNumericInputField extends AbstractRInputField {
         if (validateInput()) {
             try {
                 setBackground(Color.WHITE);
-                getField().setDouble(getWrapper(), currentInput);
+                getField().set(getWrapper(), getText());
             } catch (IllegalArgumentException e1) {
                 setMessageDisplayText(e1.getLocalizedMessage());
                 e1.printStackTrace();
@@ -110,5 +154,4 @@ public class RNumericInputField extends AbstractRInputField {
             setBackground(Color.RED);
         }
     }
-
 }

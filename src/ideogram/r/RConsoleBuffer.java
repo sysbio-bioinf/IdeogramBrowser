@@ -41,7 +41,7 @@ public class RConsoleBuffer {
     /**
      * Check whether buffer is empty.
      *
-     * @return
+     * @return true if buffer empty, else false.
      */
     public boolean isEmpty() {
         return start == -1 && end == -1;
@@ -83,7 +83,7 @@ public class RConsoleBuffer {
      * Calculate and return the number of characters currently stored in the 
      * buffer.
      *
-     * @return
+     * @return Number of currently stored characters.
      */
     public int noChars() {
         if (isEmpty()) {

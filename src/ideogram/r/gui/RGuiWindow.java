@@ -7,8 +7,8 @@ package ideogram.r.gui;
 
 
 import ideogram.r.RController;
-import ideogram.r.RException;
 import ideogram.r.RMainLoopModel;
+import ideogram.r.exceptions.RException;
 import ideogram.r.rlibwrappers.RLibraryWrapper;
 
 import java.awt.BorderLayout;
@@ -79,7 +79,7 @@ implements Observer, ActionListener, MessageDisplay {
         reader = new RLibraryWrapperReader(this);
         libSpecInterfPan = new JPanel();
         splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-        splitPane.setDividerLocation(300);
+        splitPane.setDividerLocation(400);
         
         //contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.PAGE_AXIS));
         
@@ -103,7 +103,7 @@ implements Observer, ActionListener, MessageDisplay {
         contentPane.add(splitPane, BorderLayout.CENTER);
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setVisible(true);
-        setSize(810, 600);
+        setSize(810, 700);
     }
 
     private JPanel createRStatusPanel() {

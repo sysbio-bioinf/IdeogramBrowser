@@ -16,6 +16,7 @@ import ideogram.r.rlibwrappers.RLibraryWrapper;
 import java.awt.Component;
 import java.awt.ComponentOrientation;
 import java.awt.GridLayout;
+import java.awt.LayoutManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.lang.reflect.Field;
@@ -51,12 +52,12 @@ public class StandardInterfaceBuilder implements RInterfaceBuilder {
     private MessageDisplay mdp;
     private RLibraryWrapper wrapper;
     
-    private int noInputFields;
+    //private int noInputFields;
 
     public StandardInterfaceBuilder(MessageDisplay mdp, RLibraryWrapper wrapper) {
         this.mdp = mdp;
         this.wrapper = wrapper;
-        noInputFields = 0;
+        //noInputFields = 0;
     }
 
     /* (non-Javadoc)
@@ -111,17 +112,27 @@ public class StandardInterfaceBuilder implements RInterfaceBuilder {
         p.add(label);
         p.add(iField);
         inputFields.add(p);
-        noInputFields++;
+        //noInputFields++;
     }
 
     /* (non-Javadoc)
      * @see ideogram.r.gui.RInterfaceBuilder#createAnalysisInterface(java.lang.String)
      */
     public void createAnalysisInterface(String methodName) {
-        noInputFields = 0;
+        JPanel p = new JPanel();
+        p.setLayout(new BoxLayout(p, BoxLayout.PAGE_AXIS));
+        
         inputFields = new JPanel();
-        //inputFields.setLayout(new BoxLayout(inputFields, BoxLayout.PAGE_AXIS));
-        analysisInterface.addTab(methodName, inputFields);
+        inputFields.setLayout(new GridLayout(0, 3, GLOB_HORIZ_GAP, 0));
+        p.add(inputFields);
+        
+        p.add(Box.createVerticalGlue());
+        
+        buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.LINE_AXIS));
+        p.add(buttonPanel);
+
+        analysisInterface.addTab(methodName, p);
     }
 
     /* (non-Javadoc)
@@ -129,21 +140,14 @@ public class StandardInterfaceBuilder implements RInterfaceBuilder {
      */
     public void createNewRInterfacePanel(RLibraryWrapper model) {
         interfacePanel = new RInterfacePanel(model, mdp);
-        
         analysisInterface = new JTabbedPane();
-        interfacePanel.addAnalysisInterface(analysisInterface);
-        
-        buttonPanel = new JPanel();
-        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.LINE_AXIS));
-        interfacePanel.add(buttonPanel);
+        interfacePanel.addAnalysisInterface(analysisInterface);        
     }
 
     /* (non-Javadoc)
      * @see ideogram.r.gui.RInterfaceBuilder#getRInterfacePanel()
      */
     public Component getRInterfacePanel() {
-        inputFields.setLayout(new GridLayout(noInputFields / 3 + 1, 3,
-                GLOB_HORIZ_GAP, 0));
         return interfacePanel;
     }
 
@@ -190,6 +194,7 @@ public class StandardInterfaceBuilder implements RInterfaceBuilder {
         public void actionPerformed(ActionEvent e) {
             // Cast OK, as analysis interface contains only JPanels.
             JPanel p = (JPanel)analysisInterface.getSelectedComponent();
+            p = (JPanel)p.getComponent(0);
             RInputWidget ri;
             for (Component c: p.getComponents()) {
                 // Cast OK, as each subcomponent of p is a JPanel again!

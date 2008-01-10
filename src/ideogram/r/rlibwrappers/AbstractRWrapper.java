@@ -6,7 +6,7 @@
 package ideogram.r.rlibwrappers;
 
 import ideogram.r.RDataSetWrapper;
-import ideogram.r.RException;
+import ideogram.r.exceptions.RException;
 
 import java.util.List;
 

@@ -30,4 +30,13 @@ public @interface RNumericParam {
      * @return
      */
     boolean mandatory();
+    
+    /**
+     * Specify whether this field expects input for boolean vectors. If this 
+     * is set to true, multiple values separated by commas may be inserted.
+     * Default: false.
+     *
+     * @return
+     */
+    boolean vector() default false;
 }

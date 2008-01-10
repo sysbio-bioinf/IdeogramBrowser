@@ -12,7 +12,8 @@ import java.awt.event.FocusEvent;
 import java.lang.reflect.Field;
 
 /**
- * INSERT DOCUMENTATION HERE!
+ * Special input field to specify a data sets name. Unfortunately it is not 
+ * possible to validate the name. 
  *
  * @author Ferdinand Hofherr
  *

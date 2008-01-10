@@ -9,7 +9,7 @@ import static org.junit.Assert.*;
 
 import ideogram.r.RController;
 import ideogram.r.RDataSetWrapper;
-import ideogram.r.RException;
+import ideogram.r.exceptions.RException;
 import ideogram.r.gui.RGuiWindow;
 
 import java.util.List;
