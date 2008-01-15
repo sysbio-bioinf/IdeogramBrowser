@@ -20,7 +20,8 @@ import java.util.List;
 import org.rosuda.JRI.REXP;
 
 /**
- * INSERT DOCUMENTATION HERE!
+ * Wrapper class arround the GLAD R library. The functions glad() and daglad()
+ * can be used.
  *
  * @author Ferdinand Hofherr
  *
@@ -71,7 +72,6 @@ public class GLADWrapper extends AbstractRWrapper {
     @RStringParam(name = "method", mandatory = false) 
     public String gladMethod;
 
-
     @Analysis("glad")
     @RNumericParam(name = "bandwidth", mandatory = false) 
     public String gladBandwidth;
@@ -112,7 +112,7 @@ public class GLADWrapper extends AbstractRWrapper {
     @RNumericParam(name = "nmax", mandatory = false) 
     public String gladNmax;
 
-//  TODO Uncommenting this breaks the GUI! Serious bug in RLibraryWrapperReader?
+
     @Analysis("daglad")
     @RDsNameParam(name = "Data set", mandatory = true)
     public String dagladDataSet;

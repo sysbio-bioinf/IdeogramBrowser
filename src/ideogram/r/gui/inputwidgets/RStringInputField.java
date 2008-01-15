@@ -14,7 +14,10 @@ import java.lang.management.ManagementFactory;
 import java.lang.reflect.Field;
 
 /**
- * INSERT DOCUMENTATION HERE!
+ * Input field for R strings. The surrounding single quotes (') needed by R
+ * will be removed, before the string gets displayed. They will be added, before
+ * the string is stored into the corresponding public field in the wrapper 
+ * class.
  *
  * @author Ferdinand Hofherr
  *
@@ -22,15 +25,15 @@ import java.lang.reflect.Field;
 public class RStringInputField extends AbstractRInputField {
 
     private final String MDP_TEXT = "This field only accepts Strings!";
-    private String defaultValue;
+    private String defaultValue; // stored with ' quotes!
     
     
     public RStringInputField(boolean mandatory, Field field,
             RLibraryWrapper wrapper) {
         super(mandatory, field, wrapper);
         try {
-            defaultValue = (String) field.get(wrapper);
-            setText(defaultValue);
+            defaultValue = (String)field.get(wrapper);
+            setText(removeQuotes(defaultValue));
         } catch (IllegalArgumentException e) {
             setMessageDisplayText(e.getLocalizedMessage());
             e.printStackTrace();
@@ -39,7 +42,20 @@ public class RStringInputField extends AbstractRInputField {
             e.printStackTrace();
         }
     }
-
+    
+    /*
+     * Remove the surrounding single quotes (') from the String s.
+     */
+    private String removeQuotes(String s) {
+        int firstInd = 0;
+        int lastInd = s.length() - 1;
+        char firstChar = s.charAt(firstInd);
+        char lastChar = s.charAt(lastInd);
+        if (firstChar == '\'' || firstChar == '"') firstInd++;
+        if (lastChar == '\'' || lastChar == '"') lastInd--;
+        return s.substring(firstInd, lastInd + 1);
+    }
+    
     /* (non-Javadoc)
      * @see ideogram.r.gui.AbstractRInputField#isEmpty()
      */
@@ -62,7 +78,7 @@ public class RStringInputField extends AbstractRInputField {
             setMessageDisplayText(e.getLocalizedMessage());
             e.printStackTrace();
         }
-        setText(defaultValue);
+        setText(removeQuotes(defaultValue));
     }
 
     /* (non-Javadoc)
@@ -72,7 +88,6 @@ public class RStringInputField extends AbstractRInputField {
     public boolean validateInput() {
         if(isMandatory() && getText().length() == 0) return false;
         // TODO think about string vectors!
-        if (!RController.isValidRString(getText())) return false;
         return true;
     }
 
@@ -90,7 +105,7 @@ public class RStringInputField extends AbstractRInputField {
         if (validateInput()) {
             setBackground(Color.WHITE);
             try {
-                getField().set(getWrapper(), getText());
+                getField().set(getWrapper(), "'" + getText() + "'");
             } catch (IllegalArgumentException e1) {
                 setMessageDisplayText(e1.getLocalizedMessage());
                 e1.printStackTrace();
