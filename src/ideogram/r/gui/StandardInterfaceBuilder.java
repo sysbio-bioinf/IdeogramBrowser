@@ -6,6 +6,7 @@
 package ideogram.r.gui;
 
 import ideogram.r.exceptions.InvalidInputException;
+import ideogram.r.exceptions.RException;
 import ideogram.r.gui.inputwidgets.RBoolInputField;
 import ideogram.r.gui.inputwidgets.RDataSetNameInputField;
 import ideogram.r.gui.inputwidgets.RInputWidget;
@@ -217,6 +218,12 @@ public class StandardInterfaceBuilder implements RInterfaceBuilder {
                     analysisFunction != null) {
                 try {
                     analysisFunction.invoke(wrapper, (Object[])null);
+//                    try { // JUST A TEST
+//                        wrapper.getResult();
+//                    } catch (RException e1) {
+//                        // TODO Auto-generated catch block
+//                        e1.printStackTrace();
+//                    } // REMOVE ABOVE LINES AFTER TEST
                 } catch (IllegalArgumentException e1) {
                     e1.printStackTrace();
                 } catch (IllegalAccessException e1) {

@@ -350,11 +350,12 @@ public class GLADWrapper extends AbstractRWrapper {
      */
     @Override
     public REXP getResult() throws RException {
+        System.out.println("Getting result");
         RController rc = RController.getInstance();
         REXP res = null;
         if (rc.engineRunning()) {
-            res = rc.getEngine().eval(ALGO_RES_VARNAME);
-            //rc.getEngine().eval("print("+ALGO_RES_VARNAME+")");
+            //res = rc.getEngine().eval(ALGO_RES_VARNAME);
+            rc.getEngine().eval("print("+ALGO_RES_VARNAME+")");
         }
         else {
             throw new RException("R not running!");

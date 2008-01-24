@@ -127,6 +127,16 @@ public class RConsoleBufferTest {
         System.out.println(rb.toString());
         assertTrue(rb.toString().equals("HelloWorld"));
     }
+    
+    @Test
+    public void testMuchData() {
+        int size = 1000000;
+        rb = new RConsoleBuffer(size);
+        for (int i = 0; i < size; i++) {
+            rb.insert("c");
+        }
+        System.out.println(rb.toString());
+    }
 
     /**
      * Test method for {@link ideogram.r.RConsoleBuffer#toString()}.
