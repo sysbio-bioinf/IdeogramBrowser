@@ -54,7 +54,10 @@ import org.junit.Assert;
 
 
 /**
- * Visual representation of a single ideogram.
+ * Visual representation of a single ideogram. 
+ * <i><u>Note for non biologists</u>: An ideogram is the graphical
+ * representation of a single chromosome. Thus an ideogram view represents a 
+ * single chromosome in IdeogramMainWindow. </i>
  * To show the ideogram a database has to be loaded or attached
  * with IdeogramBean.LoadDatabase or IdeogramBean.setIdeogramDB
  * 
@@ -182,7 +185,7 @@ public class IdeogramView extends JComponent // JPanel
 		minWidth = 5;
 		maxWidth = 50;
 		markerWidth = 2;
-		markers = new ArrayList<MarkerCollection>();
+		markers = new ArrayList<MarkerCollection>(); // stores all MarkerCollections belonging to this ideogram/chromosome
         geneColor = new Color(0,0,0x66);            // color of the genes
         selectedGeneColor = new Color(0x33,0x33,0xff);    // color of the selected gene(s)
         
@@ -373,7 +376,11 @@ public class IdeogramView extends JComponent // JPanel
 		
 	
 	/**
-	 * Adds a marker set {@link MarkerCollection}.
+	 * Adds a marker set {@link MarkerCollection} to the representation of this
+	 * chromosome. For each loaded CNT-File one {@link MarkerCollection} will be
+	 * added. The {@link MarkerCollection} is then represented as a line left 
+	 * to the chromosome (losses) and a line right to the chromosome (gains).
+	 * Thus for every marker collection two lines will be loaded.
 	 * 
 	 * @param M Collection of markers.
 	 */

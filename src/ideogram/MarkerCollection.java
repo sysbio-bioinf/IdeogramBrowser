@@ -11,7 +11,10 @@ import java.awt.Color;
 import ideogram.tree.Interval;
 
 /**
- * A collection of chromosomal Markers.
+ * A collection of chromosomal Markers belonging to one chromosome in one loaded
+ * data set. This means that for each loaded CNT File 23 
+ * {@link MarkerCollection}s will be created. Each {@link MarkerCollection} will
+ * belong to one {@link IdeogramView}.
  * 
  * @author muellera
  * 
@@ -60,7 +63,7 @@ public class MarkerCollection extends Observable
 	}
 
 	/**
-	 * 
+	 * Find all Markers that are located in the given interval.
 	 * @param interval
 	 * @return A LinkedList with all markers which intersect with the given
 	 *         interval.
