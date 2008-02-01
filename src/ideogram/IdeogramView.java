@@ -107,6 +107,7 @@ public class IdeogramView extends JComponent // JPanel
 	// visual options
 	protected boolean	showLabels;
 	protected boolean	showMarkers;
+	private boolean     showLogRatio;
 	protected boolean	showGenes;
 	protected boolean	showSNPs;
 	private	  boolean	consensusMode;
@@ -311,6 +312,18 @@ public class IdeogramView extends JComponent // JPanel
         if( this.showGenes != showGenes )
         {
             this.showGenes = showGenes;
+            invalidatePaintBuffer();
+        }
+    }
+    
+    /**
+     * Enable or disable the display of log ratios.
+     *
+     * @param showLogRatio
+     */
+    public void setShowLogRatio(boolean showLogRatio) {
+        if (this.showLogRatio != showLogRatio) {
+            this.showLogRatio = showLogRatio;
             invalidatePaintBuffer();
         }
     }
@@ -897,6 +910,9 @@ public class IdeogramView extends JComponent // JPanel
 		{
 			drawAberrations(g);
 		}
+		if (showLogRatio) {
+		    drawLogRatios(g);
+		}
 
         if( showSNPs )
             drawSNPs(g);
@@ -1362,6 +1378,10 @@ public class IdeogramView extends JComponent // JPanel
 					drawMarker(g,marker,pos,lineWidth,color,color,false,null);
 			}
 		}        
+	}
+	
+	protected void drawLogRatios(Graphics g) {
+	    // TODO
 	}
 
 	public Dimension updateLayout()

@@ -225,6 +225,8 @@ public class AffymetrixCntReaderModel extends AbstractIdeogramDataModel
 	protected Map<String, String>	headerLOH;
 	protected FileVersion			version;
 	
+	private boolean hashMarkCntFile;               // set to true, if the read CNT file is one of those containing hash marks
+	
 	// often used structures made global
 	private LineNumberReader		inCN;
 	private LineNumberReader		inLOH;
@@ -281,6 +283,7 @@ public class AffymetrixCntReaderModel extends AbstractIdeogramDataModel
     {
         super();
         
+        hashMarkCntFile = false;
         dataset_id = 0;
         data = new TreeSet<AffyCntRecord>();
         cache = null;
@@ -361,7 +364,7 @@ public class AffymetrixCntReaderModel extends AbstractIdeogramDataModel
      */
     public boolean expectSection(LineNumberReader in, String sectionName) throws IOException
     {
-    	in.mark(MAX_CHARACTERS);
+    	in.mark(MAX_CHARACTERS);  // After reading more than MAX_CHARACTERS returning to this mark might fail.
    		String line = in.readLine();
 		line = line.trim();
 		if( line.equalsIgnoreCase("["+sectionName+"]") )
@@ -372,6 +375,25 @@ public class AffymetrixCntReaderModel extends AbstractIdeogramDataModel
     	return false;
     }
     
+    /**
+     * Check whether the next line starts with a hashmark (#). This operation
+     * requires that the line is read, and then checked for a starting hashmark.
+     * It would be much better, if the method would read the line, remove the 
+     * hashmark, and then return it. However, choosing this solution would 
+     * involve changing great parts of already existing code in the 
+     * {@link AffymetrixCntReaderModel#readHeader(LineNumberReader)} method.
+     * Therefore the less efficient, but easier method is chosen. 
+     *
+     * @param in
+     * @return true if the next line starts with a hashmark.
+     * @throws IOException 
+     */
+    public boolean lineWithHashmark(LineNumberReader in) throws IOException {
+        in.mark(MAX_CHARACTERS);
+        boolean ret = in.readLine().trim().startsWith("#");
+        in.reset();
+        return ret;
+    }
     
     /**
      * Reads the affymetrix CNT file header.
@@ -383,27 +405,52 @@ public class AffymetrixCntReaderModel extends AbstractIdeogramDataModel
      */
     public Map<String,String> readHeader(LineNumberReader in) throws IOException, FileFormatException
     {   	
-    	if( !expectSection(in,"Header") )
+    	if( !expectSection(in,"Header") && 
+    	        !(hashMarkCntFile = lineWithHashmark(in))) {
+    	    //System.out.println("Line number:" + in.getLineNumber() + "\n\tLine content" + in.readLine());
     		throw new FileFormatException("CNT file format error: missing [Header] section");
+    	}
     
        	Map<String,String> header = new TreeMap<String,String>();
         
     	while( in.ready() )
     	{
+    	    boolean hasHashMark = false;
+    	    
     		in.mark(MAX_CHARACTERS);
     		String line = in.readLine();
 			line = line.trim();
+			/*
+			 * NOTE: The = in the following line is intentional! Do NOT replace
+			 * it by ==! 
+			 */
+			if (hashMarkCntFile && (hasHashMark = line.startsWith("#"))) {
+			    /*
+			     * Remove the hashmark from the read string.
+			     */
+			    line = line.substring(1);
+			}
 			
 			if( line.length() == 0 )
 				continue;
 			
-			if( line.startsWith("[") && line.endsWith("]") )
+			if( (line.startsWith("[") && line.endsWith("]")) || 
+			        (hashMarkCntFile && !hasHashMark) )
 			{
 				in.reset();
 				break;
 			}
 			
 			String v[] = line.split("=");
+			//System.out.println("Read line:" + line);
+			/*
+			 * TODO It seems that the new hashmark CNT files may contain lines
+			 * with no value behind the =. Ask Johann if this is correct! For
+			 * the moment just continue with the next iteration.
+			 * [Ferdinand Hofherr]
+			 */
+			if (v.length != 2) { continue; }
+			
 //			if( v.length != 2 )
 //				throw new FileFormatException("Illegal [Header] entry in CNT file at line "+in.getLineNumber()+" : \n'"+line+"'");
 			header.put(v[0], v[1]);
@@ -424,9 +471,16 @@ public class AffymetrixCntReaderModel extends AbstractIdeogramDataModel
      */
     public Map<String,Integer> readColumnNames(LineNumberReader in) throws IOException, FileFormatException
     {
-    	if( ! expectSection(in, "ColumnName") )
+    	/*
+    	 * If there is no line containing [ColumnName], and the file to load is
+    	 * not an cnt file containing hash marks in front of the lines belonging
+    	 * to the header section throw an exception.
+    	 */
+        if( ! expectSection(in, "ColumnName") && !hashMarkCntFile )
     	{
-    		throw new FileFormatException("CNT file format error: missing [ColumnName] section");
+    	    System.out.println(in.readLine());
+    		throw new FileFormatException("CNT file format error: missing " +
+    				"[ColumnName] section");
     	}
     	
     	String[] v = in.readLine().split("\t");
@@ -463,14 +517,18 @@ public class AffymetrixCntReaderModel extends AbstractIdeogramDataModel
 		val = header.get("Version");
 		
 		// set file version
-		if (val.equals("1.0")) version = FileVersion.V1_0;
+		if (val == null) {
+		    /*
+		     * The hashmark cnt files seem to have no version string!
+		     * Set the version to 1.1.
+		     */
+		    version = FileVersion.V1_1; // TODO maybe setting to UNKNOWN is better.
+		}
+		else if (val.equals("1.0")) version = FileVersion.V1_0;
 		else if (val.equals("1.1")) version = FileVersion.V1_1;
 		else version = FileVersion.UNKNOWN;
 		
-		
-		if( val == null )
-			throw new FileFormatException("CNT file format error: Version not found in [Header] section");
-		if( val.compareTo("1.0") != 0 && val.compareTo("1.1") != 0)
+		if(version == FileVersion.UNKNOWN)
 		{
 			// This is a point where LISP condition/restart handlers would succeed as this type of error
 			// cannot be handled at this point.
@@ -600,7 +658,7 @@ public class AffymetrixCntReaderModel extends AbstractIdeogramDataModel
 		iRetProb = getFieldIndex(col,Fields.RetProb);
 		
 		// [Data] section
-		if (!expectSection(inCN, "Data"))
+		if (!expectSection(inCN, "Data") && !hashMarkCntFile)
 			new FileFormatException(
 					"CNT file format exception: [Data] section not found!");
 		if (num_columns < 0) {

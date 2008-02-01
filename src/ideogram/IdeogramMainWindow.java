@@ -14,6 +14,8 @@ import ideogram.input.CommonFileFilter;
 import ideogram.input.CopyNumberMerger;
 import ideogram.input.CopyNumberTransformer;
 import ideogram.input.DataSlot;
+import ideogram.input.RResultReaderModel;
+import ideogram.input.RResultTransformer;
 import ideogram.input.TabbedTextReaderModel;
 import ideogram.input.AffymetrixCntReaderModel.FileVersion;
 import ideogram.r.RController;
@@ -167,6 +169,7 @@ implements ActionListener, ComponentListener, ChangeListener
 	private CopyNumberMerger	merger;
 	private AffymetrixCntReaderModel data;
 	private CopyNumberTransformer cn;
+	private RResultTransformer resultTransformer;
 	private DataSlot			s;
 	private File				lohfile;
 	private File				cntfile;
@@ -355,16 +358,19 @@ implements ActionListener, ComponentListener, ChangeListener
         //CommonFileFilter filter1  = new CommonFileFilter("Affymetrix Copy Number Analysis Tool File (*.cn.cnt, *.loh.cnt)");
         CommonFileFilter filter2 = new CommonFileFilter("Affymetrix Copy Number Analysis Tool File (*.cnt)");
         CommonFileFilter filter3 = new CommonFileFilter("Tab Delimited Text File (*.txt)");
+        CommonFileFilter filter4 = new CommonFileFilter("RResult file (*.RResult)");
         dialog.setAcceptAllFileFilterUsed(false);
         //filter1.addExtension("cn.cnt");
         //filter1.addExtension("loh.cnt");
         filter2.addExtension("cnt");
         filter3.addExtension("txt");
+        filter4.addExtension("RResult");
 
         dialog.addChoosableFileFilter(filter3);
         //dialog.addChoosableFileFilter(filter1);
-        dialog.addChoosableFileFilter(filter2);        
-        
+        dialog.addChoosableFileFilter(filter2);
+        dialog.addChoosableFileFilter(filter4);
+        dialog.setFileFilter(filter2);
                 
         // setup popup menu
         popmenu= new JPopupMenu();
@@ -928,11 +934,13 @@ implements ActionListener, ComponentListener, ChangeListener
 				if (lohfile.exists()) {
 					type = "CN.CNT + LOH.CNT";
 					importCNTFile(file, lohfile, target);
-				} else {
+				} 
+				else {
 					type = "CNT";
 					importCNTFile(file, target);
 				}
-			} else if (file.getName().endsWith(".loh.cnt")) {
+			} 
+			else if (file.getName().endsWith(".loh.cnt")) {
 				//parameters.fieldB = FieldB.LOHPROB;
 				// does matching cnt file exist?
 				cntfile = new File(file.getAbsolutePath().subSequence(0,
@@ -945,19 +953,25 @@ implements ActionListener, ComponentListener, ChangeListener
 					type = "CNT";
 					importCNTFile(file, target);
 				}
-			} else if (file.getName().endsWith(".cnt")) {
+			} 
+			else if (file.getName().endsWith(".cnt")) {
 				type = "CNT";
 				importCNTFile(file, target);
 			}
-
-			if (file.getName().endsWith(".txt") && target == -1) {
+			// TXT File format.
+			else if (file.getName().endsWith(".txt") && target == -1) {
 				type = "TXT";
 				importTXTFile(file);
-			} else if (file.getName().endsWith(".txt") && target != -1){
+			} 
+			else if (file.getName().endsWith(".txt") && target != -1){
 				showInfoDialog("Action not possible for TXT files");
 				return;
 			}
-			
+			//RResult file format
+			else if (file.getName().endsWith(".RResult")) {
+			    type = "RResult";
+			    importRResultFile(file, target);
+			}
 			// EXTEND HERE FOR NEW FILE FORMATS:
 			// TODO
 		}
@@ -966,18 +980,21 @@ implements ActionListener, ComponentListener, ChangeListener
 			showErrorDialog("Wrong file format of " + type + " file '"
 					+ file.getName() + "'\r\n" + e.getMessage());
 			return;
-		} catch (IOException e) {
+		} 
+		catch (IOException e) {
 			MainApp.getLogger().throwing(getClass().getName(), "actionPerformed", e);
 			showErrorDialog("I/O error while importing " + type + " file '"
 					+ file.getName() + "'\r\n" + e.getMessage());
 			return;
-		} catch (Exception e) {
+		} 
+		catch (Exception e) {
 			e.printStackTrace();
 			MainApp.getLogger().throwing(getClass().getName(), "actionPerformed", e);
 			showErrorDialog("Exception while importing " + type + "file '"
 					+ file.getName() + "'\r\n" + e.getMessage());
 			return;
-		} finally {
+		} 
+		finally {
 			normalCursor();
 		}
 
@@ -1771,8 +1788,19 @@ implements ActionListener, ComponentListener, ChangeListener
 			//merger.clear();
 			merger = null;
 
+			/*
+			 * TODO Upon loading new CNT files the clear() method will never
+			 * be called. The cn variable only points to the most recent 
+			 * CopyNumberTransformer. I think that it would be better, if the 
+			 * variables cn and resultTransformers were local variables instead
+			 * of instance fields!
+			 * [Ferdinand Hofherr] 
+			 */
 			cn.clear();
 			cn = null;
+			// TODO dito
+			resultTransformer.clear();
+			resultTransformer = null;
 
 			s.clear();
 			s = null;
@@ -2171,6 +2199,32 @@ implements ActionListener, ComponentListener, ChangeListener
 		normalCursor();
     }
     
+    /**
+     * TODO INSERT DOCUMENTATION HERE!
+     *
+     * @param file
+     * @param target
+     * @throws FileFormatException
+     * @throws IOException
+     */
+    public void importRResultFile(File file, int target) throws FileFormatException, IOException {
+        waitCursor();
+        
+        RResultReaderModel model = new RResultReaderModel();
+        model.loadFromFile(file);
+        resultTransformer = new RResultTransformer(model, parameters);
+        if (target != -1) {
+            s = slots.get(target);
+        } 
+        else {
+            s = new DataSlot(parameters);
+            slots.add(s);
+        }
+        s.addModel(resultTransformer);
+        
+        normalCursor();
+    }
+    
     public void importTXTFile(File file) throws FileFormatException, IOException
     {
         TabbedTextReaderModel model = new TabbedTextReaderModel();
@@ -2181,7 +2235,7 @@ implements ActionListener, ComponentListener, ChangeListener
     	s.addModel( model );
     	slots.add( s );
     }
-
+    
     public AllParameters loadStandardOptionFile() throws IOException, ClassNotFoundException 
     {
     	File optionfile = new File(OPTIONFILE_NAME);

@@ -37,6 +37,12 @@ public interface ICopyNumberModel extends IChangeNotifier, Iterable<CopyNumberRe
     int size();
    
     /**
+     * Clear the {@link ICopyNumberModel}.
+     *
+     */
+    public void clear();
+    
+    /**
      * 
      * @param idx
      * @return A marker's name for the given Index.
@@ -70,8 +76,7 @@ public interface ICopyNumberModel extends IChangeNotifier, Iterable<CopyNumberRe
      *    -1 = illegal value (NA)
      */
     int getCopyNumber( int idx );
-    
-  
+      
     /**
      * 
      * @param idx
@@ -79,6 +84,15 @@ public interface ICopyNumberModel extends IChangeNotifier, Iterable<CopyNumberRe
      */
     double getConfidence( int idx );
     
+    /**
+     * Return the Log2Ratio of this marker.
+     * TODO It might be necessary to return Double.NaN if the log2 ratio is 
+     * unknown. 
+     *
+     * @param idx
+     * @return
+     */
+    public double getLogRatio(int idx);
     
     String getMarkerInfo(int i);
     

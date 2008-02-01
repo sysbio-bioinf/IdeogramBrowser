@@ -34,8 +34,17 @@ public class MemoryCopyNumberModel extends AbstractCopyNumberDataModel
 		return records.size();
 	}
 
+	
 
-	public ArrayList<CopyNumberRecord> getRecords()
+	/* (non-Javadoc)
+     * @see ideogram.input.ICopyNumberModel#clear()
+     */
+    public void clear() {
+        records.clear();
+    }
+
+
+    public ArrayList<CopyNumberRecord> getRecords()
 	{
 		return records;
 	}

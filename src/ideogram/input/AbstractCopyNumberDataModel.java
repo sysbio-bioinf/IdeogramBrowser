@@ -48,7 +48,6 @@ public abstract class AbstractCopyNumberDataModel implements ICopyNumberModel
 		changeNotifier.fireChangeEvent();
 	}
     
-
     /**
      * Converts a copy number model into a MarkerCollection.
      * TODO: This intermediate step should be removed in future versions.
@@ -60,7 +59,7 @@ public abstract class AbstractCopyNumberDataModel implements ICopyNumberModel
     {
         band = new Band();
         
-        for(int i=0; i<mc.length; ++i)
+        for(int i = 0; i < mc.length; ++i)
         {
             mc[i] = new MarkerCollection();
             mc[i].setName( getFileName());
@@ -72,9 +71,12 @@ public abstract class AbstractCopyNumberDataModel implements ICopyNumberModel
             m = new Marker(getInterval(i),getCopyNumber(i));
             m.color = colorMapper.map( getConfidence(i) );
             
-            StringBuffer buf = new StringBuffer();
-            buf.append( getMarkerInfo(i) );
-            m.setInfo(buf.toString());
+            // TODO Why that??
+            // StringBuffer buf = new StringBuffer();
+            // buf.append( getMarkerInfo(i) );
+            m.setInfo(getMarkerInfo(i) /*buf.toString()*/);
+            m.setLog2Ratio(getLogRatio(i));
+            
             mc[band.chromosome-1].add(m);
         }
 
@@ -115,6 +117,13 @@ public abstract class AbstractCopyNumberDataModel implements ICopyNumberModel
 	{
 		return get(idx).info;
 	}
+	
+	/* (non-Javadoc)
+     * @see ideogram.input.ICopyNumberModel#getLog2Ratio(int)
+     */
+    public double getLogRatio(int idx) {
+        return get(idx).getLogRatio();
+    }
 		
 	public void detach()
 	{
@@ -124,6 +133,5 @@ public abstract class AbstractCopyNumberDataModel implements ICopyNumberModel
 	public Iterator<CopyNumberRecord> iterator()
 	{
 		return toCollection().iterator();
-	}	
-
+	}
 }

@@ -11,7 +11,7 @@ import java.awt.Color;
  * An IdeogramMarker will be shown as colored lines in the Ideogram.
  * It has a chromosomal range {@link #interval} and a value {@link #value} 
  * 
- * @author muellera
+ * @author muellera, Ferdinand Hofherr
  */
 public class Marker implements Comparable
 {
@@ -26,6 +26,11 @@ public class Marker implements Comparable
 	 * > 2 for gain (3 gain, 4 amplification)
 	 */
 	public int value;
+	
+	/*
+	 * Store the log2 ratio belonging to this marker.
+	 */
+	private double log2ratio;
 	
 	/**
 	 * An optional pointer to an information object.
@@ -46,6 +51,37 @@ public class Marker implements Comparable
 	{
 		this.interval = interval;
 		this.value = value; 
+	}
+	
+	/**
+	 * Create a new Marker with an associated copy number value and an 
+	 * log2ratio.
+	 *
+	 * @param interval Start and stop position of the marker.
+	 * @param value The marker's copy number value.
+	 * @param log2ratio The marker's log2 ratio.
+	 */
+	public Marker(Interval interval, int value, double log2ratio) {
+	    this(interval, value);
+	    this.log2ratio = log2ratio;
+	}
+	
+	/**
+	 * Get the associated log2 ratio.
+	 *
+	 * @return The marker's log2 ratio.
+	 */
+	public double getLog2Ratio() {
+	    return log2ratio;
+	}
+	
+	/**
+	 * Set the log2 ratio associated with this marker.
+	 *
+	 * @param log2Ratio
+	 */
+	public void setLog2Ratio(double log2Ratio) {
+	    this.log2ratio = log2Ratio;
 	}
 	
 	/*public Marker(long from, long to, int value)

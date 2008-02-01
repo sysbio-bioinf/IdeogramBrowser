@@ -131,6 +131,13 @@ public class CopyNumberTransformer extends AbstractCopyNumberDataModel
 			cn.locus = rec.locus;
 			cn.info = internalGetInfo(i);
 			
+			
+			/*
+			 * TODO As the CopyNumberRecords are now able to store the log ratio
+			 * enable this method to actually store them in the records. This 
+			 * would make it possible to display the actual log ratios in 
+			 * ideogramb browser. 
+			 */
 			switch(dataModel.getVersion()) {
 			case V1_0:
 				// thresholding

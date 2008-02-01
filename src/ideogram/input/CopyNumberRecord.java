@@ -17,6 +17,7 @@ public class CopyNumberRecord implements IntervalScale<CopyNumberRecord>
 	public int				copy_number;		// 0=double loss, 1=single loss, 2=diploid, 3=gain, 4=amplification
 	public float			confidence;			// confidence value
 	public String			info;
+	private double           log2ratio;          // log2 ratio
 	public LinkedList<CopyNumberRecord>	ref;	// references to the origin
 
 	public CopyNumberRecord()
@@ -40,8 +41,25 @@ public class CopyNumberRecord implements IntervalScale<CopyNumberRecord>
 		ref = (LinkedList<CopyNumberRecord>)record.ref.clone();
 	}
 	
-	
 	/**
+     * TODO INSERT DOCUMENTATION HERE!
+     *
+     * @return the log2ratio
+     */
+    public double getLogRatio() {
+        return log2ratio;
+    }
+
+    /**
+     * TODO INSERT DOCUMENTATION HERE!
+     *
+     * @param log2ratio the log2ratio to set
+     */
+    public void setLogRatio(double log2ratio) {
+        this.log2ratio = log2ratio;
+    }
+
+    /**
 	 * Unknown copy_number
 	 * 
 	 * @return
