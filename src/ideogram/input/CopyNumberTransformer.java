@@ -130,7 +130,7 @@ public class CopyNumberTransformer extends AbstractCopyNumberDataModel
 			cn.id = i;
 			cn.locus = rec.locus;
 			cn.info = internalGetInfo(i);
-			
+			cn.setLogRatio(rec.log2ratio);
 			
 			/*
 			 * TODO As the CopyNumberRecords are now able to store the log ratio

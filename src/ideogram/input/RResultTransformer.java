@@ -141,11 +141,16 @@ public class RResultTransformer extends AbstractCopyNumberDataModel implements
         }
     }
     
+    /**
+     * Update the stored {@link CopyNumberRecord}s. The old records will be 
+     * deleted, before any new records are calculated. 
+     *
+     */
     private void updateCopyNumbers() {
-        CopyNumberRecord cnRec;
-        
         copyNumberRecords.clear();
         copyNumberRecords.ensureCapacity(sourceModel.size());
+        
+        CopyNumberRecord cnRec;        
         for (RResultReaderModel.RResultRecord resRec: sourceModel.toCollection()) {
             cnRec = new CopyNumberRecord();
             

@@ -36,11 +36,15 @@ import util.FileFormatException;
  */
 public class RResultReaderModel extends AbstractIdeogramDataModel {
 
+    /**
+     * Assumed number of records in an *.RResult file. This constant is used
+     * to initialize the Array list.
+     */
     private static final int ASSUMED_NO_RECORDS = 1000;
-    private static final int INTERVAL_RANGE = 25;
+    //private static final int INTERVAL_RANGE = 25;
 
-    private ArrayList<RResultRecord> data; // TODO: A linked list might use less memory!
-    private File file;
+    private ArrayList<RResultRecord> data;
+    private File rResultFile;
     
     public enum RResultColumnNames {
         CHROMOSOME, POS_BASE, LOG_RATIO
@@ -48,7 +52,7 @@ public class RResultReaderModel extends AbstractIdeogramDataModel {
 
     public RResultReaderModel() {
         data = new ArrayList<RResultRecord>(ASSUMED_NO_RECORDS);
-        file = null;
+        rResultFile = null;
     }
 
     /* (non-Javadoc)
@@ -57,7 +61,7 @@ public class RResultReaderModel extends AbstractIdeogramDataModel {
     @Override
     public LinkedList<String> getFileName() {
         LinkedList<String> l = new LinkedList<String>();
-        if (file != null) { l.add(file.getAbsolutePath()); }
+        if (rResultFile != null) { l.add(rResultFile.getAbsolutePath()); }
         return l;
     }
 
@@ -71,14 +75,13 @@ public class RResultReaderModel extends AbstractIdeogramDataModel {
      */
     public void loadFromFile(File rResultFile) 
     throws IOException, FileFormatException {
-        RResultRecord rres;
-        String s;
-        String[] colVals;
-        LineNumberReader lr = new LineNumberReader(new FileReader(rResultFile));
-
-        file = rResultFile;
+        // Store the file, as a reference to it is needed by getFileName()
+        this.rResultFile = rResultFile;
         // Assure the ArrayList containing the read data is empty!
         clear();
+
+        String s;
+        LineNumberReader lr = new LineNumberReader(new FileReader(rResultFile));
         // Read the first line containing the column names:
         s = lr.readLine();
         if (s.trim().split("\t").length != 
@@ -87,24 +90,26 @@ public class RResultReaderModel extends AbstractIdeogramDataModel {
                     " RResult file: " + rResultFile.getAbsolutePath());
         }
 
+        String[] colVals;
+        RResultRecord rResRec;
         while (lr.ready()) {
             s = lr.readLine();
             colVals = s.trim().split("\t");
-            rres = new RResultRecord();
+            rResRec = new RResultRecord();
             for (RResultColumnNames col: RResultColumnNames.values()) {
                 s = colVals[col.ordinal()].trim();
                 switch (col) {
                     case CHROMOSOME:
-                        rres.setChromosome(parseInt(s));
+                        rResRec.setChromosome(parseInt(s));
                         break;
                     case POS_BASE:
-                        rres.setPosBase(parseLong(s));
+                        rResRec.setPosBase(parseLong(s));
                         break;
                     case LOG_RATIO:
-                        rres.setLogRatio(parseDouble(s));
+                        rResRec.setLogRatio(parseDouble(s));
                 }
             }
-            data.add(rres);
+            data.add(rResRec);
         }
 
         // Don't waste more memory than necessary.
@@ -220,7 +225,10 @@ public class RResultReaderModel extends AbstractIdeogramDataModel {
         }
         
         /**
-         * Get the chromosomal locus of this {@link RResultRecord}. 
+         * Get the chromosomal locus of this {@link RResultRecord}. As the SNPs
+         * on the Affymetrix Arrays only have a length of 25 base pairs, there 
+         * is no need to calculate an interval. Therefore the start and stop
+         * position of the {@link Locus} are the same.
          *
          * @return
          */
@@ -228,8 +236,9 @@ public class RResultReaderModel extends AbstractIdeogramDataModel {
             Locus l = new Locus();
             l.chromosome = (byte)getChromosome();
             
-            l.interval = new Interval(posBase - INTERVAL_RANGE / 2,
-                                      posBase + INTERVAL_RANGE / 2);
+            /*l.interval = new Interval(posBase - INTERVAL_RANGE / 2,
+                                      posBase + INTERVAL_RANGE / 2);*/
+            l.interval = new Interval(posBase, posBase);
             return l;
         }
     }

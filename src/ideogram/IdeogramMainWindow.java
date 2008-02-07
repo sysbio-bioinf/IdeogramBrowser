@@ -149,6 +149,7 @@ implements ActionListener, ComponentListener, ChangeListener
 	// MENUS
     private JCheckBoxMenuItem	showMarkersMenu;
     private JCheckBoxMenuItem   showLabelsMenu;
+    private JCheckBoxMenuItem   showLogRatioMenu;
     private ButtonGroup			zoomButtons;
     private boolean				dependentWindow;
 	private JFileChooser 		dialog;
@@ -482,6 +483,11 @@ implements ActionListener, ComponentListener, ChangeListener
         showLabelsMenu.addActionListener(this);
         menu.add(showLabelsMenu );
         showLabelsMenu.setSelected( getShowLabels() );
+        
+        showLogRatioMenu = new JCheckBoxMenuItem("Show LogRatios");
+        showLogRatioMenu.addActionListener(this);
+        menu.add(showLogRatioMenu);
+        showLogRatioMenu.setSelected(getShowLogRatio());
               
         // Zoom Menu
         JMenu  sub = new JMenu("Zoom");
@@ -665,6 +671,12 @@ implements ActionListener, ComponentListener, ChangeListener
         {
             setShowLabels( ! getShowLabels() );
             showLabelsMenu.setSelected( getShowLabels() );
+            return;
+        }
+        
+        if (cmd.equalsIgnoreCase("Show LogRatios")) {
+            setShowLogRatio(!getShowLogRatio());
+            showLogRatioMenu.setSelected(getShowLogRatio());
             return;
         }
         
@@ -1857,6 +1869,19 @@ implements ActionListener, ComponentListener, ChangeListener
 			ideograms[i].setShowMarkers(show);		
 		}
 	}
+	
+	public void setShowLogRatio(boolean show) {
+	    for (int i = 0; i < ideograms.length; i++) {
+	        ideograms[i].setShowLogRatio(show);
+	    }
+	}
+	
+	public boolean getShowLogRatio() {
+	    if (ideograms != null && ideograms.length > 0) {
+	        return ideograms[0].getShowLogRatio();
+	    }
+	    return false;
+	}
     
     public static void setLookAndFeel(Component frame)
     {        
@@ -1903,6 +1928,8 @@ implements ActionListener, ComponentListener, ChangeListener
 		
         boolean success = true;
 		frame.setShowLabels(false);
+		frame.setShowLogRatio(false);
+		
         
         progressDialog.setText("loading ideogram ...");
 		success &= frame.loadIdeogramDatabase(progressDialog);

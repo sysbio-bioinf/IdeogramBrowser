@@ -31,6 +31,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.awt.geom.Line2D;
 import java.awt.image.BufferedImage;
 import java.awt.print.PageFormat;
 import java.awt.print.Printable;
@@ -45,6 +46,8 @@ import java.util.BitSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
+
 import javax.swing.JComponent;
 import javax.swing.JToolTip;
 import javax.swing.Timer;
@@ -94,6 +97,14 @@ public class IdeogramView extends JComponent // JPanel
 	protected static final int MAX_LABEL_LENGTH = 8;
 	protected static final int MIN_MARKER_WIDTH = 4;
 
+	/**
+	 * Amplification factor for the log ratio. This is multiplied with the 
+	 * log ratio in order to make it visible to the user.
+	 * TODO It might be better to make this a option, that can be set by the 
+	 *      user.
+	 */
+	private static final double LOG_RATIO_AMPLIFIER = 7.0;
+	
 	protected IdeogramDB db;
     private GeneDB gene_db;
 	protected byte chromosome;
@@ -314,6 +325,15 @@ public class IdeogramView extends JComponent // JPanel
             this.showGenes = showGenes;
             invalidatePaintBuffer();
         }
+    }
+    
+    /**
+     * TODO INSERT DOCUMENTATION HERE!
+     *
+     * @return
+     */
+    public boolean getShowLogRatio() {
+        return showLogRatio;
     }
     
     /**
@@ -1033,7 +1053,6 @@ public class IdeogramView extends JComponent // JPanel
     	return selectedSampleIndex;
     }
     
-    
     /**
      * Paints the SNPs
      * @param g
@@ -1056,7 +1075,6 @@ public class IdeogramView extends JComponent // JPanel
     		}
     	}    	
     }
-
     
     /**
      * Draws a gene into the graphic context
@@ -1097,7 +1115,6 @@ public class IdeogramView extends JComponent // JPanel
             g.drawLine(xofs,y1+dy,xofs,y2-dy);
     }
     
-    
     /**
      * Draws a SNP into the graphic context
      * @param g Graphics context
@@ -1134,9 +1151,8 @@ public class IdeogramView extends JComponent // JPanel
 	
 		y2--;
 	
-		boolean cutTop = false,
-		cutBot = false;			
-						
+		boolean cutTop = false, cutBot = false;			
+
 		if( y1 < ideogramBounds.y )
 		{
 			cutTop = true;
@@ -1182,7 +1198,92 @@ public class IdeogramView extends JComponent // JPanel
 		    if( !cutBot )	g.drawLine(x1,y2,x2,y2);
 		}
     }
+    
+/*   /**
+     * Copy of {@link IdeogramView#drawInterval(Graphics, int, Interval, int, boolean, Color)}.
+     * Only the calculation of the local variable x is changed. This is a really ugly way of
+     * doing the job, but avoids messing around with the rest of the code.
+     *
+     * @param g
+     * @param column
+     * @param interval
+     * @param lineWidth
+     * @param show_band
+     * @param band_color
+     * @param logRatio
+     *//*
+    private void drawLogRatioInterval( Graphics g, int column, Interval interval, int lineWidth,
+            boolean show_band, Color band_color, double logRatio)
+    {
+        Graphics2D g2d = (Graphics2D)g;
+        int y1 = BaseToYCoord(interval.from);
+        int y2 = BaseToYCoord(interval.to) - 1; 
 
+        double x = markerToXCoord(column);
+
+        boolean cutTop = false, cutBot = false;         
+
+        if( y1 < ideogramBounds.y )
+        {
+            cutTop = true;
+            y1 = ideogramBounds.y;
+        }
+
+        if( y2 > ideogramBounds.y + ideogramBounds.height )
+        {
+            cutBot = true;
+            y2 = ideogramBounds.y + ideogramBounds.height;
+        }
+
+        if( y2 - y1 < 1 ) {
+            
+             * If the distance between y1 and y2 is less than 1, i.e. there is 
+             * less than one base between y1 and y2, set the distance to 1.
+             
+            y2 = y1 + 1;
+        }
+
+        //int dx = Math.max((int)(deltaX/3),1);
+
+        // draw cross line if the ends are cut
+        Line2D.Double line;
+//        if( cutTop ) {
+//            line = new Line2D.Double(x + logRatio, y1, x + logRatio, y2);
+//            g2d.draw(line);
+//        }
+//        if( cutBot ) {
+//            line = new Line2D.Double(x-dx,y2-dx,x+dx,y2+dx);
+//            g2d.draw(line);
+//        }
+//        if( getShowDetails() )
+//        {
+//            // draw line ends with higher details
+//            if( !cutTop ) {
+//                //g.fillRect(x-dx1,y1,dx1+dx2,dy);
+//                line = new Line2D.Double(x-dx,y1,x+dx,y1);
+//                g2d.draw(line);
+//            }
+//            if( !cutBot ) {
+//                line = new Line2D.Double(x-dx,y2,x+dx,y2);
+//                g2d.draw(line);
+//            }
+//        }
+
+
+//        if( show_band )
+//        {
+            if( band_color != null ) g.setColor(band_color);
+            if( !cutTop )   {
+                line = new Line2D.Double(x + logRatio,y1,x + logRatio,y1);
+                g2d.draw(line);
+            }
+            if( !cutBot ) {
+                line = new Line2D.Double(x + logRatio,y2,x + logRatio,y2);
+                g2d.draw(line);
+            }
+//        }
+    }
+*/
     /**
 	 * Draws a single marker.
 	 * 
@@ -1212,7 +1313,6 @@ public class IdeogramView extends JComponent // JPanel
 	    boolean left_side = marker.value < 2 || marker.value < 0, 
 	    		right_side = marker.value > 2 || marker.value < 0;
 
-	    		
 	    if( marker.value < 0 )
 	    {	// copy number undefined ()
 	    	color_left = Color.MAGENTA;
@@ -1246,7 +1346,7 @@ public class IdeogramView extends JComponent // JPanel
 	    	drawInterval( g, (1+column), marker.interval, width, show_band, band_color ); 
 	    }    
 	}
-	
+
 	/**
 	 * Finds for each MarkerCollection if it is empty or not and updates 
 	 * the two BitSets leftVisible and rightVisible.
@@ -1282,7 +1382,6 @@ public class IdeogramView extends JComponent // JPanel
 	}
 	
 	/**
-	 * 
 	 * @param markerIndex
 	 * @return -1 if the index line is NOT found
 	 */
@@ -1310,7 +1409,6 @@ public class IdeogramView extends JComponent // JPanel
 	}
 	
 	/**
-	 * 
 	 * @param sampleIndex
 	 * @param leftSide
 	 * @return 0 if there is no profile line for the given sample
@@ -1381,7 +1479,93 @@ public class IdeogramView extends JComponent // JPanel
 	}
 	
 	protected void drawLogRatios(Graphics g) {
-	    // TODO
+	    updateVisibility();
+
+	    /*
+	     * Go through all marker collections available. Plot the log ratios for 
+	     * each marker in each of the marker collections. Each marker collection
+	     * is associated to a column. As the columns shall be drawn to the left
+	     * side, the first column is numbered with -1, the second with -2, and 
+	     * so on. The plotting algorithm is as follows:
+	     * - Draw a line from the previous end position (prevX2, prevY2) to the 
+	     *   new start position (x1, y2). COMMENTED OUT FOR THE MOMENT, AS I'M
+	     *   NOT SURE WHETHER THIS IS A GOOD IDEA!
+	     * - Draw a line from (x1, y1) to the new end position (x2, y2).
+	     * - Set (prevX2, prevY2) to (x2, y2)
+	     */
+	    Graphics2D g2d = (Graphics2D)g;
+	    int mColIndex, column;
+	    double x1, y1, x2, y2, prevX2, prevY2;
+	    MarkerCollection mCol;
+	    ListIterator<MarkerCollection> it = markers.listIterator();
+        
+	    g2d.setColor(Color.BLUE);
+	    while (it.hasNext()) {
+	        mColIndex = it.nextIndex();
+	        mCol = it.next();
+	        // Calculate the actual column number. First mColIndex == 0.
+	        column = markerToXCoord(-1 * (mColIndex + 1));
+	        prevX2 = column;
+	        prevY2 = BaseToYCoord(view.from);
+	        for (Marker marker : mCol.find(view)) {
+	            if (marker == null) { continue; }
+	            x1 = column + marker.getLogRatio() * LOG_RATIO_AMPLIFIER;
+	            y1 = assureBounds(BaseToYCoord(marker.interval.from));
+	            x2 = column + marker.getLogRatio() * LOG_RATIO_AMPLIFIER;
+	            y2 = assureBounds(BaseToYCoord(marker.interval.to));
+	            //drawLine(g2d, prevX2, prevY2, x1, y1); // REALLY A GOOD IDEA? SEE COMMENT ABOVE!
+	            drawLine(g2d, x1, y1, x2, y2);
+	            prevX2 = x2;
+	            prevY2 = y2;
+	        }
+	    }
+	    
+	}
+	
+	/**
+	 * Assure the given y is neither less than the lower bound of the ideogram, 
+	 * nor greater than the ideogram's upper bound.
+	 *
+	 * @param y
+	 * @return
+	 */
+	private double assureBounds(double y) {
+	    if (y < ideogramBounds.y) { 
+	        y = ideogramBounds.y;
+	    }
+	    else if (y > ideogramBounds.y + ideogramBounds.height) {
+	        y = ideogramBounds.y + ideogramBounds.height;
+	    }
+	    return y;
+	}
+	
+	/**
+	 * Draw a line from (x1, y1) to (x2, y2).
+	 *
+	 * @param g2d
+	 * @param x1
+	 * @param y1
+	 * @param x2
+	 * @param y2
+	 */
+	private void drawLine(Graphics2D g2d, double x1, double y1, 
+	        double x2, double y2) {
+	    Line2D.Double line = new Line2D.Double(x1, y1, x2, y2);
+	    g2d.draw(line);
+	}
+	
+	/**
+	 * Draw a line from (x1, y2) to (x2, y2). This is a convenience method
+	 * around {@link Graphics2D#drawLine(int, int, int, int)}.
+	 *
+	 * @param g2d
+	 * @param x1
+	 * @param y1
+	 * @param x2
+	 * @param y2
+	 */
+	private void drawLine(Graphics2D g2d, int x1, int y1, int x2, int y2) {
+	    g2d.drawLine(x1, y1, x2, y2);
 	}
 
 	public Dimension updateLayout()

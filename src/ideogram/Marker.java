@@ -71,7 +71,7 @@ public class Marker implements Comparable
 	 *
 	 * @return The marker's log2 ratio.
 	 */
-	public double getLog2Ratio() {
+	public double getLogRatio() {
 	    return log2ratio;
 	}
 	
