@@ -1,11 +1,13 @@
 package ideogram;
 
+import ideogram.input.RResultTransformer;
 import ideogram.input.AffymetrixCntReaderModel.FileVersion;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -42,6 +44,8 @@ public class FilterPanel extends JPanel implements ActionListener, MouseListener
 	private HashMap<Integer, AllParameters.FieldB>	indexToFieldB;	
 	
 	// GUI Fields
+	private JSpinner    logRatioAmpSpinner;
+	private JSpinner    normFrameSpinner;
     private JSpinner	lower_spinner;
 	private JSpinner 	upper_spinner;
 	private JSpinner	max_pValue;
@@ -52,6 +56,7 @@ public class FilterPanel extends JPanel implements ActionListener, MouseListener
 	private JCheckBox 	consensus_mode;
 
 	private JComboBox	filterComboBox;
+	private JComboBox   normTypeCombo;
 	private JCheckBox	diffMode;
 	private JCheckBox	condensed_mode;
 	private JCheckBox	showProfileLines_mode;
@@ -86,6 +91,8 @@ public class FilterPanel extends JPanel implements ActionListener, MouseListener
         invertColors = new JCheckBox("Inv.");
         invertColors.addActionListener(this);
         
+        logRatioAmpSpinner = new JSpinner(new SpinnerNumberModel(parameters.logRatioAmplifier, 0.0, 10.0, 0.1));
+        logRatioAmpSpinner.setEnabled(false);
         lower_spinner = new JSpinner(new SpinnerNumberModel(parameters.log2ratio_lower, Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY, 0.05f));
         upper_spinner = new JSpinner(new SpinnerNumberModel(parameters.log2ratio_upper, Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY, 0.05f));
         max_pValue = new JSpinner(new SpinnerNumberModel(parameters.pValue_upper, 0.0, 20.0, 1.0));
@@ -233,6 +240,48 @@ public class FilterPanel extends JPanel implements ActionListener, MouseListener
         c.gridwidth = GridBagConstraints.REMAINDER;
         add(new JLabel("Amp."),c);
 
+        
+        c.ipadx = 0;
+        c.ipady = 5;
+        c.insets = new Insets(0,3,2,3);
+        c.anchor = GridBagConstraints.LINE_START;
+        c.gridwidth = GridBagConstraints.RELATIVE;
+        c.gridx = 0;
+        c.weightx = 1;
+        c.gridy = y;
+        add(new JLabel("LogRatio Amp."),c);
+        
+        c.ipadx = 0;
+        c.ipady = 5;
+        c.insets = new Insets(0,3,2,3);
+        c.anchor = GridBagConstraints.LINE_START;
+        c.gridwidth = GridBagConstraints.RELATIVE;
+        c.gridx = 5;
+        c.weightx = 1;
+        c.gridy = y++;
+        add(logRatioAmpSpinner,c);
+        
+        normFrameSpinner = 
+            new JSpinner(new SpinnerNumberModel(parameters.normalizationFrame, 
+                    0, 1000000, 1));
+        normFrameSpinner.setEnabled(false);
+        normTypeCombo = new JComboBox(RResultTransformer.NormalizationMethods.values());
+        normTypeCombo.setSelectedItem(parameters.normalizationMethod);
+        normTypeCombo.setEnabled(false);
+        JPanel p = new JPanel(new GridLayout(2,2));
+        p.add(new JLabel("Normalization Frame"));
+        p.add(normFrameSpinner);
+        p.add(new JLabel("Normalization Method"));
+        p.add(normTypeCombo);
+        c.ipadx = 0;
+        c.ipady = 5;
+        c.insets = new Insets(0,3,2,3);
+        c.anchor = GridBagConstraints.LINE_START;
+        c.gridwidth = GridBagConstraints.RELATIVE;
+        c.gridx = 0;
+        c.weightx = 1;
+        c.gridy = y++;
+        add(p, c);
         
         c.ipadx = 0;
         c.ipady = 5;
@@ -445,11 +494,38 @@ public class FilterPanel extends JPanel implements ActionListener, MouseListener
         ++y;
         
         setAlignmentY(Component.TOP_ALIGNMENT);
-        setMaximumSize(new Dimension(220, 330));
+        setMaximumSize(new Dimension(220, 450));
 		      
         updateGui();
 	}
 
+	/**
+	 * Enable or disable the logRatioAmplification Spinner.
+	 *
+	 * @param enabled
+	 */
+	public void setLogRatioSpinnerEnabled(boolean enabled) {
+	    logRatioAmpSpinner.setEnabled(enabled);
+	}
+	
+	/**
+	 * Enable or disable the normFrameSpinner.
+	 *
+	 * @param enabled
+	 */
+	public void setNormFrameSpinnerEnabled(boolean enabled) {
+	    normFrameSpinner.setEnabled(enabled);
+	}
+	
+	/**
+	 * Enable or disable the normTypeCombo. 
+	 *
+	 * @param enabled
+	 */
+	public void setNormTypeComboEnabled(boolean enabled) {
+	    normTypeCombo.setEnabled(enabled);
+	}
+	
 	protected void fireActionPerformed()
 	{
 		ActionEvent e = new ActionEvent(this,ActionEvent.ACTION_PERFORMED,"ok");
@@ -646,6 +722,25 @@ public class FilterPanel extends JPanel implements ActionListener, MouseListener
 			e.printStackTrace();
 		}
 
+		try {
+		    if (logRatioAmpSpinner.getValue() != null) {
+		        parameters.logRatioAmplifier = Double.parseDouble(logRatioAmpSpinner.getValue().toString());
+		    }
+		}
+		catch (ClassCastException e) {
+		    e.printStackTrace();
+		}
+		
+		try {
+		    if (normFrameSpinner.getValue() != null) {
+		        parameters.normalizationFrame = Integer.parseInt(normFrameSpinner.getValue().toString());
+		        parameters.normalizationMethod = 
+		            (RResultTransformer.NormalizationMethods)normTypeCombo.getSelectedItem();
+		    }
+		} catch (ClassCastException e) {
+		    e.printStackTrace();
+		}
+		
 		try {
 			if( max_pValue.getValue() != null )
 				parameters.pValue_upper = ((Float)max_pValue.getValue()).floatValue();

@@ -213,6 +213,8 @@ public class CopyNumberTransformer extends AbstractCopyNumberDataModel
 			}
 			copy_numbers.add(cn);
 		}
+		applyNormalization(copy_numbers, parameters.normalizationFrame, 
+		        parameters.normalizationMethod);
 	}
 	
 	public void detach()

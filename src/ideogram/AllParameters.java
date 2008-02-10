@@ -5,6 +5,7 @@
 package ideogram;
 
 import ideogram.event.IChangeNotifier;
+import ideogram.input.RResultTransformer;
 import ideogram.input.AffymetrixCntReaderModel.FileVersion;
 import java.awt.Color;
 import java.io.Serializable;
@@ -21,6 +22,21 @@ import util.SystemUtility;
 public class AllParameters implements Serializable, IChangeNotifier, Cloneable
 {
     private static final long serialVersionUID = 3L;
+    
+    /**
+     * Amplification factor for the log ratio. This is multiplied with the 
+     * log ratio in order to make it visible to the user.
+     * TODO It might be better to make this a option, that can be set by the 
+     *      user.
+     */
+    private static final double DEFAULT_LOG_RATIO_AMPLIFIER = 7.0;
+    
+    /**
+     * Default size of the normalization frame. Any positive integer spezifies
+     * the frame's size. A size of 0 indicates that no normalization should be
+     * applied.
+     */
+    private static final int DEFAULT_NORMALIZATION_FRAME = 0;
     
     // default values for lower and upper bounds
     // V1.0 defaults
@@ -113,6 +129,10 @@ public class AllParameters implements Serializable, IChangeNotifier, Cloneable
     					neglog10pvalue_upper,
     					pValue_upper,
     					lohprob_upper;
+    
+    public double       logRatioAmplifier;
+    public int          normalizationFrame;
+    public RResultTransformer.NormalizationMethods normalizationMethod;
 
     public int			group_lim;
 	public boolean 		consensus_mode;
@@ -148,6 +168,9 @@ public class AllParameters implements Serializable, IChangeNotifier, Cloneable
 		loh_upper=LOH_UP;
 		min_length=MINLENGTH;
 		
+		logRatioAmplifier = DEFAULT_LOG_RATIO_AMPLIFIER;
+		normalizationFrame = DEFAULT_NORMALIZATION_FRAME;
+		normalizationMethod = RResultTransformer.NormalizationMethods.MEAN;
 		// new for 1.1 file format
 		log2ratio_lower_new = LOG2RATIO_LOW_NEW;
 		log2ratio_upper_new = LOG2RATIO_UP_NEW;
@@ -430,6 +453,9 @@ public class AllParameters implements Serializable, IChangeNotifier, Cloneable
 		
 		invertColors = parameters.invertColors;
 		this.versionLoaded = parameters.versionLoaded;
+		logRatioAmplifier = parameters.logRatioAmplifier;
+		normalizationFrame = parameters.normalizationFrame;
+		normalizationMethod = parameters.normalizationMethod;
 		
 			
 		fireChangeEvent();

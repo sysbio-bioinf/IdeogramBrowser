@@ -46,6 +46,13 @@ public class RResultReaderModel extends AbstractIdeogramDataModel {
     private ArrayList<RResultRecord> data;
     private File rResultFile;
     
+    /**
+     * Lists all possible column names in the order in which they may appear 
+     * in the file.
+     *
+     * @author Ferdinand Hofherr
+     *
+     */
     public enum RResultColumnNames {
         CHROMOSOME, POS_BASE, LOG_RATIO
     }

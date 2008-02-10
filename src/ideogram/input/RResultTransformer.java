@@ -8,8 +8,11 @@ package ideogram.input;
 import ideogram.AllParameters;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -28,6 +31,7 @@ public class RResultTransformer extends AbstractCopyNumberDataModel implements
     private ArrayList<CopyNumberRecord> copyNumberRecords;
     private boolean stateValid;
     
+    
     /**
      * TODO INSERT DOCUMENTATION HERE!
      *
@@ -38,18 +42,13 @@ public class RResultTransformer extends AbstractCopyNumberDataModel implements
             AllParameters parameters) {
         this.sourceModel = sourceModel;
         this.parameters = parameters;
+        this.parameters.addChangeListener(this);
         this.copyNumberRecords = 
             new ArrayList<CopyNumberRecord>(sourceModel.size());
         this.stateValid = false;
         
         sourceModel.addChangeListener(this);
     }
-    
-    /*
-     * TODO
-     *      - The drawAberations() method must then draw this log2 ratio. 
-     */
-
     
     /* (non-Javadoc)
      * @see javax.swing.event.ChangeListener#stateChanged(javax.swing.event.ChangeEvent)
@@ -170,6 +169,9 @@ public class RResultTransformer extends AbstractCopyNumberDataModel implements
         
         // Don't waste more memory than necessary.
         copyNumberRecords.trimToSize();
+        applyNormalization(copyNumberRecords, parameters.normalizationFrame,
+                parameters.normalizationMethod);
     }
+
     
 }

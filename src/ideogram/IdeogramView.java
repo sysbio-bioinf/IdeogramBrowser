@@ -80,6 +80,7 @@ public class IdeogramView extends JComponent // JPanel
 	implements Serializable, ActionListener, Printable
 {
 	private static final long serialVersionUID = 2L;
+	//private static final double LOG_RATIO_AMPLIFIER = 7.0;
 
 	/**
 	 * Maximum view, basepairs (=zoomed out).
@@ -96,14 +97,6 @@ public class IdeogramView extends JComponent // JPanel
 	 */
 	protected static final int MAX_LABEL_LENGTH = 8;
 	protected static final int MIN_MARKER_WIDTH = 4;
-
-	/**
-	 * Amplification factor for the log ratio. This is multiplied with the 
-	 * log ratio in order to make it visible to the user.
-	 * TODO It might be better to make this a option, that can be set by the 
-	 *      user.
-	 */
-	private static final double LOG_RATIO_AMPLIFIER = 7.0;
 	
 	protected IdeogramDB db;
     private GeneDB gene_db;
@@ -131,6 +124,8 @@ public class IdeogramView extends JComponent // JPanel
     protected Color		selectedGeneColor;
     protected Color		snpColor;
     protected Color		selectedSnpColor;
+    
+//    private double      logRatioAmplifier;
     
     // marker selected
     private Marker		selectedMarker;
@@ -176,10 +171,13 @@ public class IdeogramView extends JComponent // JPanel
 	private LinkedList<Interval>	viewHistory;
 	
 	private MarkerCollection		M;
+	
+	private AllParameters parameters;
 
 	
-	public IdeogramView()
+	public IdeogramView(AllParameters paramters)
 	{
+	    this.parameters = paramters;
 		// dragmode
 		selectionBackground = new Color(0xdd,0xdd,0xff);
 		viewHistory = new LinkedList<Interval>();
@@ -194,6 +192,7 @@ public class IdeogramView extends JComponent // JPanel
         showProfileLines = true;
         condensedMode = false;
 		consensusMode = false;
+//		logRatioAmplifier = paramters.logRatioAmplifier;
 		minWidth = 5;
 		maxWidth = 50;
 		markerWidth = 2;
@@ -219,9 +218,9 @@ public class IdeogramView extends JComponent // JPanel
 		initTransientState();
 	}
 
-	public IdeogramView(IdeogramDB db)
+	public IdeogramView(IdeogramDB db, AllParameters parameters)
 	{
-		this();
+		this(parameters);
 		this.db = db;
 	}
 
@@ -347,6 +346,15 @@ public class IdeogramView extends JComponent // JPanel
             invalidatePaintBuffer();
         }
     }
+    
+//    public void setLogRatioAmplifier(double logRatioAmplifier) {
+//        this.logRatioAmplifier = logRatioAmplifier;
+//        validate();
+//    }
+//    
+//    public double getLogRatioAmplifier() {
+//        return logRatioAmplifier;
+//    }
     
 	public void setConsensusMode(boolean mode)
 	{
@@ -1495,7 +1503,7 @@ public class IdeogramView extends JComponent // JPanel
 	     */
 	    Graphics2D g2d = (Graphics2D)g;
 	    int mColIndex, column;
-	    double x1, y1, x2, y2, prevX2, prevY2;
+	    double x1, y1, x2, y2;//, prevX2, prevY2;
 	    MarkerCollection mCol;
 	    ListIterator<MarkerCollection> it = markers.listIterator();
         
@@ -1505,18 +1513,19 @@ public class IdeogramView extends JComponent // JPanel
 	        mCol = it.next();
 	        // Calculate the actual column number. First mColIndex == 0.
 	        column = markerToXCoord(-1 * (mColIndex + 1));
-	        prevX2 = column;
-	        prevY2 = BaseToYCoord(view.from);
+	        //prevX2 = column;
+	        //prevY2 = BaseToYCoord(view.from);
 	        for (Marker marker : mCol.find(view)) {
 	            if (marker == null) { continue; }
-	            x1 = column + marker.getLogRatio() * LOG_RATIO_AMPLIFIER;
+	            //System.out.println("LRAMP: " + parameters.logRatioAmplifier);
+	            x1 = column + marker.getLogRatio() * parameters.logRatioAmplifier ;
 	            y1 = assureBounds(BaseToYCoord(marker.interval.from));
-	            x2 = column + marker.getLogRatio() * LOG_RATIO_AMPLIFIER;
+	            x2 = column + marker.getLogRatio() * parameters.logRatioAmplifier;
 	            y2 = assureBounds(BaseToYCoord(marker.interval.to));
 	            //drawLine(g2d, prevX2, prevY2, x1, y1); // REALLY A GOOD IDEA? SEE COMMENT ABOVE!
 	            drawLine(g2d, x1, y1, x2, y2);
-	            prevX2 = x2;
-	            prevY2 = y2;
+	            //prevX2 = x2;
+	            //prevY2 = y2;
 	        }
 	    }
 	    
@@ -3037,6 +3046,15 @@ public class IdeogramView extends JComponent // JPanel
 								  YCoordToBase(endPoint.y));
 		setRangeSelection(x);
 	}
+
+//    public void stateChanged(ChangeEvent e) {
+//        // Redraw view, if parameters.logRatioAmplifier and logRatioAmplifier
+//        // don't match!
+//        if (logRatioAmplifier != parameters.logRatioAmplifier) {
+//            logRatioAmplifier = parameters.logRatioAmplifier;
+//           
+//        }
+//    }
 
 }
 

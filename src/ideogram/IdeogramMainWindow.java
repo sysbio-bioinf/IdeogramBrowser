@@ -265,7 +265,7 @@ implements ActionListener, ComponentListener, ChangeListener
 		int n2 = ideograms.length/2;
 		for(int i=0; i<ideograms.length; ++i)
 		{
-			ideograms[i] = new IdeogramView();
+			ideograms[i] = new IdeogramView(parameters);
             ideograms[i].setDataModel(slots);
 			ideograms[i].setChromosome(i+1);
 			ideograms[i].setIdeogramDB(db);
@@ -677,6 +677,9 @@ implements ActionListener, ComponentListener, ChangeListener
         if (cmd.equalsIgnoreCase("Show LogRatios")) {
             setShowLogRatio(!getShowLogRatio());
             showLogRatioMenu.setSelected(getShowLogRatio());
+            filterPanel.setLogRatioSpinnerEnabled(getShowLogRatio());
+            filterPanel.setNormFrameSpinnerEnabled(getShowLogRatio());
+            filterPanel.setNormTypeComboEnabled(getShowLogRatio());
             return;
         }
         
@@ -1873,6 +1876,7 @@ implements ActionListener, ComponentListener, ChangeListener
 	public void setShowLogRatio(boolean show) {
 	    for (int i = 0; i < ideograms.length; i++) {
 	        ideograms[i].setShowLogRatio(show);
+//	        ideograms[i].setLogRatioAmplifier(parameters.logRatioAmplifier);
 	    }
 	}
 	
