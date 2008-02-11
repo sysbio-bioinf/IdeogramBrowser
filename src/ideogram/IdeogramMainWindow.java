@@ -59,8 +59,11 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Locale;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.zip.GZIPInputStream;
@@ -190,6 +193,8 @@ implements ActionListener, ComponentListener, ChangeListener
 	public IdeogramMainWindow()
 	{	
 		super("Ideogram Main Application");
+		
+		RController.getInstance().addSingleChangeListener(this);
 		
 		// File Version can be changed only if no markers are loaded
 		versionModeChangeable = true;
@@ -2177,7 +2182,20 @@ implements ActionListener, ComponentListener, ChangeListener
                 ideograms[i].setActive( ideograms[i] == ideo );
             }
             return;
-        }        
+        }
+        else if (e.getSource() instanceof RController) {
+            ArrayList<String> rResultFiles = RController.getInstance().getRResultFiles();
+            for (String s: rResultFiles) {
+                try {
+                    importRResultFile(new File(s), -1);
+                } catch (FileFormatException e1) {
+                    e1.printStackTrace();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            }
+            update();
+        }
     }
     
     public void importCNTFile(File file, int target) throws FileFormatException, IOException, FileCompatibilityException
@@ -2241,6 +2259,7 @@ implements ActionListener, ComponentListener, ChangeListener
     public void importRResultFile(File file, int target) throws FileFormatException, IOException {
         waitCursor();
         
+        System.out.println("PATH:" + file.getAbsolutePath());
         RResultReaderModel model = new RResultReaderModel();
         model.loadFromFile(file);
         resultTransformer = new RResultTransformer(model, parameters);

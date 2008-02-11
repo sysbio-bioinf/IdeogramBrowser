@@ -6,6 +6,7 @@
 package ideogram.r.gui;
 
 import static org.junit.Assert.*;
+import ideogram.r.exceptions.RException;
 import ideogram.r.exceptions.RLibraryWrapperException;
 import ideogram.r.rlibwrappers.GLADWrapper;
 
@@ -64,11 +65,12 @@ public class RLibraryWrapperReaderTest {
     /**
      * Test method for {@link ideogram.r.gui.RLibraryWrapperReader#createInputPanel(java.lang.String)}.
      * @throws ClassNotFoundException 
+     * @throws RException 
      * @throws RLibraryWrapperException 
      */
     @Test
     public void testCreateInputPanelString() 
-    throws ClassNotFoundException, IllegalArgumentException{
+    throws ClassNotFoundException, IllegalArgumentException, RException{
         rd.createInputPanel(new GLADWrapper());
     }
 

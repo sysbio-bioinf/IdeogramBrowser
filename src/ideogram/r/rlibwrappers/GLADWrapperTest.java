@@ -106,8 +106,8 @@ public class GLADWrapperTest {
      */
     @Test
     public void testUseGladFunction() throws RException {
-        REXP res = gw.useGladFunction();
-        assertTrue(res != null);
+        String res = gw.useGladFunction();
+        System.out.println(res);
     }
 
     /**

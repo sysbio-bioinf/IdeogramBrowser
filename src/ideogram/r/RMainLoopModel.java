@@ -53,7 +53,7 @@ public class RMainLoopModel extends Observable implements RMainLoopCallbacks {
      * @see org.rosuda.JRI.RMainLoopCallbacks#rFlushConsole(org.rosuda.JRI.Rengine)
      */
     public void rFlushConsole(Rengine arg0) {
-        rConsole.flush();
+        //rConsole.flush();
         setChanged();
         notifyObservers();
     }
@@ -85,8 +85,10 @@ public class RMainLoopModel extends Observable implements RMainLoopCallbacks {
     /* (non-Javadoc)
      * @see org.rosuda.JRI.RMainLoopCallbacks#rShowMessage(org.rosuda.JRI.Rengine, java.lang.String)
      */
-    public void rShowMessage(Rengine arg0, String arg1) {
-        // TODO Auto-generated method stub
+    public void rShowMessage(Rengine re, String text) {
+        rConsole.insert(text);
+        setChanged();
+        notifyObservers();
     }
 
     /* (non-Javadoc)

@@ -14,10 +14,17 @@ import ideogram.r.annotations.RNumericParam;
 import ideogram.r.annotations.RStringParam;
 import ideogram.r.exceptions.RException;
 
+import java.io.File;
+import java.text.DateFormat;
+import java.text.Format;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.rosuda.JRI.REXP;
+
+import com.thoughtworks.xstream.io.binary.Token.Formatter;
 
 /**
  * Wrapper class arround the GLAD R library. The functions glad() and daglad()
@@ -29,10 +36,34 @@ import org.rosuda.JRI.REXP;
 public class GLADWrapper extends AbstractRWrapper {
 
     private static final String LIB_NAME = "GLAD";
-    private static final String PROFILE_CGH_VARNAME = "profileCGH";
+    //private static final String PROFILE_CGH_VARNAME = "profileCGH";
     private static final String ALGO_RES_VARNAME = "res";
+    
+    private static final String RES_WRITER = 
+        "writeProfileCGH <- function(profileCGH, path, fileName) {\n" +
+            "cat('Writing...', path, fileName)\n" +
+            "colNames <- c('Chromosome', 'PosBase', 'LogRatio')\n" +
+            "absPath <- paste(path, fileName, sep='/')\n" +
+            "# Open a connection for writing\n" +
+            "con <- file(absPath, open='w', encoding='UTF8')\n" +
+            "# Write the column names\n" +
+            "cat(colNames, file=con, sep='\t')\n" + 
+            "cat('\n', file=con, sep='')\n" +
+            "# Write the contents of the profileCGH$profileValues\n" +
+            "prfVals <- profileCGH$profileValues\n" +
+            "for (i in 1:nrow(prfVals)) {\n" +
+                "cat(as.numeric(prfVals$Chromosome[i]),\n" +
+                "as.integer(prfVals$PosBase[i]),\n" +
+                "as.numeric(prfVals$LogRatio[i]),\n" +
+                "file=con, sep='\t')\n" +
+                "cat('\n', file=con, sep='')\n" +
+            "}\n" +
+            "close(con)\n"+
+        "}\n";
 
+    
     private List<RDataSetWrapper> sampleData;
+    private boolean writerFunctionLoaded;
 
     // Parameters for glad function.
 
@@ -217,8 +248,9 @@ public class GLADWrapper extends AbstractRWrapper {
     @RBoolParam(name = "CheckBkpPos", mandatory = false)
     public String dagladCheckBkpPos;
 
-    public GLADWrapper() {
+    public GLADWrapper() throws RException {
         sampleData = new ArrayList<RDataSetWrapper>();
+        writerFunctionLoaded = false;
 
         // set default values for glad function. If null, no default value available
         gladDataSet = null;
@@ -302,6 +334,18 @@ public class GLADWrapper extends AbstractRWrapper {
         dw.addElement("gm13031");
         dw.addElement("gm13330");
         sampleData.add(dw);
+        
+        if (!RController.getInstance().engineRunning()) {
+            throw new RException("R not running!");
+        }
+        
+        File f = new File(RController.R_STORAGE_PATH);
+        if (!f.exists()) {
+            if (!f.mkdirs()) { 
+                throw new RException("Failed to create R storage directory " + 
+                        RController.R_STORAGE_PATH + "!");
+            }
+        }
     }
 
     /* Methods required by ideogram.r.RLibrary and ideogram.r.AbstractRWrapper */
@@ -365,8 +409,15 @@ public class GLADWrapper extends AbstractRWrapper {
 
     /* Other methods, which will be discovered via reflection */
 
+    /**
+     * Call the glad function in the R package GLAD. This method should not be
+     * called directly but by reflection.
+     *
+     * @return
+     * @throws RException
+     */
     @Analysis("glad")
-    public REXP useGladFunction() throws RException{
+    public String useGladFunction() throws RException{
         RController rc = RController.getInstance();
 
         if (!rc.engineRunning()) {
@@ -403,11 +454,16 @@ public class GLADWrapper extends AbstractRWrapper {
             throw new RException("Function glad() returned with null! " +
             "Is the data set's name correct?");
         }
-        return res;
+        loadWriterFunction();
+        String resFile = RController.createUniqueRResultFileName();
+        writeResult(RController.R_STORAGE_PATH, resFile);
+        rc.addRResultFile(RController.R_STORAGE_PATH + File.separator + resFile);
+        
+        return resFile;
     }
 
     @Analysis("daglad")
-    public REXP useDagladFunction() throws RException {
+    public String useDagladFunction() throws RException {
         RController rc = RController.getInstance();
 
         if (!rc.engineRunning()) {
@@ -449,8 +505,46 @@ public class GLADWrapper extends AbstractRWrapper {
             throw new RException("Function daglad() returned with null! " +
             "Is the data set's name correct?");
         }
-        return res;
+        loadWriterFunction();
+        String resFile = RController.createUniqueRResultFileName();
+        writeResult(RController.R_STORAGE_PATH, resFile);
+        rc.addRResultFile(RController.R_STORAGE_PATH + File.separator + resFile);
+
+        return resFile;
     }
+    
+    /**
+     * Load the writer function if necessary.
+     * @throws RException 
+     *
+     */
+    private void loadWriterFunction() throws RException {
+        if (!writerFunctionLoaded) {
+            RController rc = RController.getInstance();
+            if (!rc.engineRunning()) {
+                throw new RException("R not running!");
+            }
+            rc.getEngine().eval(RES_WRITER);
+            rc.getEngine().eval("cat('\n', ls(), '\n')");            
 
-
+            writerFunctionLoaded = true;
+        }
+    }
+    
+    /**
+     * Call the writeProfileCGH() function (in R) to store the result of the 
+     * the last analysis.
+     * TODO INSERT DOCUMENTATION HERE!
+     *
+     * @param path
+     * @param fileName
+     */
+    private void writeResult(String path, String fileName) {
+        String s = "writeProfileCGH(" + ALGO_RES_VARNAME + ", '" +
+        path + "', '" + fileName + "')";
+        System.out.println(s);
+        RController rc = RController.getInstance();
+        rc.getEngine().eval(s);
+    }
+    
 }

@@ -7,15 +7,21 @@ package ideogram.r;
 
 import ideogram.r.exceptions.JRIVersionException;
 import ideogram.r.exceptions.RException;
-import ideogram.r.exceptions.RLibraryWrapperException;
+import ideogram.r.rlibwrappers.GLADWrapper;
 import ideogram.r.rlibwrappers.RLibraryWrapper;
 
+import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.text.Format;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.rosuda.JRI.REXP;
 import org.rosuda.JRI.Rengine;
@@ -23,6 +29,9 @@ import org.rosuda.JRI.Rengine;
 /**
  * Central controlling class for interaction with R. This class is implemented
  * as a singleton. It ensures that only one running R thread exists.
+ * <strong>Note</strong>: This class allows the registration of a single 
+ * {@link ChangeListener}. Further registrations will be ignored until the 
+ * {@link RController#removeSingleChangeListener(ChangeListener)} method is called!
  * 
  * <strong>TODO: Fill bug report about stopEngine. JRI seems to have a bug there. </strong>
  * @author Ferdinand Hofherr
@@ -37,8 +46,26 @@ public class RController {
     private boolean running;
     private HashMap<String, String> availableLibraries;
     private RLibraryWrapper loadedWrapper;
+    private ChangeListener changeListener;
+    private ChangeEvent changeEvent;
+    
+    /*
+     * List containing the names of all currently exsisting RResult files.
+     * Will be set to null at the beginning and after the list of the RResult
+     * files is retrieved. It will by instanciated by the addRResultFile() 
+     * method if necessary.
+     */
+    private ArrayList<String> rResultFiles;
+
+    public static final String R_STORAGE_PATH = System.getProperty("user.dir")+ File.separator + "IdeogramBrowser" + File.separator + "RResult";
 
     private RController() {
+        // Will be set by addChangeListener()!
+        changeListener = null;
+        changeEvent = new ChangeEvent(this);
+        
+        rResultFiles = null;
+        
         rEngine = null;
         mainLoopModel = new RMainLoopModel();
         running = false;
@@ -55,6 +82,33 @@ public class RController {
         private final static RController INSTANCE = new RController();
     }
     
+    /**
+     * Wrapper for {@link GLADWrapper#createUniqueRResultFileName(String)} with
+     * empty prefix.
+     *
+     * @return
+     */
+    public static String createUniqueRResultFileName() {
+        return createUniqueRResultFileName("");
+    }
+    
+    /**
+     * Create a new RResult file name, consisting of date and time.
+     * As the file name includes milliseconds it should be pretty unique.
+     * 
+     * @param prefix Prefix to insert before timestamp.
+     * @return
+     */
+    public static String createUniqueRResultFileName(String prefix) {
+        Format f = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss-SS");
+        if (prefix.equals("")) {
+            return f.format(new Date()) + ".RResult";
+        }
+        else {
+            return prefix + "_" + f.format(new Date()) + ".RResult";
+        }
+    }
+
     /**
      * Test whether the passed string can be casted to a valid R numeric
      * value. This is achieved by a call to {@link Double#parseDouble(String)}.
@@ -153,6 +207,67 @@ public class RController {
      */
     public static RController getInstance() {
         return InstanceHolder.INSTANCE;
+    }
+    
+    /**
+     * Register a {@link ChangeListener} if no other listener is registered.
+     * If you want to register an other listener you must first unregister the
+     * old listener by calling {@link RController#removeChangeListener()}.
+     *
+     * @param listener
+     */
+    public void addSingleChangeListener(ChangeListener listener) {
+        if (changeListener == null) {
+            changeListener = listener;
+        }
+    }
+    
+    /**
+     * Remove the only allowed {@link ChangeListener}.
+     *
+     * @param listener
+     */
+    public void removeSingleChangeListener() {
+        changeListener = null;
+    }
+    
+    /**
+     * Notify all registered {@link ChangeListener}s.
+     *
+     */
+    protected void fireStateChanged() {
+        if (changeListener != null) {
+            changeListener.stateChanged(changeEvent);
+        }
+    }
+    
+    /**
+     * Add a new RResult file to the list of existing files. You must specify
+     * the absolute path to the file.
+     *
+     * @param absoluteFileName
+     */
+    public void addRResultFile(String absoluteFileName) {
+        if (rResultFiles == null) {
+            rResultFiles = new ArrayList<String>();
+        }
+        rResultFiles.add(absoluteFileName);
+        fireStateChanged();
+    }
+    
+    /**
+     * Return the list of newly available RResult files. Reset it to null 
+     * afterwards. If no RResult files are available return null. 
+     *
+     * @return List of newly available RResult files or null.
+     */
+    public ArrayList<String> getRResultFiles() {
+        if (rResultFiles != null) {
+            ArrayList<String> tmp = rResultFiles;
+            rResultFiles = null;
+            return tmp;
+        }
+        return null;
     }
     
     /**
