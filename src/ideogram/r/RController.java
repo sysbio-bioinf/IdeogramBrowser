@@ -361,6 +361,13 @@ public class RController {
      */
     public void loadRLibrary(String libName) throws RException {
         if (engineRunning()) {
+            /*
+             * Unload a previously loaded library if it exist.
+             */
+            if (loadedWrapper != null) {
+                loadedWrapper.unloadLibrary();
+            }
+            
             /* require() is used, as it returns true on success and false on
              * error. */
             REXP re = getEngine().eval("require('" + libName + "')");
