@@ -4,6 +4,7 @@
  */
 package ideogram.r.gui;
 
+import ideogram.r.rlibwrappers.RAnalysisWrapper;
 import ideogram.r.rlibwrappers.RLibraryWrapper;
 
 import java.awt.Component;
@@ -90,7 +91,7 @@ public class EmptyInterfaceBuilder implements RInterfaceBuilder {
      * 
      * @see ideogram.r.gui.RInterfacePanelBuilder#createNewRInterfacePanel(ideogram.r.rlibwrappers.RLibraryWrapper)
      */
-    public void createNewRInterfacePanel(RLibraryWrapper wrapper) {
+    public void createNewRInterfacePanel(RAnalysisWrapper wrapper) {
         JPanel p = new JPanel();
         p.add(new JLabel("No library selected!"));
         interfacePanel = new RInterfacePanel(wrapper, mdp);

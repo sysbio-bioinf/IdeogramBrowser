@@ -1,7 +1,6 @@
 /*
- * File:	StringRingBufferTest.java
- * Created: 02.01.2008
- * Author:	Ferdinand Hofherr <ferdinand.hofherr@uni-ulm.de>
+ * File: StringRingBufferTest.java Created: 02.01.2008 Author: Ferdinand
+ * Hofherr <ferdinand.hofherr@uni-ulm.de>
  */
 package ideogram.r;
 
@@ -15,16 +14,16 @@ import org.junit.Test;
 
 /**
  * INSERT DOCUMENTATION HERE!
- *
+ * 
  * @author Ferdinand Hofherr
- *
  */
 public class RConsoleBufferTest {
 
     private RConsoleBuffer rb;
+
     /**
      * INSERT DOCUMENTATION HERE!
-     *
+     * 
      * @throws java.lang.Exception
      */
     @BeforeClass
@@ -33,7 +32,7 @@ public class RConsoleBufferTest {
 
     /**
      * INSERT DOCUMENTATION HERE!
-     *
+     * 
      * @throws java.lang.Exception
      */
     @AfterClass
@@ -42,7 +41,7 @@ public class RConsoleBufferTest {
 
     /**
      * INSERT DOCUMENTATION HERE!
-     *
+     * 
      * @throws java.lang.Exception
      */
     @Before
@@ -52,7 +51,7 @@ public class RConsoleBufferTest {
 
     /**
      * INSERT DOCUMENTATION HERE!
-     *
+     * 
      * @throws java.lang.Exception
      */
     @After
@@ -76,13 +75,16 @@ public class RConsoleBufferTest {
      */
     @Test
     public void testIsEmpty() {
-        /* Each test starts with a new empty buffer. If this fails something is
-         * seriously wrong. */
+        /*
+         * Each test starts with a new empty buffer. If this fails something is
+         * seriously wrong.
+         */
         assertTrue(rb.isEmpty());
     }
 
     /**
-     * Test method for {@link ideogram.r.RConsoleBuffer#insert(java.lang.String)}.
+     * Test method for
+     * {@link ideogram.r.RConsoleBuffer#insert(java.lang.String)}.
      */
     @Test
     public void testInsert1() {
@@ -91,9 +93,10 @@ public class RConsoleBufferTest {
         System.out.println(rb.toString());
         assertTrue(rb.toString().equals("Hello"));
     }
-    
+
     /**
-     * Test method for {@link ideogram.r.RConsoleBuffer#insert(java.lang.String)}.
+     * Test method for
+     * {@link ideogram.r.RConsoleBuffer#insert(java.lang.String)}.
      */
     @Test
     public void testInsert2() {
@@ -102,32 +105,34 @@ public class RConsoleBufferTest {
         System.out.println(rb.toString());
         assertTrue(rb.toString().equals("HelloHello"));
     }
-    
+
     /**
-     * Test method for {@link ideogram.r.RConsoleBuffer#insert(java.lang.String)}.
+     * Test method for
+     * {@link ideogram.r.RConsoleBuffer#insert(java.lang.String)}.
      */
     @Test
     public void testInsert3() {
         System.out.println("\ntestInsert3()");
         rb.insert("12345HelloWorld"); // bigger than buffer size, 12345
-                                      // should be overwritten by World.
+        // should be overwritten by World.
         System.out.println(rb.toString());
         assertTrue(rb.toString().equals("HelloWorld"));
     }
-    
+
     /**
-     * Test method for {@link ideogram.r.RConsoleBuffer#insert(java.lang.String)}.
+     * Test method for
+     * {@link ideogram.r.RConsoleBuffer#insert(java.lang.String)}.
      */
     @Test
     public void testInsert4() {
         System.out.println("\ntestInsert4()");
-        rb.insert("1234567890"); //exactly buffer size
+        rb.insert("1234567890"); // exactly buffer size
         System.out.println(rb.toString());
         rb.insert("HelloWorld");
         System.out.println(rb.toString());
         assertTrue(rb.toString().equals("HelloWorld"));
     }
-    
+
     @Test
     public void testMuchData() {
         int size = 1000000;

@@ -1,55 +1,53 @@
 /*
- * File:	StringRingBuffer.java
- * Created: 02.01.2008
- * Author:	Ferdinand Hofherr <ferdinand.hofherr@uni-ulm.de>
+ * File: StringRingBuffer.java Created: 02.01.2008 Author: Ferdinand Hofherr
+ * <ferdinand.hofherr@uni-ulm.de>
  */
 package ideogram.r;
 
 /**
  * Ring buffer for storing the output of the Rconsole.
- *
+ * 
  * @author Ferdinand Hofherr
- *
  */
 public class RConsoleBuffer {
-    
+
     private char[] buffer;
-    
-    /* Pointers to start and end of buffer. The buffer is considered empty,
-     * when start == end == -1. The buffer must be always read from start 
-     * to end! */
-    private int start, end; 
-    
+
+    /*
+     * Pointers to start and end of buffer. The buffer is considered empty,
+     * when start == end == -1. The buffer must be always read from start to
+     * end!
+     */
+    private int start, end;
+
     /**
      * Create a new empty StringRingBuffer of the given size.
-     *
+     * 
      * @param size
      */
     public RConsoleBuffer(int size) {
         buffer = new char[size];
         flush();
     }
-    
+
     /**
      * Empty the buffer.
-     *
      */
     public void flush() {
         start = end = -1;
     }
-    
+
     /**
      * Check whether buffer is empty.
-     *
+     * 
      * @return true if buffer empty, else false.
      */
     public boolean isEmpty() {
         return start == -1 && end == -1;
     }
-    
+
     /**
      * Calculate pointer values.
-     *
      */
     private void calcPointers() {
         // Initialize buffer if empty.
@@ -59,37 +57,37 @@ public class RConsoleBuffer {
         else {
             // Recalculate end. Assure it is lower than buffer.length.
             end = (end + 1) % buffer.length;
-            //Buffer overflow. Overwrite old characters.
+            // Buffer overflow. Overwrite old characters.
             if (end == start) {
                 start = (start + 1) % buffer.length;
             }
         }
     }
-    
+
     /**
      * Insert the String s into the buffer.
-     *
+     * 
      * @param s
      */
     public void insert(String s) {
         char[] sArr = s.toCharArray();
-        for (char c: sArr) {
+        for (char c : sArr) {
             calcPointers();
             buffer[end] = c;
         }
     }
 
     /**
-     * Calculate and return the number of characters currently stored in the 
+     * Calculate and return the number of characters currently stored in the
      * buffer.
-     *
+     * 
      * @return Number of currently stored characters.
      */
     public int noChars() {
         if (isEmpty()) {
             return 0;
         }
-        else if (start <= end) { 
+        else if (start <= end) {
             // start == end may be the case, when there is only one character
             // in the buffer.
             return end - start + 1;
@@ -98,8 +96,10 @@ public class RConsoleBuffer {
             return buffer.length - start + end + 1;
         }
     }
-    
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#toString()
      */
     @Override
@@ -112,6 +112,5 @@ public class RConsoleBuffer {
         }
         return new String(ca);
     }
-    
-    
+
 }

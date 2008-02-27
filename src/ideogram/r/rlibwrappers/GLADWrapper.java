@@ -5,8 +5,10 @@
  */
 package ideogram.r.rlibwrappers;
 
+import ideogram.r.FileTypeRecord;
 import ideogram.r.RController;
 import ideogram.r.RDataSetWrapper;
+import ideogram.r.FileTypeRecord.FileTypeRegistry;
 import ideogram.r.annotations.Analysis;
 import ideogram.r.annotations.RBoolParam;
 import ideogram.r.annotations.RDsNameParam;
@@ -27,13 +29,13 @@ import org.rosuda.JRI.REXP;
 import com.thoughtworks.xstream.io.binary.Token.Formatter;
 
 /**
- * Wrapper class arround the GLAD R library. The functions glad() and daglad()
+ * Wrapper class around the GLAD R library. The functions glad() and daglad()
  * can be used.
  *
  * @author Ferdinand Hofherr
  *
  */
-public class GLADWrapper extends AbstractRWrapper {
+public class GLADWrapper extends AbstractAnalysisWrapper {
 
     private static final String LIB_NAME = "GLAD";
     //private static final String PROFILE_CGH_VARNAME = "profileCGH";
@@ -64,6 +66,7 @@ public class GLADWrapper extends AbstractRWrapper {
     
     private List<RDataSetWrapper> sampleData;
     private boolean writerFunctionLoaded;
+    private boolean libraryLoaded;
 
     // Parameters for glad function.
 
@@ -251,6 +254,7 @@ public class GLADWrapper extends AbstractRWrapper {
     public GLADWrapper() throws RException {
         sampleData = new ArrayList<RDataSetWrapper>();
         writerFunctionLoaded = false;
+        libraryLoaded = false;
 
         // set default values for glad function. If null, no default value available
         gladDataSet = null;
@@ -353,7 +357,6 @@ public class GLADWrapper extends AbstractRWrapper {
     /* (non-Javadoc)
      * @see ideogram.r.AbstractRWrapper#hasSampleData()
      */
-    @Override
     public boolean hasSampleData() {
         return true;
     }
@@ -361,7 +364,6 @@ public class GLADWrapper extends AbstractRWrapper {
     /* (non-Javadoc)
      * @see ideogram.r.AbstractRWrapper#listSampleData()
      */
-    @Override
     public List<RDataSetWrapper> listSampleData() {
         return sampleData;
     }
@@ -369,17 +371,22 @@ public class GLADWrapper extends AbstractRWrapper {
     /* (non-Javadoc)
      * @see ideogram.r.AbstractRWrapper#load()
      */
-    @Override
     public void loadLibrary() throws RException {
-        RController.getInstance().loadRLibrary(LIB_NAME);
+        if (!libraryLoaded) {
+            RController.getInstance().unloadPreviousWrapper();
+            RController.getInstance().loadRLibrary(LIB_NAME);
+            libraryLoaded = true;
+        }
     }
 
     /* (non-Javadoc)
      * @see ideogram.r.AbstractRWrapper#unload()
      */
-    @Override
     public void unloadLibrary() throws RException {
-        RController.getInstance().unloadRLibrary(LIB_NAME);
+        if (libraryLoaded) {
+            RController.getInstance().unloadRLibrary(LIB_NAME);
+            libraryLoaded = false;
+        }
     }
 
     /* (non-Javadoc)
@@ -397,17 +404,26 @@ public class GLADWrapper extends AbstractRWrapper {
         System.out.println("Getting result");
         RController rc = RController.getInstance();
         REXP res = null;
-        if (rc.engineRunning()) {
-            //res = rc.getEngine().eval(ALGO_RES_VARNAME);
-            rc.getEngine().eval("print("+ALGO_RES_VARNAME+")");
-        }
-        else {
-            throw new RException("R not running!");
-        }
+        //res = rc.getEngine().eval(ALGO_RES_VARNAME);
+        rc.getEngine().eval("print("+ALGO_RES_VARNAME+")");
         return res;
     }
 
     /* Other methods, which will be discovered via reflection */
+
+    /* (non-Javadoc)
+     * @see ideogram.r.rlibwrappers.AbstractRWrapper#getAcceptedFileTypes()
+     */
+    public List<FileTypeRecord> getAcceptedFileTypes() {
+        ArrayList<FileTypeRecord> ret = new ArrayList<FileTypeRecord>(1);
+        //ret.add(new FileTypeRecord(FileTypeRegistry.NONE, false));
+        
+        // JUST FOR TESTING PURPOSES:
+        ret.add(new FileTypeRecord(FileTypeRegistry.CEL, true));
+        ret.add(new FileTypeRecord(FileTypeRegistry.CDF, false));
+        return ret;
+    }
+    
 
     /**
      * Call the glad function in the R package GLAD. This method should not be
@@ -521,9 +537,6 @@ public class GLADWrapper extends AbstractRWrapper {
     private void loadWriterFunction() throws RException {
         if (!writerFunctionLoaded) {
             RController rc = RController.getInstance();
-            if (!rc.engineRunning()) {
-                throw new RException("R not running!");
-            }
             rc.getEngine().eval(RES_WRITER);
             rc.getEngine().eval("cat('\n', ls(), '\n')");            
 
@@ -538,13 +551,15 @@ public class GLADWrapper extends AbstractRWrapper {
      *
      * @param path
      * @param fileName
+     * @throws RException 
      */
-    private void writeResult(String path, String fileName) {
+    private void writeResult(String path, String fileName) throws RException {
         String s = "writeProfileCGH(" + ALGO_RES_VARNAME + ", '" +
         path + "', '" + fileName + "')";
-        System.out.println(s);
+        //System.out.println(s);
         RController rc = RController.getInstance();
         rc.getEngine().eval(s);
     }
+    
     
 }

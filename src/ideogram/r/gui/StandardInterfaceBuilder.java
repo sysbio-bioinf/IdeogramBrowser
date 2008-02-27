@@ -12,6 +12,7 @@ import ideogram.r.gui.inputwidgets.RDataSetNameInputField;
 import ideogram.r.gui.inputwidgets.RInputWidget;
 import ideogram.r.gui.inputwidgets.RNumericInputField;
 import ideogram.r.gui.inputwidgets.RStringInputField;
+import ideogram.r.rlibwrappers.RAnalysisWrapper;
 import ideogram.r.rlibwrappers.RLibraryWrapper;
 
 import java.awt.Component;
@@ -139,7 +140,7 @@ public class StandardInterfaceBuilder implements RInterfaceBuilder {
     /* (non-Javadoc)
      * @see ideogram.r.gui.RInterfaceBuilder#createNewRInterfacePanel(ideogram.r.rlibwrappers.RLibraryWrapper, ideogram.r.gui.MessageDisplay)
      */
-    public void createNewRInterfacePanel(RLibraryWrapper model) {
+    public void createNewRInterfacePanel(RAnalysisWrapper model) {
         interfacePanel = new RInterfacePanel(model, mdp);
         analysisInterface = new JTabbedPane();
         interfacePanel.addAnalysisInterface(analysisInterface);        

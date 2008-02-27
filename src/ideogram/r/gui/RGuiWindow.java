@@ -9,6 +9,7 @@ package ideogram.r.gui;
 import ideogram.r.RController;
 import ideogram.r.RMainLoopModel;
 import ideogram.r.exceptions.RException;
+import ideogram.r.rlibwrappers.RAnalysisWrapper;
 import ideogram.r.rlibwrappers.RLibraryWrapper;
 
 import java.awt.BorderLayout;
@@ -63,7 +64,7 @@ implements Observer, ActionListener, MessageDisplay {
     private JLabel statusLabel; // Displays status information.
     private JPanel libSpecInterfPan; // Library specific interface.
     private Container contentPane;
-    private RLibraryWrapperReader reader;
+    private RAnalysisWrapperReader reader;
     private JSplitPane splitPane;
     
     /**
@@ -76,7 +77,7 @@ implements Observer, ActionListener, MessageDisplay {
         rConsole = new JTextArea(); rConsole.setEditable(false);
         statusLabel = new JLabel();
         contentPane = getContentPane();
-        reader = new RLibraryWrapperReader(this);
+        reader = new RAnalysisWrapperReader(this);
         libSpecInterfPan = new JPanel();
         splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
         splitPane.setDividerLocation(400);
@@ -188,8 +189,8 @@ implements Observer, ActionListener, MessageDisplay {
         if (ActionCommands.LIB_SEL_COMBO.accCmd().compareTo(accCmd) == 0) {
             String selLib = (String)((JComboBox)e.getSource()).getSelectedItem();
             try {
-                RLibraryWrapper wr = 
-                    RController.getInstance().loadRLibraryWrapper(selLib);
+                RAnalysisWrapper wr = 
+                    RController.getInstance().loadRAnalysisWrapper(selLib);
                 reader.setBuilder(new StandardInterfaceBuilder(this, wr));
                 setLibSpecInterf(reader.createInputPanel(wr));
             } catch (IllegalArgumentException e1) {

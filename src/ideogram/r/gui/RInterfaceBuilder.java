@@ -1,5 +1,6 @@
 package ideogram.r.gui;
 
+import ideogram.r.rlibwrappers.RAnalysisWrapper;
 import ideogram.r.rlibwrappers.RLibraryWrapper;
 
 import java.awt.Component;
@@ -15,7 +16,7 @@ public interface RInterfaceBuilder {
      *
      * @param model
      */
-    public void createNewRInterfacePanel(RLibraryWrapper model);
+    public void createNewRInterfacePanel(RAnalysisWrapper model);
 
     /**
      * Create an interface to an new analysis method. All successive calls to

@@ -5,9 +5,12 @@
  */
 package ideogram.r.rlibwrappers;
 
+import ideogram.r.FileTypeRecord;
 import ideogram.r.RDataSetWrapper;
+import ideogram.r.FileTypeRecord.FileTypeRegistry;
 import ideogram.r.exceptions.RException;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.rosuda.JRI.REXP;
@@ -19,7 +22,7 @@ import org.rosuda.JRI.REXP;
  * @author Ferdinand Hofherr
  *
  */
-public abstract class AbstractRWrapper implements RLibraryWrapper {
+public abstract class AbstractAnalysisWrapper implements RAnalysisWrapper {
 
     /* (non-Javadoc)
      * @see ideogram.r.RLibrary#hasSampleData()
@@ -34,21 +37,6 @@ public abstract class AbstractRWrapper implements RLibraryWrapper {
     public List<RDataSetWrapper> listSampleData() {
         return null;
     }
-
-    /* (non-Javadoc)
-     * @see ideogram.r.RLibrary#load()
-     */
-    public abstract void loadLibrary() throws RException;
-
-    /* (non-Javadoc)
-     * @see ideogram.r.RLibrary#unload()
-     */
-    public abstract void unloadLibrary() throws RException;
-
-    /* (non-Javadoc)
-     * @see ideogram.r.RLibrary#loadSampleData(ideogram.r.RDataSetWrapper)
-     */
-    public abstract void loadSampleData(RDataSetWrapper data) throws RException;
 
     /* (non-Javadoc)
      * @see ideogram.r.RLibrary#getResult()

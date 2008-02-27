@@ -22,9 +22,9 @@ import org.junit.Test;
  * @author Ferdinand Hofherr
  *
  */
-public class RLibraryWrapperReaderTest {
+public class RAnalysisWrapperReaderTest {
 
-    private static RLibraryWrapperReader rd;
+    private static RAnalysisWrapperReader rd;
     /**
      * INSERT DOCUMENTATION HERE!
      *
@@ -32,7 +32,7 @@ public class RLibraryWrapperReaderTest {
      */
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
-        rd = new RLibraryWrapperReader();
+        rd = new RAnalysisWrapperReader();
     }
 
     /**
@@ -63,7 +63,7 @@ public class RLibraryWrapperReaderTest {
     }
 
     /**
-     * Test method for {@link ideogram.r.gui.RLibraryWrapperReader#createInputPanel(java.lang.String)}.
+     * Test method for {@link ideogram.r.gui.RAnalysisWrapperReader#createInputPanel(java.lang.String)}.
      * @throws ClassNotFoundException 
      * @throws RException 
      * @throws RLibraryWrapperException 

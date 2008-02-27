@@ -10,6 +10,7 @@ import ideogram.r.annotations.RBoolParam;
 import ideogram.r.annotations.RDsNameParam;
 import ideogram.r.annotations.RNumericParam;
 import ideogram.r.annotations.RStringParam;
+import ideogram.r.rlibwrappers.RAnalysisWrapper;
 import ideogram.r.rlibwrappers.RLibraryWrapper;
 
 import java.awt.Component;
@@ -33,40 +34,40 @@ import java.util.Iterator;
  * @author Ferdinand Hofherr
  *
  */
-public class RLibraryWrapperReader {
+public class RAnalysisWrapperReader {
     
     private RInterfaceBuilder builder;
     private Class<?> rLibraryWrapperClass;
     private MessageDisplay mdp;
     
     /**
-     * Create a new {@link RLibraryWrapperReader} with an 
+     * Create a new {@link RAnalysisWrapperReader} with an 
      * {@link EmptyInterfaceBuilder} as builder and no {@link MessageDisplay} 
      * specified.
      *
      */
-    public RLibraryWrapperReader() {
+    public RAnalysisWrapperReader() {
         this(new EmptyInterfaceBuilder(null), null);
     }
     
     /**
-     * Create a new {@link RLibraryWrapperReader} with an 
+     * Create a new {@link RAnalysisWrapperReader} with an 
      * {@link EmptyInterfaceBuilder} and the specified {@link MessageDisplay}.
      *
      * @param mdp
      */
-    public RLibraryWrapperReader(MessageDisplay mdp) {
+    public RAnalysisWrapperReader(MessageDisplay mdp) {
         this(new EmptyInterfaceBuilder(mdp), mdp);
     }
 
     /**
-     * Create a new {@link RLibraryWrapperReader} with the specified 
+     * Create a new {@link RAnalysisWrapperReader} with the specified 
      * {@link RInterfaceBuilder} and {@link MessageDisplay}.
      *
      * @param builder
      * @param mdp
      */
-    public RLibraryWrapperReader(RInterfaceBuilder builder, MessageDisplay mdp) {
+    public RAnalysisWrapperReader(RInterfaceBuilder builder, MessageDisplay mdp) {
         rLibraryWrapperClass = RLibraryWrapper.class;
         this.builder = builder;
         this.mdp = mdp;
@@ -106,7 +107,7 @@ public class RLibraryWrapperReader {
      * @throws ClassNotFoundException
      * @throws IllegalArgumentException
      */
-    public Component createInputPanel(RLibraryWrapper wrapper) 
+    public Component createInputPanel(RAnalysisWrapper wrapper) 
     throws ClassNotFoundException, IllegalArgumentException {
         Class<?> c;
         ArrayList<Method> analysisMethods;
