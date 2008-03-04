@@ -5,18 +5,22 @@
 package ideogram.r;
 
 import java.util.Observable;
+import java.util.logging.Logger;
 
 import org.rosuda.JRI.RMainLoopCallbacks;
 import org.rosuda.JRI.Rengine;
 
 /**
  * Model for the R main loop. Observers of this model will be notified about
- * R's status and its console output.
+ * R's status and its console output. This object is shared between the thread
+ * running R and IdeogramBrowser's thread.
  * 
  * @author Ferdinand Hofherr
  */
 public class RMainLoopModel extends Observable implements RMainLoopCallbacks {
 
+    private static final Logger logger = Logger.getLogger(RMainLoopModel.class
+            .getName());
     private final int R_CONSOLE_MAXCAP = 1000000; // 1000 kb
 
     private RConsoleBuffer rConsole;
@@ -28,22 +32,26 @@ public class RMainLoopModel extends Observable implements RMainLoopCallbacks {
     }
 
     /*
-     * (non-Javadoc)
+     * (non-Javadoc) It seems that this method is only called, when the R
+     * mainloop is started and R is accepting direct user input.
      * 
      * @see org.rosuda.JRI.RMainLoopCallbacks#rBusy(org.rosuda.JRI.Rengine,
      *      int)
      */
     public void rBusy(Rengine re, int which) {
-        switch (which) {
-            case 0:
-                rBusy = false;
-                break;
-            case 1:
-                rBusy = true;
-                break;
+        synchronized (this) {
+            switch (which) {
+                case 0:
+                    rBusy = false;
+                    break;
+                case 1:
+                    rBusy = true;
+                    break;
+            }
         }
         setChanged();
         notifyObservers();
+        logger.info("Method rBusy was called. R is now busy: " + rBusy);
     }
 
     /*
@@ -132,11 +140,11 @@ public class RMainLoopModel extends Observable implements RMainLoopCallbacks {
      * 
      * @return String with the contents of the RConsole.
      */
-    public String getRConsole() {
+    public synchronized String getRConsole() {
         return rConsole.toString();
     }
 
-    public boolean isBusy() {
+    public synchronized boolean isBusy() {
         return rBusy;
     }
 }

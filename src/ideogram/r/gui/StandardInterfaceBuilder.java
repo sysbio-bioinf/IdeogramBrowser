@@ -209,7 +209,7 @@ public class StandardInterfaceBuilder implements RInterfaceBuilder {
                         ri.validateInput();
                     } catch (InvalidInputException e1) {
                         if (mdp != null) {
-                            mdp.setMessage(e1.getLocalizedMessage());
+                            mdp.displayMessage(e1.getLocalizedMessage());
                         }
                         return; // If some input is invalid the action can't be performed.
                     }
@@ -231,7 +231,7 @@ public class StandardInterfaceBuilder implements RInterfaceBuilder {
                     e1.printStackTrace();
                 } catch (InvocationTargetException e1) {
                     if (mdp != null) {
-                        mdp.setMessage(e1.getCause().getLocalizedMessage());
+                        mdp.displayMessage(e1.getCause().getLocalizedMessage());
                     }
                     else {
                         System.out.println(e1.getCause().getLocalizedMessage());

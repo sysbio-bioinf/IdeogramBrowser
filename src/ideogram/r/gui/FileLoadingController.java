@@ -10,6 +10,7 @@ import static ideogram.r.rlibwrappers.ParserRegistry.UNKNOWN_PARSER;
 import ideogram.CommonFileFilter;
 import ideogram.r.FileTypeRecord;
 import ideogram.r.FileTypeRecord.FileTypeRegistry;
+import ideogram.r.exceptions.RException;
 import ideogram.r.exceptions.UnsupportedFileTypeException;
 import ideogram.r.rlibwrappers.AffxparserWrapper;
 import ideogram.r.rlibwrappers.ParserRegistry;
@@ -72,10 +73,10 @@ public class FileLoadingController {
      * 
      * @param acceptedFileTypes
      *            the acceptedFileTypes to set
-     * @throws UnsupportedFileTypeException
+     * @throws RException 
      */
     public void setAcceptedFileTypes(List<FileTypeRecord> acceptedFileTypes)
-            throws UnsupportedFileTypeException {
+            throws RException {
         reset();
         this.acceptedFileTypes = acceptedFileTypes;
 
@@ -89,6 +90,7 @@ public class FileLoadingController {
                 parser = null;
                 throw new UnsupportedFileTypeException(NO_PARSER_MESSAGE);
         }
+        parser.loadLibrary();
     }
 
     private void reset() {

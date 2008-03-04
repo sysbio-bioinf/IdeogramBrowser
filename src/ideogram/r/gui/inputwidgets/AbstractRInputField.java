@@ -93,7 +93,7 @@ implements FocusListener, RInputWidget {
      */
     protected void setMessageDisplayText(String text) {
         if (mdp != null) {
-            mdp.setMessage(text);
+            mdp.displayMessage(text);
         }
         else {
             System.out.println(text);

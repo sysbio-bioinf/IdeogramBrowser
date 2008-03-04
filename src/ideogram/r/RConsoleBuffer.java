@@ -33,7 +33,7 @@ public class RConsoleBuffer {
     /**
      * Empty the buffer.
      */
-    public void flush() {
+    public synchronized void flush() {
         start = end = -1;
     }
 
@@ -42,14 +42,14 @@ public class RConsoleBuffer {
      * 
      * @return true if buffer empty, else false.
      */
-    public boolean isEmpty() {
+    public synchronized boolean isEmpty() {
         return start == -1 && end == -1;
     }
 
     /**
      * Calculate pointer values.
      */
-    private void calcPointers() {
+    private synchronized void calcPointers() {
         // Initialize buffer if empty.
         if (isEmpty()) {
             start = end = 0;
@@ -71,9 +71,11 @@ public class RConsoleBuffer {
      */
     public void insert(String s) {
         char[] sArr = s.toCharArray();
-        for (char c : sArr) {
-            calcPointers();
-            buffer[end] = c;
+        synchronized (this) {
+            for (char c : sArr) {
+                calcPointers();
+                buffer[end] = c;
+            }
         }
     }
 
@@ -83,7 +85,7 @@ public class RConsoleBuffer {
      * 
      * @return Number of currently stored characters.
      */
-    public int noChars() {
+    public synchronized int noChars() {
         if (isEmpty()) {
             return 0;
         }
@@ -105,10 +107,12 @@ public class RConsoleBuffer {
     @Override
     public String toString() {
         char[] ca = new char[noChars()];
-        int bPointer = start;
-        for (int i = 0; i < ca.length; i++) {
-            ca[i] = buffer[bPointer];
-            bPointer = (bPointer + 1) % buffer.length;
+        synchronized (this) {
+            int bPointer = start;
+            for (int i = 0; i < ca.length; i++) {
+                ca[i] = buffer[bPointer];
+                bPointer = (bPointer + 1) % buffer.length;
+            }
         }
         return new String(ca);
     }

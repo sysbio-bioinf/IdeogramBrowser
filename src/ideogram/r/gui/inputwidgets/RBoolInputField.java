@@ -127,7 +127,7 @@ public class RBoolInputField extends JComboBox implements RInputWidget {
      */
     private void setMessageDisplayText(String text) {
         if (getMessageDisplay() != null) {
-            getMessageDisplay().setMessage(text);
+            getMessageDisplay().displayMessage(text);
         }
         else {
             System.out.println(text);

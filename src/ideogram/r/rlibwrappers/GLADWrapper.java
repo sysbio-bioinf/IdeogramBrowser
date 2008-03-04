@@ -445,6 +445,7 @@ public class GLADWrapper extends AbstractAnalysisWrapper {
 
         //createProfileCGH(dsName);
         String wrappedParam = "c(d = "+ gladParam +")";
+        RController.getInstance().getRMainLoopModel().rBusy(rc.getEngine(), 1);
         REXP res = rc.getEngine().eval(ALGO_RES_VARNAME + 
                 " <- glad(as.profileCGH(" + gladDataSet + ")" +
                 ", mediancenter = " + gladMediancenter + 
@@ -466,6 +467,7 @@ public class GLADWrapper extends AbstractAnalysisWrapper {
                 ", nmax = " + gladNmax +
                 ", verbose = " + gladVerbose +
         ")");
+        RController.getInstance().getRMainLoopModel().rBusy(rc.getEngine(), 0);
         if (res == null) {
             throw new RException("Function glad() returned with null! " +
             "Is the data set's name correct?");
@@ -488,7 +490,7 @@ public class GLADWrapper extends AbstractAnalysisWrapper {
         if (dagladDataSet == null || dagladDataSet.equals("")) {
             throw new RException("No data set specified!");
         }
-
+        RController.getInstance().getRMainLoopModel().rBusy(rc.getEngine(), 1);
         REXP res = rc.getEngine().eval(ALGO_RES_VARNAME + 
                 " <- daglad(as.profileCGH(" + dagladDataSet + ")" +
                 ", mediancenter = " + dagladMediancenter +
@@ -517,6 +519,7 @@ public class GLADWrapper extends AbstractAnalysisWrapper {
                 ", MinBkpWeight = " + dagladMinBkpWeight +
                 ", CheckBkpPos = " + dagladCheckBkpPos +
         ")");
+        RController.getInstance().getRMainLoopModel().rBusy(rc.getEngine(), 0);
         if (res == null) {
             throw new RException("Function daglad() returned with null! " +
             "Is the data set's name correct?");

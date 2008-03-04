@@ -20,6 +20,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -49,6 +53,7 @@ public class RController {
     private RAnalysisWrapper loadedAnalysisWrapper;
     private ChangeListener changeListener;
     private ChangeEvent changeEvent;
+    private ExecutorService executorService;
 
     /*
      * List containing the names of all currently exsisting RResult files. Will
@@ -76,6 +81,7 @@ public class RController {
         availableLibraries = new HashMap<String, String>();
         loadedAnalysisWrapper = null;
         librariesRegistered = false;
+        executorService = Executors.newCachedThreadPool();
     }
 
     private static class InstanceHolder {
@@ -213,6 +219,15 @@ public class RController {
     }
 
     /**
+     * Submit a task to be run by {@link RController}'s executor service.
+     *
+     * @return
+     */
+    public <T> Future<T> submitTask(Callable<T> task) {
+        return executorService.submit(task);
+    }
+    
+    /**
      * Register a {@link ChangeListener} if no other listener is registered. If
      * you want to register an other listener you must first unregister the old
      * listener by calling {@link RController#removeChangeListener()}.
@@ -290,7 +305,7 @@ public class RController {
      * @throws RException
      *             if Rengine is not running.
      */
-    public Rengine getEngine() throws RException {
+    public synchronized Rengine getEngine() throws RException {
         if (!engineRunning()) {
             throw new RException("R not running!");
         }
@@ -417,7 +432,17 @@ public class RController {
      * @throws RException
      */
     public void listWorkspace() throws RException {
-        getEngine().eval("ls()");
+        getEngine().eval("cat(ls(), sep='\n')");
+    }
+
+    /**
+     * Clear all workspace contents. This removes everything, a call to ls()
+     * would show.
+     * 
+     * @throws RException
+     */
+    public void clearWorkspace() throws RException {
+        getEngine().eval("rm(list=ls())");
     }
 
     /**

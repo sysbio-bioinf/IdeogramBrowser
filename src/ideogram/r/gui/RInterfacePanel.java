@@ -5,6 +5,7 @@
 package ideogram.r.gui;
 
 import ideogram.r.FileTypeRecord;
+import ideogram.r.RController;
 import ideogram.r.RDataSetWrapper;
 import ideogram.r.exceptions.RException;
 import ideogram.r.exceptions.UnsupportedFileTypeException;
@@ -13,11 +14,13 @@ import ideogram.r.rlibwrappers.RFileParser;
 
 import java.awt.CardLayout;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.HashMap;
+import java.util.logging.Logger;
 
 import javax.swing.Action;
 import javax.swing.Box;
@@ -31,7 +34,10 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+
+import org.rosuda.JRI.Rengine;
 
 /**
  * Stub class for R interface panels.
@@ -39,6 +45,9 @@ import javax.swing.JTextField;
  * @author Ferdinand Hofherr
  */
 public class RInterfacePanel extends JPanel implements ActionListener {
+
+    private static Logger logger = Logger.getLogger(RInterfacePanel.class
+            .getName());
 
     // Action commands.
     private static final String SAMPLE_DATA = "sample data";
@@ -57,7 +66,9 @@ public class RInterfacePanel extends JPanel implements ActionListener {
     private JComboBox sampleDataCombo;
     private MessageDisplay mdp;
     private HashMap<String, JTextField> fileChooserTextFields;
-    private JCheckBox multiVariableMode; // created by createSampleDataPanel().
+    private JCheckBox multiVariableMode; // created by
+
+    // createSampleDataPanel().
 
     /**
      * Create a new RInterfacePanel with the specified wrapper as model. If
@@ -73,7 +84,7 @@ public class RInterfacePanel extends JPanel implements ActionListener {
 
         this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
         fileChooserTextFields = new HashMap<String, JTextField>();
-        sampleDataCardPanel = null; 
+        sampleDataCardPanel = null;
         this.add(createSampleDataPanel());
 
         analysisFields = new JPanel();
@@ -132,14 +143,15 @@ public class RInterfacePanel extends JPanel implements ActionListener {
             for (FileTypeRecord ftr : wrapper.getAcceptedFileTypes()) {
                 pnl = new JPanel(new GridLayout(1, 2));
                 tf = new JTextField();
-                tf.setEditable(false);
+                tf.setEditable(true);
                 pnl.add(tf);
 
                 btn = new JButton(ftr.getFileType().buttonLabel());
                 btn.setActionCommand(ftr.toString());
                 btn.addActionListener(this);
                 pnl.add(btn);
-
+                pnl.setPreferredSize(new Dimension(btn.getWidth()
+                        + tf.getWidth(), pnl.getPreferredSize().height));
                 card.add(pnl);
 
                 fileChooserTextFields.put(btn.getActionCommand(), tf);
@@ -236,6 +248,10 @@ public class RInterfacePanel extends JPanel implements ActionListener {
                 JOptionPane.showMessageDialog(this, ex.getLocalizedMessage(),
                         "Exception", JOptionPane.ERROR_MESSAGE);
                 cl.show(sampleDataCardPanel, EMPTY_CARD);
+            } catch (RException ex) {
+                JOptionPane.showMessageDialog(this, ex.getLocalizedMessage(),
+                        "Exception", JOptionPane.ERROR_MESSAGE);
+                cl.show(sampleDataCardPanel, EMPTY_CARD);
             }
             cl.show(sampleDataCardPanel, OTHER_DATA_CARD);
 
@@ -259,7 +275,7 @@ public class RInterfacePanel extends JPanel implements ActionListener {
              */
             String text;
             String[] fileNames;
-            for (FileTypeRecord ftr: wrapper.getAcceptedFileTypes()) {
+            for (FileTypeRecord ftr : wrapper.getAcceptedFileTypes()) {
                 text = fileChooserTextFields.get(ftr.toString()).getText();
                 fileNames = text.split("; ");
                 for (int i = 0; i < fileNames.length; i++) {
@@ -267,12 +283,15 @@ public class RInterfacePanel extends JPanel implements ActionListener {
                 }
             }
             try {
+                Rengine re = RController.getInstance().getEngine();
+                RController.getInstance().getRMainLoopModel().rBusy(re, 1);
                 parser.loadFiles(multiVariableMode.isSelected());
+                RController.getInstance().getRMainLoopModel().rBusy(re, 0);
             } catch (RException e1) {
                 JOptionPane.showMessageDialog(this, e1.getLocalizedMessage(),
                         "Exception", JOptionPane.ERROR_MESSAGE);
             }
-           
+
         }
         else if (cmd.equals(CLEAR_FIELDS_COMMAND)) {
             for (JTextField tf : fileChooserTextFields.values()) {
@@ -299,7 +318,7 @@ public class RInterfacePanel extends JPanel implements ActionListener {
                 else {
                     buf.append(chooser.getSelectedFile().getAbsolutePath());
                 }
-                //System.out.println("Selected: " + buf.toString());
+                // System.out.println("Selected: " + buf.toString());
                 fileChooserTextFields.get(cmd).setText(buf.toString());
             }
         }
@@ -307,7 +326,7 @@ public class RInterfacePanel extends JPanel implements ActionListener {
 
     private void setMessageDisplayText(String text) {
         if (mdp != null) {
-            mdp.setMessage(text);
+            mdp.displayMessage(text);
         }
     }
 }
