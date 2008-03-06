@@ -317,12 +317,11 @@ public class AffxparserWrapper implements RFileParser {
                 long mins = (seconds % 3600) / 60;
                 seconds -= hours * 3600 + mins * 60;
 
-                String text = "Loaded files in "
+                String msg = "Loaded files in "
                         + String.format("%2dh %2dmin %2dsec", hours, mins,
                                 seconds) + ".";
-                DefaultMessageDisplayModel.getInstance().setDefaultMessage(
-                        text);
-                engine.eval("cat(" + text + ", '\n')");
+                DefaultMessageDisplayModel.getInstance().displayMessage(msg);
+                RController.getInstance().toRwriteln(msg);
 
             } catch (RException e) {
                 // TODO enable message dialog!

@@ -1,6 +1,7 @@
 /*
- * File: RMainLoopModel.java Created: 28.11.2007 Author: Ferdinand Hofherr
- * <ferdinand.hofherr@uni-ulm.de>
+ * File: RMainLoopModel.java 
+ * Created: 28.11.2007 
+ * Author: Ferdinand Hofherr <ferdinand.hofherr@uni-ulm.de>
  */
 package ideogram.r;
 
@@ -19,9 +20,8 @@ import org.rosuda.JRI.Rengine;
  */
 public class RMainLoopModel extends Observable implements RMainLoopCallbacks {
 
-    private static final Logger logger = Logger.getLogger(RMainLoopModel.class
-            .getName());
     private final int R_CONSOLE_MAXCAP = 1000000; // 1000 kb
+    
 
     private RConsoleBuffer rConsole;
     private boolean rBusy;
@@ -51,7 +51,6 @@ public class RMainLoopModel extends Observable implements RMainLoopCallbacks {
         }
         setChanged();
         notifyObservers();
-        logger.info("Method rBusy was called. R is now busy: " + rBusy);
     }
 
     /*

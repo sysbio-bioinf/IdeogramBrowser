@@ -87,7 +87,7 @@ public class RController {
     private static class InstanceHolder {
         private final static RController INSTANCE = new RController();
     }
-
+    
     /**
      * Wrapper for {@link GLADWrapper#createUniqueRResultFileName(String)} with
      * empty prefix.
@@ -296,6 +296,39 @@ public class RController {
         return running;
     }
 
+    /**
+     * Output the given message, followed by a newline,  to the R console.
+     *
+     * @param msg The message to write to the R console.
+     */
+    public void toRwriteln(String msg) {
+        try {
+            getEngine().eval("cat('" + msg + "', '\n')");
+        } catch (RException e) {
+            /*
+             * Exception is thrown, because R is not running. This usually 
+             * indicates a serious error. Therefore print the stack trace. Under
+             * normal conditions this code should be never reached.
+             */
+            e.printStackTrace();
+        }
+         
+    }
+    
+    /**
+     * Output the given message, not followed by a newline, to the R console.
+     *
+     * @param msg The message to write to the R console.
+     */
+    public void toRwrite(String msg) {
+        try {
+            getEngine().eval("cat('" + msg + "')");
+        } catch (RException e) {
+            // See catch in toRwriteln
+            e.printStackTrace();
+        }
+    }
+    
     /**
      * Get the only instance of Rengine. This method will check if the
      * {@link Rengine} is running. If this is not the case, an
