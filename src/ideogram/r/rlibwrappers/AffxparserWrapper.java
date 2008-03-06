@@ -26,6 +26,7 @@ import org.rosuda.JRI.Rengine;
 
 import ideogram.r.FileTypeRecord;
 import ideogram.r.RController;
+import ideogram.r.RFunctionTask;
 import ideogram.r.FileTypeRecord.FileTypeRegistry;
 import ideogram.r.exceptions.RException;
 import ideogram.r.gui.DefaultMessageDisplayModel;
@@ -54,9 +55,12 @@ public class AffxparserWrapper implements RFileParser {
             .getLogger(AffxparserWrapper.class.getName());
 
     private HashMap<FileTypeRecord.FileTypeRegistry, ArrayList<String>> fileNames;
-    private boolean libraryLoaded;
+    private boolean libraryLoaded;  // True if affxparser library allready loade.
+    private boolean callsSuccessfull; // True when all function calls were successfull
+    List<String> functionCalls = new ArrayList<String>();
+    List<String> variableNames = new ArrayList<String>();
 
-    private Future<List<String>> varNameFuture;
+    //private Future<List<String>> varNameFuture;
 
     /**
      * Create a new {@link AffxparserWrapper} object.
@@ -65,7 +69,10 @@ public class AffxparserWrapper implements RFileParser {
         fileNames = new HashMap<FileTypeRegistry, ArrayList<String>>();
         fileNames.put(CDF, new ArrayList<String>());
         fileNames.put(CEL, new ArrayList<String>());
-        this.libraryLoaded = false;
+        variableNames = new ArrayList<String>();
+        functionCalls = new ArrayList<String>();
+        libraryLoaded = false;
+        callsSuccessfull = false;
     }
 
     /*
@@ -200,12 +207,15 @@ public class AffxparserWrapper implements RFileParser {
         if (!checkPreconditions()) {
             return getVariableNames();
         }
-
-        CelReader reader = new CelReader(fileNames.get(CDF).get(0), fileNames
-                .get(CEL), useMultipleVariables);
-        varNameFuture = RController.getInstance().submitTask(reader);
+        
+        prepareFuncalls(useMultipleVariables);
+        RFunctionTask task;
+        for (String funcall : functionCalls) {
+            task = new RFunctionTask(funcall);
+            RController.getInstance().submitTask(task);
+        }
+        
         return getVariableNames();
-
     }
 
     /*
@@ -213,123 +223,153 @@ public class AffxparserWrapper implements RFileParser {
      * 
      * @see ideogram.r.rlibwrappers.RFileParser#getVariableNames()
      */
-    public List<String> getVariableNames() {
-        List<String> ret;
+    public  List<String> getVariableNames() {
+        if (callsSuccessfull) {
+            return variableNames;
+        }
+        else {
+            return new ArrayList<String>();
+        }
+    }
+    
+    private void prepareFuncalls(boolean useMultipleVariables) {
 
-        if (varNameFuture.isDone()) {
-            try {
-                ret = varNameFuture.get();
-            } catch (InterruptedException e) {
-                ret = new ArrayList<String>();
-            } catch (ExecutionException e) {
-                ret = new ArrayList<String>();
+        
+        String funcall, varName;
+        variableNames.clear();
+        functionCalls.clear();
+        if (useMultipleVariables) {
+            for (String celFileName : fileNames.get(CEL)) {
+                varName = makeVarName(celFileName);
+                variableNames.add(varName);
+
+                funcall = varName + " <- readCelUnits('" + celFileName
+                        + "'," + "cdf = '" + fileNames.get(CDF).get(0)
+                        + "', units=NULL, reorder=FALSE)";
+                functionCalls.add(funcall);
             }
         }
         else {
-            ret = new ArrayList<String>();
-        }
-
-        return ret;
-    }
-
-    private class CelReader implements Callable<List<String>> {
-
-        private String cdfFileName;
-        private ArrayList<String> celFileNames;
-        boolean useMultipleVariables;
-        private List<String> variableNamesSyncList;
-
-        /**
-         * Create a new CelReader. The passed objects will be copied.
-         * 
-         * @param cdfFileName
-         *            Name of the CDF File, will be copied.
-         * @param celFileNames
-         *            Name of the CEL file, will be copied.
-         * @param useMultipleVariables
-         *            true if multiple variables shall be created.
-         */
-        public CelReader(String cdfFileName, List<String> celFileNames,
-                boolean useMultipleVariables) {
-            this.cdfFileName = new String(cdfFileName);
-            this.celFileNames = new ArrayList<String>(celFileNames);
-            this.useMultipleVariables = useMultipleVariables;
-            variableNamesSyncList = Collections
-                    .synchronizedList(new ArrayList<String>());
-        }
-
-        public List<String> call() {
-            try {
-                String varName, funcall;
-                Rengine engine = RController.getInstance().getEngine();
-                REXP rRes;
-
-                long startTime = System.currentTimeMillis();
-
-                if (useMultipleVariables) {
-                    // Create one variable for each celFile
-                    for (String celFileName : celFileNames) {
-                        varName = makeVarName(celFileName);
-                        variableNamesSyncList.add(varName);
-                        funcall = varName + " <- readCelUnits('" + celFileName
-                                + "'," + "cdf = '" + cdfFileName
-                                + "', units=NULL, reorder=FALSE)";
-
-                        RController.getInstance().getRMainLoopModel().rBusy(
-                                engine, 1);
-                        rRes = engine.eval(funcall);
-                        RController.getInstance().getRMainLoopModel().rBusy(
-                                engine, 0);
-                        // TODO Check whether rRes == null ==> An error might
-                        // have
-                        // occured.
-                    }
-                }
-                else {
-                    ListIterator<String> it = celFileNames.listIterator();
-                    StringBuffer sb = new StringBuffer();
-
-                    sb.append("c('"); // Open the R vector.
-                    sb.append(it.next()); // Add the first element.
-                    while (it.hasNext()) { // Add all other elements.
-                        sb.append("', '");
-                        sb.append(it.next());
-                    }
-                    sb.append("')"); // Close the R vector;
-
-                    varName = makeVarName(celFileNames.get(0));
-                    variableNamesSyncList.add(varName);
-                    funcall = varName + " <- readCelUnits('" + sb.toString()
-                            + "'," + "cdf = '" + cdfFileName
-                            + "', units=NULL, reorder=FALSE)";
-                    RController.getInstance().getRMainLoopModel().rBusy(
-                            engine, 1);
-                    rRes = engine.eval(funcall);
-                    RController.getInstance().getRMainLoopModel().rBusy(
-                            engine, 0);
-                    // TODO Check whether rRes == null ==> An error might have
-                    // occured.
-                }
-
-                long stopTime = System.currentTimeMillis();
-                long seconds = (stopTime - startTime) / 1000;
-                long hours = seconds / 3600;
-                long mins = (seconds % 3600) / 60;
-                seconds -= hours * 3600 + mins * 60;
-
-                String msg = "Loaded files in "
-                        + String.format("%2dh %2dmin %2dsec", hours, mins,
-                                seconds) + ".";
-                DefaultMessageDisplayModel.getInstance().displayMessage(msg);
-                RController.getInstance().toRwriteln(msg);
-
-            } catch (RException e) {
-                // TODO enable message dialog!
-                e.printStackTrace();
+            StringBuffer sb = new StringBuffer();
+            ListIterator<String> it = fileNames.get(CEL).listIterator();
+            
+            sb.append("c('"); // Open the R vector.
+            sb.append(it.next()); // Add the first element.
+            while (it.hasNext()) { // Add all other elements.
+                sb.append("', '");
+                sb.append(it.next());
             }
-            return variableNamesSyncList;
+            sb.append("')"); // Close the R vector;
+            
+            varName = makeVarName(fileNames.get(CDF).get(0));
+            variableNames.add(varName);
+            
+            funcall = varName + " <- readCelUnits('" + sb
+                    + "'," + "cdf = '" + fileNames.get(CDF).get(0)
+                    + "', units=NULL, reorder=FALSE)";
+            functionCalls.add(funcall);
         }
-
+        
     }
+
+//    private class CelReader implements Callable<List<String>> {
+//
+//        private String cdfFileName;
+//        private ArrayList<String> celFileNames;
+//        boolean useMultipleVariables;
+//        private List<String> variableNamesSyncList;
+//
+//        /**
+//         * Create a new CelReader. The passed objects will be copied.
+//         * 
+//         * @param cdfFileName
+//         *            Name of the CDF File, will be copied.
+//         * @param celFileNames
+//         *            Name of the CEL file, will be copied.
+//         * @param useMultipleVariables
+//         *            true if multiple variables shall be created.
+//         */
+//        public CelReader(String cdfFileName, List<String> celFileNames,
+//                boolean useMultipleVariables) {
+//            this.cdfFileName = new String(cdfFileName);
+//            this.celFileNames = new ArrayList<String>(celFileNames);
+//            this.useMultipleVariables = useMultipleVariables;
+//            variableNamesSyncList = Collections
+//                    .synchronizedList(new ArrayList<String>());
+//        }
+//
+//        public List<String> call() {
+//            try {
+//                String varName, funcall;
+//                Rengine engine = RController.getInstance().getEngine();
+//                REXP rRes;
+//
+//                long startTime = System.currentTimeMillis();
+//
+//                if (useMultipleVariables) {
+//                    // Create one variable for each celFile
+//                    for (String celFileName : celFileNames) {
+//                        varName = makeVarName(celFileName);
+//                        variableNamesSyncList.add(varName);
+//                        funcall = varName + " <- readCelUnits('" + celFileName
+//                                + "'," + "cdf = '" + cdfFileName
+//                                + "', units=NULL, reorder=FALSE)";
+//
+//                        RController.getInstance().getRMainLoopModel().rBusy(
+//                                engine, 1);
+//                        rRes = engine.eval(funcall);
+//                        RController.getInstance().getRMainLoopModel().rBusy(
+//                                engine, 0);
+//                        // TODO Check whether rRes == null ==> An error might
+//                        // have
+//                        // occured.
+//                    }
+//                }
+//                else {
+//                    ListIterator<String> it = celFileNames.listIterator();
+//                    StringBuffer sb = new StringBuffer();
+//
+//                    sb.append("c('"); // Open the R vector.
+//                    sb.append(it.next()); // Add the first element.
+//                    while (it.hasNext()) { // Add all other elements.
+//                        sb.append("', '");
+//                        sb.append(it.next());
+//                    }
+//                    sb.append("')"); // Close the R vector;
+//
+//                    varName = makeVarName(celFileNames.get(0));
+//                    variableNamesSyncList.add(varName);
+//                    funcall = varName + " <- readCelUnits('" + sb.toString()
+//                            + "'," + "cdf = '" + cdfFileName
+//                            + "', units=NULL, reorder=FALSE)";
+//                    RController.getInstance().getRMainLoopModel().rBusy(
+//                            engine, 1);
+//                    rRes = engine.eval(funcall);
+//                    RController.getInstance().getRMainLoopModel().rBusy(
+//                            engine, 0);
+//                    // TODO Check whether rRes == null ==> An error might have
+//                    // occured.
+//                }
+//
+//                long stopTime = System.currentTimeMillis();
+//                long seconds = (stopTime - startTime) / 1000;
+//                long hours = seconds / 3600;
+//                long mins = (seconds % 3600) / 60;
+//                seconds -= hours * 3600 + mins * 60;
+//
+//                String msg = "Loaded files in "
+//                        + String.format("%2dh %2dmin %2dsec", hours, mins,
+//                                seconds) + ".";
+//                DefaultMessageDisplayModel.getInstance().displayMessage(msg);
+//                RController.getInstance().toRwriteln(msg);
+//
+//            } catch (RException e) {
+//                // TODO enable message dialog!
+//                e.printStackTrace();
+//            }
+//            return variableNamesSyncList;
+//        }
+//
+//    }
 
 }

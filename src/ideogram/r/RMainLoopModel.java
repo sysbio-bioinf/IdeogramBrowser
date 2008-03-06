@@ -38,8 +38,7 @@ public class RMainLoopModel extends Observable implements RMainLoopCallbacks {
      * @see org.rosuda.JRI.RMainLoopCallbacks#rBusy(org.rosuda.JRI.Rengine,
      *      int)
      */
-    public void rBusy(Rengine re, int which) {
-        synchronized (this) {
+    public synchronized void rBusy(Rengine re, int which) {
             switch (which) {
                 case 0:
                     rBusy = false;
@@ -48,7 +47,6 @@ public class RMainLoopModel extends Observable implements RMainLoopCallbacks {
                     rBusy = true;
                     break;
             }
-        }
         setChanged();
         notifyObservers();
     }
@@ -59,7 +57,7 @@ public class RMainLoopModel extends Observable implements RMainLoopCallbacks {
      * @see org.rosuda.JRI.RMainLoopCallbacks#rChooseFile(org.rosuda.JRI.Rengine,
      *      int)
      */
-    public String rChooseFile(Rengine arg0, int arg1) {
+    public synchronized String rChooseFile(Rengine arg0, int arg1) {
         // TODO Auto-generated method stub
         return null;
     }
@@ -69,7 +67,7 @@ public class RMainLoopModel extends Observable implements RMainLoopCallbacks {
      * 
      * @see org.rosuda.JRI.RMainLoopCallbacks#rFlushConsole(org.rosuda.JRI.Rengine)
      */
-    public void rFlushConsole(Rengine arg0) {
+    public synchronized void rFlushConsole(Rengine arg0) {
         // rConsole.flush();
         setChanged();
         notifyObservers();
@@ -81,7 +79,7 @@ public class RMainLoopModel extends Observable implements RMainLoopCallbacks {
      * @see org.rosuda.JRI.RMainLoopCallbacks#rLoadHistory(org.rosuda.JRI.Rengine,
      *      java.lang.String)
      */
-    public void rLoadHistory(Rengine arg0, String arg1) {
+    public synchronized void rLoadHistory(Rengine arg0, String arg1) {
         // TODO Auto-generated method stub
 
     }
@@ -92,7 +90,7 @@ public class RMainLoopModel extends Observable implements RMainLoopCallbacks {
      * @see org.rosuda.JRI.RMainLoopCallbacks#rReadConsole(org.rosuda.JRI.Rengine,
      *      java.lang.String, int)
      */
-    public String rReadConsole(Rengine arg0, String arg1, int arg2) {
+    public synchronized String rReadConsole(Rengine arg0, String arg1, int arg2) {
         // TODO Auto-generated method stub
         return null;
     }
@@ -103,7 +101,7 @@ public class RMainLoopModel extends Observable implements RMainLoopCallbacks {
      * @see org.rosuda.JRI.RMainLoopCallbacks#rSaveHistory(org.rosuda.JRI.Rengine,
      *      java.lang.String)
      */
-    public void rSaveHistory(Rengine arg0, String arg1) {
+    public synchronized void rSaveHistory(Rengine arg0, String arg1) {
         // TODO Auto-generated method stub
 
     }
@@ -114,7 +112,7 @@ public class RMainLoopModel extends Observable implements RMainLoopCallbacks {
      * @see org.rosuda.JRI.RMainLoopCallbacks#rShowMessage(org.rosuda.JRI.Rengine,
      *      java.lang.String)
      */
-    public void rShowMessage(Rengine re, String text) {
+    public synchronized void rShowMessage(Rengine re, String text) {
         rConsole.insert(text);
         setChanged();
         notifyObservers();
@@ -126,7 +124,7 @@ public class RMainLoopModel extends Observable implements RMainLoopCallbacks {
      * @see org.rosuda.JRI.RMainLoopCallbacks#rWriteConsole(org.rosuda.JRI.Rengine,
      *      java.lang.String, int)
      */
-    public void rWriteConsole(Rengine re, String text, int oType) {
+    public synchronized void rWriteConsole(Rengine re, String text, int oType) {
         rConsole.insert(text);
         // System.out.println(rConsole.noChars());
         // Mark RMainLoopModel as changed and notify observers.

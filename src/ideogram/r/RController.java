@@ -81,7 +81,8 @@ public class RController {
         availableLibraries = new HashMap<String, String>();
         loadedAnalysisWrapper = null;
         librariesRegistered = false;
-        executorService = Executors.newCachedThreadPool();
+        executorService = Executors
+            .newSingleThreadExecutor(new HandlerThreadFactory());
     }
 
     private static class InstanceHolder {
@@ -219,11 +220,13 @@ public class RController {
     }
 
     /**
-     * Submit a task to be run by {@link RController}'s executor service.
+     * Submit a task to be run by {@link RController}'s executor service. 
+     * {@link RController} uses a SingleThreadExecutor. Thus only one R function
+     * at a time can be executed. All others will wait in the queue.
      *
      * @return
      */
-    public <T> Future<T> submitTask(Callable<T> task) {
+    public Future<RFunctionTask.ExecutorResult> submitTask(RFunctionTask task) {
         return executorService.submit(task);
     }
     
