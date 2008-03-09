@@ -26,7 +26,7 @@ import org.rosuda.JRI.Rengine;
 
 import ideogram.r.FileTypeRecord;
 import ideogram.r.RController;
-import ideogram.r.RFunctionTask;
+import ideogram.r.RTask;
 import ideogram.r.FileTypeRecord.FileTypeRegistry;
 import ideogram.r.exceptions.RException;
 import ideogram.r.gui.DefaultMessageDisplayModel;
@@ -45,7 +45,9 @@ import ideogram.r.gui.DefaultMessageDisplayModel;
  */
 
 /**
- * TODO INSERT DOCUMENTATION HERE!
+ * Wrapper around the affxparser library available at bioconductor.org. This
+ * wrapper is used to read CEL and CDF files. Depending on the file size such 
+ * reading operations can be very time consuming.
  * 
  * @author Ferdinand Hofherr
  */
@@ -55,7 +57,7 @@ public class AffxparserWrapper implements RFileParser {
             .getLogger(AffxparserWrapper.class.getName());
 
     private HashMap<FileTypeRecord.FileTypeRegistry, ArrayList<String>> fileNames;
-    private boolean libraryLoaded;  // True if affxparser library allready loade.
+    private boolean libraryLoaded;  // True if affxparser library already loaded.
     private boolean callsSuccessfull; // True when all function calls were successfull
     List<String> functionCalls = new ArrayList<String>();
     List<String> variableNames = new ArrayList<String>();
@@ -209,9 +211,9 @@ public class AffxparserWrapper implements RFileParser {
         }
         
         prepareFuncalls(useMultipleVariables);
-        RFunctionTask task;
+        RTask task;
         for (String funcall : functionCalls) {
-            task = new RFunctionTask(funcall);
+            task = new RTask(funcall);
             RController.getInstance().submitTask(task);
         }
         

@@ -69,13 +69,11 @@ public class RConsoleBuffer {
      * 
      * @param s
      */
-    public void insert(String s) {
+    public synchronized void insert(String s) {
         char[] sArr = s.toCharArray();
-        synchronized (this) {
-            for (char c : sArr) {
-                calcPointers();
-                buffer[end] = c;
-            }
+        for (char c : sArr) {
+            calcPointers();
+            buffer[end] = c;
         }
     }
 
@@ -105,7 +103,7 @@ public class RConsoleBuffer {
      * @see java.lang.Object#toString()
      */
     @Override
-    public String toString() {
+    public synchronized String toString() {
         char[] ca = new char[noChars()];
         synchronized (this) {
             int bPointer = start;

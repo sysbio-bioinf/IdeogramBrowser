@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Random;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -45,7 +46,8 @@ import org.rosuda.JRI.Rengine;
 public class RController {
 
     private static boolean available = false;
-
+    private static final Random random = new Random(System.currentTimeMillis());
+    
     private Rengine rEngine;
     private RMainLoopModel mainLoopModel;
     private boolean running;
@@ -54,6 +56,7 @@ public class RController {
     private ChangeListener changeListener;
     private ChangeEvent changeEvent;
     private ExecutorService executorService;
+
 
     /*
      * List containing the names of all currently exsisting RResult files. Will
@@ -69,6 +72,7 @@ public class RController {
             + File.separator + "IdeogramBrowser" + File.separator + "RResult";
 
     private RController() {
+   
         // Will be set by addChangeListener()!
         changeListener = null;
         changeEvent = new ChangeEvent(this);
@@ -108,7 +112,9 @@ public class RController {
      * @return
      */
     public static String createUniqueRResultFileName(String prefix) {
-        Format f = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss-SS");
+        int rndInt = Math.abs(random.nextInt());
+        Format f = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss-SS-" + 
+                rndInt);
         if (prefix.equals("")) {
             return f.format(new Date()) + ".RResult";
         }
@@ -221,12 +227,13 @@ public class RController {
 
     /**
      * Submit a task to be run by {@link RController}'s executor service. 
-     * {@link RController} uses a SingleThreadExecutor. Thus only one R function
-     * at a time can be executed. All others will wait in the queue.
+     * {@link RController} uses a SingleThreadExecutor. This ensures that only
+     * one R function at a time can be executed. All others will wait in the 
+     * queue.
      *
-     * @return
+     * @return Future object containing possible return values.
      */
-    public Future<RFunctionTask.ExecutorResult> submitTask(RFunctionTask task) {
+    public Future<RTask.RTaskResult> submitTask(RTask task) {
         return executorService.submit(task);
     }
     
@@ -278,6 +285,8 @@ public class RController {
     /**
      * Return the list of newly available RResult files. Reset it to null
      * afterwards. If no RResult files are available return null.
+     * It is best, if R takes care of writing those files. This also means that
+     * R has to decide whether to write those files or not.
      * 
      * @return List of newly available RResult files or null.
      */
@@ -304,9 +313,10 @@ public class RController {
      *
      * @param msg The message to write to the R console.
      */
-    public void toRwriteln(String msg) {
+    public synchronized void toRwriteln(String msg) {
         try {
-            getEngine().eval("cat('" + msg + "', '\n')");
+            msg = escapeChars(msg);
+            getEngine().eval("cat('" + msg + "', '\\n')");
         } catch (RException e) {
             /*
              * Exception is thrown, because R is not running. This usually 
@@ -323,13 +333,25 @@ public class RController {
      *
      * @param msg The message to write to the R console.
      */
-    public void toRwrite(String msg) {
+    public synchronized void toRwrite(String msg) {
         try {
+            msg = escapeChars(msg);
             getEngine().eval("cat('" + msg + "')");
         } catch (RException e) {
             // See catch in toRwriteln
             e.printStackTrace();
         }
+    }
+    
+    /**
+     * Escape all characters that have a special meaning in R strings.
+     *
+     * @param msg
+     * @return
+     */
+    private String escapeChars(String msg) {
+        msg = msg.replaceAll("'", "\\\\'");
+        return msg;
     }
     
     /**
@@ -389,7 +411,7 @@ public class RController {
      * @return The Rengine's RMainLoopModel even though the engine might not be
      *         running.
      */
-    public RMainLoopModel getRMainLoopModel() {
+    public synchronized RMainLoopModel getRMainLoopModel() {
         return mainLoopModel;
     }
 
@@ -423,7 +445,7 @@ public class RController {
      * @throws RException
      *             if R is not running.
      */
-    public void loadRLibrary(String libName) throws RException {
+    public synchronized void loadRLibrary(String libName) throws RException {
         /*
          * require() is used, as it returns true on success and false on error.
          */
@@ -467,7 +489,7 @@ public class RController {
      * 
      * @throws RException
      */
-    public void listWorkspace() throws RException {
+    public synchronized void listWorkspace() throws RException {
         getEngine().eval("cat(ls(), sep='\n')");
     }
 
@@ -477,7 +499,7 @@ public class RController {
      * 
      * @throws RException
      */
-    public void clearWorkspace() throws RException {
+    public synchronized void clearWorkspace() throws RException {
         getEngine().eval("rm(list=ls())");
     }
 

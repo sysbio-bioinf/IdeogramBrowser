@@ -74,7 +74,8 @@ public class RResultReaderModel extends AbstractIdeogramDataModel {
 
     /**
      * Load the results calculated in R from the specified file. The filename 
-     * should end with *.RResult.
+     * should end with *.RResult. If null is passed for the as path name for
+     * the RResult the method will return immedeately.
      *
      * @param rResultFile
      * @throws IOException 
@@ -82,8 +83,10 @@ public class RResultReaderModel extends AbstractIdeogramDataModel {
      */
     public void loadFromFile(File rResultFile) 
     throws IOException, FileFormatException {
-        // Store the file, as a reference to it is needed by getFileName()
+        // Store the file. A reference to it is needed by getFileName()
         this.rResultFile = rResultFile;
+       
+        if (rResultFile == null) { return; }
         // Assure the ArrayList containing the read data is empty!
         clear();
 

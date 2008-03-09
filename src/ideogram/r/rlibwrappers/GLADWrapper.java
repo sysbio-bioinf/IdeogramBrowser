@@ -8,7 +8,9 @@ package ideogram.r.rlibwrappers;
 import ideogram.r.FileTypeRecord;
 import ideogram.r.RController;
 import ideogram.r.RDataSetWrapper;
+import ideogram.r.RTask;
 import ideogram.r.FileTypeRecord.FileTypeRegistry;
+import ideogram.r.RTask.RTaskResult;
 import ideogram.r.annotations.Analysis;
 import ideogram.r.annotations.RBoolParam;
 import ideogram.r.annotations.RDsNameParam;
@@ -23,6 +25,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import org.rosuda.JRI.REXP;
 
@@ -43,22 +47,22 @@ public class GLADWrapper extends AbstractAnalysisWrapper {
     
     private static final String RES_WRITER = 
         "writeProfileCGH <- function(profileCGH, path, fileName) {\n" +
-            "cat('Writing...', path, fileName)\n" +
+            "cat('Writing...', path, fileName, '\\n')\n" +
             "colNames <- c('Chromosome', 'PosBase', 'LogRatio')\n" +
             "absPath <- paste(path, fileName, sep='/')\n" +
             "# Open a connection for writing\n" +
             "con <- file(absPath, open='w', encoding='UTF8')\n" +
             "# Write the column names\n" +
             "cat(colNames, file=con, sep='\t')\n" + 
-            "cat('\n', file=con, sep='')\n" +
+            "cat('\\n', file=con, sep='')\n" +
             "# Write the contents of the profileCGH$profileValues\n" +
             "prfVals <- profileCGH$profileValues\n" +
             "for (i in 1:nrow(prfVals)) {\n" +
                 "cat(as.numeric(prfVals$Chromosome[i]),\n" +
                 "as.integer(prfVals$PosBase[i]),\n" +
                 "as.numeric(prfVals$LogRatio[i]),\n" +
-                "file=con, sep='\t')\n" +
-                "cat('\n', file=con, sep='')\n" +
+                "file=con, sep='\\t')\n" +
+                "cat('\\n', file=con, sep='')\n" +
             "}\n" +
             "close(con)\n"+
         "}\n";
@@ -445,36 +449,36 @@ public class GLADWrapper extends AbstractAnalysisWrapper {
 
         //createProfileCGH(dsName);
         String wrappedParam = "c(d = "+ gladParam +")";
-        RController.getInstance().getRMainLoopModel().rBusy(rc.getEngine(), 1);
-        REXP res = rc.getEngine().eval(ALGO_RES_VARNAME + 
-                " <- glad(as.profileCGH(" + gladDataSet + ")" +
-                ", mediancenter = " + gladMediancenter + 
-                ", smoothfunc = " + gladSmoothfunc +
-                ", bandwidth = " + gladBandwidth +
-                ", round = " + gladRound +
-                ", model = " + gladModel +
-                ", lkern = " + gladLkern +
-                ", qlambda = " + gladQlambda +
-                ", base = " + gladBase + 
-                ", lambdabreak = " + gladLambdabreak + 
-                ", lambdacluster = " + gladLambdacluster +
-                ", lambdaClusterGen = " + gladLambdaClusterGen + 
-                ", type = " + gladType +
-                ", param = " + wrappedParam + 
-                ", alpha = " + gladAlpha +
-                ", msize = " + gladMsize +
-                ", method = " + gladMethod +
-                ", nmax = " + gladNmax +
-                ", verbose = " + gladVerbose +
-        ")");
-        RController.getInstance().getRMainLoopModel().rBusy(rc.getEngine(), 0);
-        if (res == null) {
-            throw new RException("Function glad() returned with null! " +
-            "Is the data set's name correct?");
-        }
+        String funcall = ALGO_RES_VARNAME + 
+        " <- glad(as.profileCGH(" + gladDataSet + ")" +
+        ", mediancenter = " + gladMediancenter + 
+        ", smoothfunc = " + gladSmoothfunc +
+        ", bandwidth = " + gladBandwidth +
+        ", round = " + gladRound +
+        ", model = " + gladModel +
+        ", lkern = " + gladLkern +
+        ", qlambda = " + gladQlambda +
+        ", base = " + gladBase + 
+        ", lambdabreak = " + gladLambdabreak + 
+        ", lambdacluster = " + gladLambdacluster +
+        ", lambdaClusterGen = " + gladLambdaClusterGen + 
+        ", type = " + gladType +
+        ", param = " + wrappedParam + 
+        ", alpha = " + gladAlpha +
+        ", msize = " + gladMsize +
+        ", method = " + gladMethod +
+        ", nmax = " + gladNmax +
+        ", verbose = " + gladVerbose +
+        ")";
+        RTask task = new RTask(funcall, 
+                "Function glad() returned with null! " +
+                  "Is the data set's name correct?");
+        Future<RTaskResult> future = 
+            RController.getInstance().submitTask(task);
+        
         loadWriterFunction();
         String resFile = RController.createUniqueRResultFileName();
-        writeResult(RController.R_STORAGE_PATH, resFile);
+        writeResult(RController.R_STORAGE_PATH, resFile, future);
         rc.addRResultFile(RController.R_STORAGE_PATH + File.separator + resFile);
         
         return resFile;
@@ -490,44 +494,45 @@ public class GLADWrapper extends AbstractAnalysisWrapper {
         if (dagladDataSet == null || dagladDataSet.equals("")) {
             throw new RException("No data set specified!");
         }
-        RController.getInstance().getRMainLoopModel().rBusy(rc.getEngine(), 1);
-        REXP res = rc.getEngine().eval(ALGO_RES_VARNAME + 
-                " <- daglad(as.profileCGH(" + dagladDataSet + ")" +
-                ", mediancenter = " + dagladMediancenter +
-                ", normalrefcenter = " + dagladNormalrefcenter +
-                ", genomestep = " + dagladGenomestep +
-                ", smoothfunc = " + dagladSmoothfunc +
-                ", lkern = " + dagladLkern +
-                ", model = " + dagladModel +
-                ", qlambda = " + dagladQlambda +
-                ", bandwidth = " + dagladBandwidth +
-                ", base = " + dagladBase +
-                ", round = " + dagladRound +
-                ", lambdabreak = " + dagladLambdabreak +
-                ", lambdaclusterGen = " + dagladLambdaclusterGen +
-                ", param = c(" + dagladParam + ")" +
-                ", alpha = " + dagladAlpha +
-                ", msize = " + dagladMsize +
-                ", method = " + dagladMethod +
-                ", nmin = " + dagladNmin +
-                ", nmax = " + dagladNmax +
-                ", amplicon = " + dagladAmplicon +
-                ", deletion = " + dagladDeletion +
-                ", deltaN = " + dagladDeltaN +
-                ", forceGL = c(" + dagladForceGL + ")" + 
-                ", nbsigma = " + dagladNbsigma +
-                ", MinBkpWeight = " + dagladMinBkpWeight +
-                ", CheckBkpPos = " + dagladCheckBkpPos +
-        ")");
-        RController.getInstance().getRMainLoopModel().rBusy(rc.getEngine(), 0);
-        if (res == null) {
-            throw new RException("Function daglad() returned with null! " +
-            "Is the data set's name correct?");
-        }
+        String funcall = ALGO_RES_VARNAME + 
+        " <- daglad(as.profileCGH(" + dagladDataSet + ")" +
+        ", mediancenter = " + dagladMediancenter +
+        ", normalrefcenter = " + dagladNormalrefcenter +
+        ", genomestep = " + dagladGenomestep +
+        ", smoothfunc = " + dagladSmoothfunc +
+        ", lkern = " + dagladLkern +
+        ", model = " + dagladModel +
+        ", qlambda = " + dagladQlambda +
+        ", bandwidth = " + dagladBandwidth +
+        ", base = " + dagladBase +
+        ", round = " + dagladRound +
+        ", lambdabreak = " + dagladLambdabreak +
+        ", lambdaclusterGen = " + dagladLambdaclusterGen +
+        ", param = c(" + dagladParam + ")" +
+        ", alpha = " + dagladAlpha +
+        ", msize = " + dagladMsize +
+        ", method = " + dagladMethod +
+        ", nmin = " + dagladNmin +
+        ", nmax = " + dagladNmax +
+        ", amplicon = " + dagladAmplicon +
+        ", deletion = " + dagladDeletion +
+        ", deltaN = " + dagladDeltaN +
+        ", forceGL = c(" + dagladForceGL + ")" + 
+        ", nbsigma = " + dagladNbsigma +
+        ", MinBkpWeight = " + dagladMinBkpWeight +
+        ", CheckBkpPos = " + dagladCheckBkpPos +
+        ")";
+        
+        RTask task = new RTask(funcall, 
+                "Function daglad() returned with null! " +
+                "Is the data set's name correct?");
+        Future<RTask.RTaskResult> future = 
+            RController.getInstance().submitTask(task);
+
+        String resFile = null;
         loadWriterFunction();
-        String resFile = RController.createUniqueRResultFileName();
-        writeResult(RController.R_STORAGE_PATH, resFile);
-        rc.addRResultFile(RController.R_STORAGE_PATH + File.separator + resFile);
+        resFile = RController.createUniqueRResultFileName();
+        writeResult(RController.R_STORAGE_PATH, resFile, future);
 
         return resFile;
     }
@@ -538,30 +543,40 @@ public class GLADWrapper extends AbstractAnalysisWrapper {
      *
      */
     private void loadWriterFunction() throws RException {
-        if (!writerFunctionLoaded) {
             RController rc = RController.getInstance();
             rc.getEngine().eval(RES_WRITER);
-            rc.getEngine().eval("cat('\n', ls(), '\n')");            
-
-            writerFunctionLoaded = true;
-        }
     }
     
     /**
      * Call the writeProfileCGH() function (in R) to store the result of the 
      * the last analysis.
-     * TODO INSERT DOCUMENTATION HERE!
      *
      * @param path
      * @param fileName
+     * @param dependingOn
      * @throws RException 
      */
-    private void writeResult(String path, String fileName) throws RException {
-        String s = "writeProfileCGH(" + ALGO_RES_VARNAME + ", '" +
+    private void writeResult(String path, String fileName,
+            Future<RTaskResult> dependingOn) throws RException {
+        String funcall = "writeProfileCGH(" + ALGO_RES_VARNAME + ", '" +
         path + "', '" + fileName + "')";
         //System.out.println(s);
-        RController rc = RController.getInstance();
-        rc.getEngine().eval(s);
+        RTask task = new RTask(funcall, "Could not write file.",
+                dependingOn);
+        Future<RTask.RTaskResult> future = 
+            RController.getInstance().submitTask(task);
+        
+        try {
+            // The whole system blocks during this call.
+            if (future.get().rexp != null) {
+                RController.getInstance().addRResultFile(RController.R_STORAGE_PATH + 
+                    File.separator + fileName);
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
     }
     
     
