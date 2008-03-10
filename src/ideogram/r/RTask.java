@@ -5,15 +5,12 @@
  */
 package ideogram.r;
 
-import ideogram.r.exceptions.RException;
 import ideogram.r.gui.DefaultMessageDisplayModel;
-import ideogram.r.gui.MessageDisplay;
+import ideogram.r.rlibwrappers.RLibraryWrapper;
 
+import java.lang.reflect.Method;
 import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
-import org.rosuda.JRI.REXP;
 import org.rosuda.JRI.Rengine;
 
 /**
@@ -25,48 +22,36 @@ import org.rosuda.JRI.Rengine;
  */
 public class RTask implements Callable<RTask.RTaskResult> {
     
-    private String funcall;
-    private String failureMessage;  // null if no checking needs to be done.
-    private Future<RTaskResult> dependingOn;
-    
-    /**
-     * Create a new {@link RTask}. Creating a task this way means
-     * that it will not be checked whether the requested operation was 
-     * successful.
-     *
-     * @param funcall String containing the correct call to the R function.
-     */
-    public RTask(String funcall) {
-        this(funcall, null, null);
-    }
+    private Method funcall;
+    private RLibraryWrapper wrapper;
+    private Object[] funcallArgs;
     
 
     /**
-     * Create a new {@link RTask}.
-     *
-     * @param funcall String containing the correct call to the R function.
-     * @param failureMessage Message that will be displayed upon failure.
+     * Create a new {@link RTask}. It is assumed that the passed {@link Method}
+     * funcall does not expect any arguments.
+
+     * @param wrapper The {@link RLibraryWrapper} that funcall belongs to.
+     * @param funcall Method of wrapper that shall be called.
      */
-    public RTask(String funcall, String failureMessage) {
-        this(funcall, failureMessage, null);
+    public RTask(RLibraryWrapper wrapper, Method funcall) {
+	this.funcall = funcall;
+	this.wrapper = wrapper;
     }
     
     /**
-     * Create a new {@link RTask}. If failureMessage is not null, this 
-     * message will get displayed upon failure. If dependingOn is not null,
-     * {@link RTask} will check whether the encapsulated 
-     * </code>{@link RTaskResult#rexp} != null</code> before executung the
-     * funcall.
+     * Create a new {@link RTask}. If the funcall requires any arguments they
+     * can be passed via funcallArgs. Pass null, if funcall does not requre 
+     * arguments.
      *
+     * @param wrapper
      * @param funcall
-     * @param failureMessage
-     * @param dependingOn
+     * @param funcallArgs
      */
-    public RTask(String funcall, String failureMessage, 
-            Future<RTaskResult> dependingOn) {
-        this.funcall = funcall;
-        this.failureMessage = failureMessage;
-        this.dependingOn = dependingOn;
+    public RTask(RLibraryWrapper wrapper, Method funcall, Object... funcallArgs) {
+	this.funcall = funcall;
+	this.wrapper = wrapper;
+	this.funcallArgs = funcallArgs;
     }
     
     /**
@@ -88,17 +73,11 @@ public class RTask implements Callable<RTask.RTaskResult> {
      * @see java.util.concurrent.Callable#call()
      */
     public RTask.RTaskResult call() throws Exception {
-        if (dependingOn != null && dependingOn.get().rexp == null) {
-            RController.getInstance().toRwriteln(failureMessage);
-            DefaultMessageDisplayModel.getInstance().
-                displayMessage(failureMessage);
-            return new RTaskResult(null, formatTimeDelta(0));
-        }
         
         Rengine engine = RController.getInstance().getEngine();
         RController.getInstance().getRMainLoopModel().rBusy(engine, 1);
         long start = System.currentTimeMillis();
-        REXP rexp = RController.getInstance().getEngine().eval(funcall);
+        Object funcallReturn = funcall.invoke(wrapper, funcallArgs);
         long stop = System.currentTimeMillis();
         RController.getInstance().getRMainLoopModel().rBusy(engine, 0);
 
@@ -107,17 +86,10 @@ public class RTask implements Callable<RTask.RTaskResult> {
         DefaultMessageDisplayModel.getInstance().displayMessage(msg);
         RController.getInstance().toRwriteln(msg);
         
-        if (rexp == null && failureMessage != null) {
-            System.out.println(failureMessage);
-            RController.getInstance().toRwriteln(failureMessage);
-            DefaultMessageDisplayModel.getInstance().displayMessage(
-                    failureMessage);
-        }
-        
 //        System.out.println("Simulating a long running task!");
 //        TimeUnit.SECONDS.sleep(10);  // simulate long running task
         
-        return new RTaskResult(rexp, delta);
+        return new RTaskResult(funcallReturn, delta);
     }
 
     /**
@@ -125,11 +97,15 @@ public class RTask implements Callable<RTask.RTaskResult> {
      * a neatly formatted string with the duration of the call.
      */
     public class RTaskResult {
-        public final REXP rexp;
+	/** The function calls return value. */
+        public final Object funcallReturn;
+        
+        /** Time it took R to evaluate the function. **/
         public final String time;
         
-        public RTaskResult(REXP rexp, String time) {
-            this.rexp = rexp;
+        /** Create new RTaskResult. */
+        public RTaskResult(Object funcallReturn, String time) {
+            this.funcallReturn = funcallReturn;
             this.time = time;
         }
     }

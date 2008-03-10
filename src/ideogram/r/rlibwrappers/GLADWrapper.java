@@ -17,6 +17,7 @@ import ideogram.r.annotations.RDsNameParam;
 import ideogram.r.annotations.RNumericParam;
 import ideogram.r.annotations.RStringParam;
 import ideogram.r.exceptions.RException;
+import ideogram.r.gui.DefaultMessageDisplayModel;
 
 import java.io.File;
 import java.text.DateFormat;
@@ -413,6 +414,33 @@ public class GLADWrapper extends AbstractAnalysisWrapper {
         return res;
     }
 
+    /**
+     * Tell R to evaluate the specified funcall, and write its results to 
+     * a RResult file if the operation was successfull. Return the RResult 
+     * file's name upon success, or null else. 
+     *
+     * @param funcall The R function to execute.
+     * @return The RResult file's name on success, else <code>null</code>.
+     * @throws RException
+     */
+    private String evalAndWriteFuncall(String funcall) throws RException {
+	RController rc = RController.getInstance();
+        REXP rexp = rc.getEngine().eval(funcall);
+        if (rexp != null) {
+            loadWriterFunction();
+            String resFile = RController.createUniqueRResultFileName();
+            writeResult(RController.R_STORAGE_PATH, resFile);
+            rc.addRResultFile(RController.R_STORAGE_PATH + File.separator + resFile);
+            return resFile;
+        }
+        else {
+            DefaultMessageDisplayModel.getInstance().displayMessage(
+		    "Function glad() returned with null! "
+			    + "Is the data set's name correct?");
+            return null;
+        }
+    }
+    
     /* Other methods, which will be discovered via reflection */
 
     /* (non-Javadoc)
@@ -470,18 +498,8 @@ public class GLADWrapper extends AbstractAnalysisWrapper {
         ", nmax = " + gladNmax +
         ", verbose = " + gladVerbose +
         ")";
-        RTask task = new RTask(funcall, 
-                "Function glad() returned with null! " +
-                  "Is the data set's name correct?");
-        Future<RTaskResult> future = 
-            RController.getInstance().submitTask(task);
-        
-        loadWriterFunction();
-        String resFile = RController.createUniqueRResultFileName();
-        writeResult(RController.R_STORAGE_PATH, resFile, future);
-        rc.addRResultFile(RController.R_STORAGE_PATH + File.separator + resFile);
-        
-        return resFile;
+
+        return evalAndWriteFuncall(funcall);
     }
 
     @Analysis("daglad")
@@ -522,19 +540,8 @@ public class GLADWrapper extends AbstractAnalysisWrapper {
         ", MinBkpWeight = " + dagladMinBkpWeight +
         ", CheckBkpPos = " + dagladCheckBkpPos +
         ")";
-        
-        RTask task = new RTask(funcall, 
-                "Function daglad() returned with null! " +
-                "Is the data set's name correct?");
-        Future<RTask.RTaskResult> future = 
-            RController.getInstance().submitTask(task);
 
-        String resFile = null;
-        loadWriterFunction();
-        resFile = RController.createUniqueRResultFileName();
-        writeResult(RController.R_STORAGE_PATH, resFile, future);
-
-        return resFile;
+        return evalAndWriteFuncall(funcall);
     }
     
     /**
@@ -556,28 +563,13 @@ public class GLADWrapper extends AbstractAnalysisWrapper {
      * @param dependingOn
      * @throws RException 
      */
-    private void writeResult(String path, String fileName,
-            Future<RTaskResult> dependingOn) throws RException {
-        String funcall = "writeProfileCGH(" + ALGO_RES_VARNAME + ", '" +
-        path + "', '" + fileName + "')";
-        //System.out.println(s);
-        RTask task = new RTask(funcall, "Could not write file.",
-                dependingOn);
-        Future<RTask.RTaskResult> future = 
-            RController.getInstance().submitTask(task);
-        
-        try {
-            // The whole system blocks during this call.
-            if (future.get().rexp != null) {
-                RController.getInstance().addRResultFile(RController.R_STORAGE_PATH + 
-                    File.separator + fileName);
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
+    private void writeResult(String path, String fileName) throws RException {
+	String funcall = "writeProfileCGH(" + ALGO_RES_VARNAME + ", '" +
+	path + "', '" + fileName + "')";
+	//System.out.println(s);
+	RController.getInstance().getEngine().eval(funcall);
+
+	RController.getInstance().addRResultFile(RController.R_STORAGE_PATH + 
+		File.separator + fileName);
     }
-    
-    
 }

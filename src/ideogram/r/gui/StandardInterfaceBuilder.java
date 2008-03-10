@@ -5,6 +5,8 @@
  */
 package ideogram.r.gui;
 
+import ideogram.r.RController;
+import ideogram.r.RTask;
 import ideogram.r.exceptions.InvalidInputException;
 import ideogram.r.exceptions.RException;
 import ideogram.r.gui.inputwidgets.RBoolInputField;
@@ -54,7 +56,6 @@ public class StandardInterfaceBuilder implements RInterfaceBuilder {
     private MessageDisplay mdp;
     private RLibraryWrapper wrapper;
     
-    //private int noInputFields;
 
     public StandardInterfaceBuilder(MessageDisplay mdp, RLibraryWrapper wrapper) {
         this.mdp = mdp;
@@ -195,12 +196,12 @@ public class StandardInterfaceBuilder implements RInterfaceBuilder {
 
         public void actionPerformed(ActionEvent e) {
             // Cast OK, as analysis interface contains only JPanels.
-            JPanel p = (JPanel)analysisInterface.getSelectedComponent();
-            p = (JPanel)p.getComponent(0);
+            JPanel p = (JPanel) analysisInterface.getSelectedComponent();
+            p = (JPanel) p.getComponent(0);
             RInputWidget ri;
             for (Component c: p.getComponents()) {
                 // Cast OK, as each subcomponent of p is a JPanel again!
-                ri = findInputWidget((JPanel)c);
+                ri = findInputWidget((JPanel) c);
                 if (e.getActionCommand().equalsIgnoreCase(RESET_FIELDS)) {
                     ri.resetToDefault();
                 }
@@ -217,27 +218,24 @@ public class StandardInterfaceBuilder implements RInterfaceBuilder {
             }
             if (e.getActionCommand().equalsIgnoreCase(PERFORM_ANALYSIS) &&
                     analysisFunction != null) {
-                try {
-                    analysisFunction.invoke(wrapper, (Object[])null);
-//                    try { // JUST A TEST
-//                        wrapper.getResult();
-//                    } catch (RException e1) {
-//                        // TODO Auto-generated catch block
-//                        e1.printStackTrace();
-//                    } // REMOVE ABOVE LINES AFTER TEST
-                } catch (IllegalArgumentException e1) {
-                    e1.printStackTrace();
-                } catch (IllegalAccessException e1) {
-                    e1.printStackTrace();
-                } catch (InvocationTargetException e1) {
-                    if (mdp != null) {
-                        mdp.displayMessage(e1.getCause().getLocalizedMessage());
-                    }
-                    else {
-                        System.out.println(e1.getCause().getLocalizedMessage());
-                    }
-                    //e1.printStackTrace();
-                }
+//                try {
+                    //analysisFunction.invoke(wrapper, (Object[]) null);
+                    RTask task = new RTask(wrapper, analysisFunction);
+                    RController.getInstance().submitTask(task);
+                    
+//                } catch (IllegalArgumentException e1) {
+//                    e1.printStackTrace();
+//                } catch (IllegalAccessException e1) {
+//                    e1.printStackTrace();
+//                } catch (InvocationTargetException e1) {
+//                    if (mdp != null) {
+//                        mdp.displayMessage(e1.getCause().getLocalizedMessage());
+//                    }
+//                    else {
+//                        System.out.println(e1.getCause().getLocalizedMessage());
+//                    }
+//                    //e1.printStackTrace();
+//                }
             }
         }
         

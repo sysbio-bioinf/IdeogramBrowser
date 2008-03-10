@@ -1,6 +1,9 @@
 /*
- * File: RController.java Created: 28.11.2007 Author: Ferdinand Hofherr
- * <ferdinand.hofherr@uni-ulm.de>
+ * File: RController.java
+ * 
+ * Created: 28.11.2007 
+ * 
+ * Author: Ferdinand Hofherr <ferdinand.hofherr@uni-ulm.de>
  */
 package ideogram.r;
 
@@ -59,7 +62,7 @@ public class RController {
 
 
     /*
-     * List containing the names of all currently exsisting RResult files. Will
+     * List containing the names of all currently existing RResult files. Will
      * be set to null at the beginning and after the list of the RResult files
      * is retrieved. It will by instanciated by the addRResultFile() method if
      * necessary.

@@ -1,6 +1,9 @@
 /*
- * File: FileTypeWrapper.java Created: 25.02.2008 Author: Ferdinand Hofherr
- * <ferdinand.hofherr@uni-ulm.de>
+ * File: FileTypeWrapper.java 
+ * 
+ * Created: 25.02.2008 
+ * 
+ * Author: Ferdinand Hofherr <ferdinand.hofherr@uni-ulm.de>
  */
 package ideogram.r;
 

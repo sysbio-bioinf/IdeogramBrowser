@@ -1,6 +1,7 @@
 package ideogram.r.rlibwrappers;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -21,7 +22,8 @@ public interface RFileParser extends RLibraryWrapper {
     /**
      * Tell the file parser about the file to parse. The fileNames will be
      * stored according to their file type extensions. <strong>You must pass
-     * absolute path names!</strong>
+     * absolute path names</strong>! If the specified file type is not accepted
+     * by the RFileParser, the call to this method will be ignored.
      * 
      * @param fileType
      * @param fileName
@@ -38,15 +40,15 @@ public interface RFileParser extends RLibraryWrapper {
      * 
      * @param multipleVariables
      *            Shall the parser create multiple variables in R?
-     * @return List of variable names in R.
      * @throws RException
      */
-    public List<String> loadFiles(boolean multipleVariables) throws RException;
+    public void loadFiles(boolean multipleVariables);
     
     /**
-     * Return the list of variable names that were created in the R process. 
-     *
-     * @return
+     * Return the list of variable names that were created in the R process. If
+     * a call to a R function failed, return an empty list.
+     *	
+     * @return List containing variable names in R, or empty list upon failure.
      */
     public List<String> getVariableNames();
 }

@@ -51,7 +51,7 @@ public class FileLoadingController {
     }
 
     /**
-     * TODO INSERT DOCUMENTATION HERE!
+     * Get the selected {@link RFileParser}.
      * 
      * @return the parser
      */
@@ -60,7 +60,7 @@ public class FileLoadingController {
     }
 
     /**
-     * TODO INSERT DOCUMENTATION HERE!
+     * Get a list of currently accepted file types.
      * 
      * @return the acceptedFileTypes
      */
@@ -69,7 +69,8 @@ public class FileLoadingController {
     }
 
     /**
-     * TODO INSERT DOCUMENTATION HERE!
+     * Set a list of file types that shall be accepted by the parser. Depending
+     * upon the set list, the correct parser will be loaded.
      * 
      * @param acceptedFileTypes
      *            the acceptedFileTypes to set
@@ -93,6 +94,9 @@ public class FileLoadingController {
         parser.loadLibrary();
     }
 
+    /**
+     * Reset the {@link FileLoadingController}.
+     */
     private void reset() {
         acceptedFileTypes = null;
         parser = null;

@@ -7,6 +7,7 @@ package ideogram.r.gui;
 import ideogram.r.FileTypeRecord;
 import ideogram.r.RController;
 import ideogram.r.RDataSetWrapper;
+import ideogram.r.RTask;
 import ideogram.r.exceptions.RException;
 import ideogram.r.exceptions.UnsupportedFileTypeException;
 import ideogram.r.rlibwrappers.RAnalysisWrapper;
@@ -19,10 +20,10 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
-import javax.swing.Action;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
@@ -34,10 +35,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
 import javax.swing.JTextField;
-
-import org.rosuda.JRI.Rengine;
 
 /**
  * Stub class for R interface panels.
@@ -283,14 +281,18 @@ public class RInterfacePanel extends JPanel implements ActionListener {
                 }
             }
             try {
-                Rengine re = RController.getInstance().getEngine();
-                RController.getInstance().getRMainLoopModel().rBusy(re, 1);
-                parser.loadFiles(multiVariableMode.isSelected());
-                RController.getInstance().getRMainLoopModel().rBusy(re, 0);
-            } catch (RException e1) {
-                JOptionPane.showMessageDialog(this, e1.getLocalizedMessage(),
-                        "Exception", JOptionPane.ERROR_MESSAGE);
-            }
+                Method load = parser.getClass().getMethod("loadFiles",
+                	new Class[] { boolean.class });
+                RTask task = 
+                    new RTask(parser, load, multiVariableMode.isSelected());
+                RController.getInstance().submitTask(task);
+            } catch (SecurityException ex) {
+		// TODO Auto-generated catch block
+		ex.printStackTrace();
+	    } catch (NoSuchMethodException ex) {
+		// TODO Auto-generated catch block
+		ex.printStackTrace();
+	    }
 
         }
         else if (cmd.equals(CLEAR_FIELDS_COMMAND)) {
