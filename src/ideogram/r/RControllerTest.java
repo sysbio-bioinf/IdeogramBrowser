@@ -1,6 +1,9 @@
 /*
- * File: RControllerTest.java Created: 29.11.2007 Author: Ferdinand Hofherr
- * <ferdinand.hofherr@uni-ulm.de>
+ * File: 	RControllerTest.java 
+ * 
+ * Created: 	29.11.2007 
+ * 
+ * Author: Ferdinand Hofherr <ferdinand.hofherr@uni-ulm.de>
  */
 package ideogram.r;
 
@@ -11,12 +14,8 @@ import ideogram.r.gui.RGuiWindow;
 
 import javax.swing.JFrame;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.rosuda.JRI.Rengine;
 
 /**
  * INSERT DOCUMENTATION HERE!
@@ -34,8 +33,8 @@ public class RControllerTest {
      */
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
-        RController.checkVersion();
-        gui = new RGuiWindow();
+	RController.checkVersion();
+	gui = new RGuiWindow();
     }
 
     // /**
@@ -71,8 +70,8 @@ public class RControllerTest {
      */
     @Test
     public void testCheckVersion() throws JRIVersionException {
-        RController.checkVersion();
-        assertTrue(true);
+	RController.checkVersion();
+	assertTrue(true);
     }
 
     /**
@@ -80,12 +79,12 @@ public class RControllerTest {
      */
     @Test
     public void testGetInstance() {
-        assertTrue(RController.getInstance() != null);
+	assertTrue(RController.getInstance() != null);
     }
 
     @Test
     public void startEngine() throws RException {
-        RController.getInstance().startEngine();
+	RController.getInstance().startEngine();
     }
 
     /**
@@ -93,7 +92,7 @@ public class RControllerTest {
      */
     @Test
     public void testGetEngine() throws RException {
-        assertTrue(RController.getInstance().getEngine() != null);
+	assertTrue(RController.getInstance().getEngine() != null);
     }
 
     /**
@@ -104,8 +103,8 @@ public class RControllerTest {
      */
     @Test
     public void testLoadRLibrary() throws RException {
-        RController.getInstance().loadRLibrary("splines");
-        assertTrue(true);
+	RController.getInstance().loadRLibrary("splines");
+	assertTrue(true);
     }
 
     /**
@@ -115,8 +114,8 @@ public class RControllerTest {
      */
     @Test
     public void testStopEngine() throws RException {
-        RController.getInstance().getEngine(); // assure the engine is
-        // running!
-        assertTrue(RController.getInstance().stopEngine());
+	RController.getInstance().getEngine(); // assure the engine is
+	// running!
+	assertTrue(RController.getInstance().stopEngine());
     }
 }

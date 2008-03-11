@@ -21,10 +21,11 @@ import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -50,7 +51,7 @@ public class RController {
 
     private static boolean available = false;
     private static final Random random = new Random(System.currentTimeMillis());
-    
+
     private Rengine rEngine;
     private RMainLoopModel mainLoopModel;
     private boolean running;
@@ -60,42 +61,41 @@ public class RController {
     private ChangeEvent changeEvent;
     private ExecutorService executorService;
 
-
     /*
      * List containing the names of all currently existing RResult files. Will
      * be set to null at the beginning and after the list of the RResult files
      * is retrieved. It will by instanciated by the addRResultFile() method if
      * necessary.
      */
-    private ArrayList<String> rResultFiles;
+    private List<String> rResultFilesSyncList;
 
     private boolean librariesRegistered;
 
     public static final String R_STORAGE_PATH = System.getProperty("user.dir")
-            + File.separator + "IdeogramBrowser" + File.separator + "RResult";
+	    + File.separator + "IdeogramBrowser" + File.separator + "RResult";
 
     private RController() {
-   
-        // Will be set by addChangeListener()!
-        changeListener = null;
-        changeEvent = new ChangeEvent(this);
 
-        rResultFiles = null;
+	// Will be set by addChangeListener()!
+	changeListener = null;
+	changeEvent = new ChangeEvent(this);
 
-        rEngine = null;
-        mainLoopModel = new RMainLoopModel();
-        running = false;
-        availableLibraries = new HashMap<String, String>();
-        loadedAnalysisWrapper = null;
-        librariesRegistered = false;
-        executorService = Executors
-            .newSingleThreadExecutor(new HandlerThreadFactory());
+	rResultFilesSyncList = null;
+
+	rEngine = null;
+	mainLoopModel = new RMainLoopModel();
+	running = false;
+	availableLibraries = new HashMap<String, String>();
+	loadedAnalysisWrapper = null;
+	librariesRegistered = false;
+	executorService = Executors
+		.newSingleThreadExecutor(new HandlerThreadFactory());
     }
 
     private static class InstanceHolder {
-        private final static RController INSTANCE = new RController();
+	private final static RController INSTANCE = new RController();
     }
-    
+
     /**
      * Wrapper for {@link GLADWrapper#createUniqueRResultFileName(String)} with
      * empty prefix.
@@ -103,7 +103,7 @@ public class RController {
      * @return
      */
     public static String createUniqueRResultFileName() {
-        return createUniqueRResultFileName("");
+	return createUniqueRResultFileName("");
     }
 
     /**
@@ -111,19 +111,17 @@ public class RController {
      * name includes milliseconds it should be pretty unique.
      * 
      * @param prefix
-     *            Prefix to insert before timestamp.
+     *                Prefix to insert before timestamp.
      * @return
      */
     public static String createUniqueRResultFileName(String prefix) {
-        int rndInt = Math.abs(random.nextInt());
-        Format f = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss-SS-" + 
-                rndInt);
-        if (prefix.equals("")) {
-            return f.format(new Date()) + ".RResult";
-        }
-        else {
-            return prefix + "_" + f.format(new Date()) + ".RResult";
-        }
+	int rndInt = Math.abs(random.nextInt());
+	Format f = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss-SS-" + rndInt);
+	if (prefix.equals("")) {
+	    return f.format(new Date()) + ".RResult";
+	} else {
+	    return prefix + "_" + f.format(new Date()) + ".RResult";
+	}
     }
 
     /**
@@ -134,12 +132,12 @@ public class RController {
      * @return true if s is a valid R numeric value.
      */
     public static boolean isValidRNumeric(String s) {
-        try {
-            Double.parseDouble(s.trim());
-        } catch (NumberFormatException e) {
-            return false;
-        }
-        return true;
+	try {
+	    Double.parseDouble(s.trim());
+	} catch (NumberFormatException e) {
+	    return false;
+	}
+	return true;
     }
 
     /**
@@ -151,22 +149,22 @@ public class RController {
      * @return true if s is a valid R identifier.
      */
     public static boolean isValidRIdentifier(String s) {
-        char[] cArr = s.toCharArray();
+	char[] cArr = s.toCharArray();
 
-        if (!Character.isLetter(cArr[0])) {
-            // The first character must be a letter!
-            return false;
-        }
-        for (char c : cArr) {
-            if (c != '.' && c != '_' && !Character.isLetterOrDigit(c)) {
-                /*
-                 * The others may be letters, digits, the underscore, or the
-                 * colon.
-                 */
-                return false;
-            }
-        }
-        return true;
+	if (!Character.isLetter(cArr[0])) {
+	    // The first character must be a letter!
+	    return false;
+	}
+	for (char c : cArr) {
+	    if (c != '.' && c != '_' && !Character.isLetterOrDigit(c)) {
+		/*
+		 * The others may be letters, digits, the underscore, or the
+		 * colon.
+		 */
+		return false;
+	    }
+	}
+	return true;
     }
 
     /**
@@ -178,45 +176,42 @@ public class RController {
      * @return true if s is a valid R string.
      */
     public static boolean isValidRString(String s) {
-        char first = s.charAt(0);
-        char last = s.charAt(s.length() - 1);
-        if (first != last && (first != '\'' || first != '"')) {
-            return false;
-        }
-        return true;
+	char first = s.charAt(0);
+	char last = s.charAt(s.length() - 1);
+	if (first != last && (first != '\'' || first != '"')) {
+	    return false;
+	}
+	return true;
     }
 
     /**
      * Check whether the versions of JRI.jar and the JRI native library match.
      * Throw an JRIVersionException if they do not. If they match mark R as
-     * usable. If this method is not called at least once, R will not be
-     * usable.
+     * usable. If this method is not called at least once, R will not be usable.
      * 
      * @throws JRIVersionException
      */
     public static void checkVersion() throws JRIVersionException {
-        if (!Rengine.versionCheck()) {
-            // Versions of JRI.jar and native library don't match!
-            available = false;
-            throw new JRIVersionException("Versions of JRI.jar and native "
-                    + "library do not match!");
-            // TODO: Tell the user, what he can do about this issue.
-        }
-        else {
-            available = true;
-        }
+	if (!Rengine.versionCheck()) {
+	    // Versions of JRI.jar and native library don't match!
+	    available = false;
+	    throw new JRIVersionException("Versions of JRI.jar and native "
+		    + "library do not match!");
+	    // TODO: Tell the user, what he can do about this issue.
+	} else {
+	    available = true;
+	}
     }
 
     /**
-     * Check whether R is usable from within IdeogramBrowser. R will
-     * <strong>not</strong> be usable if
-     * {@link ideogram.r.RController#checkVersion()} is not called at least
-     * once.
+     * Check whether R is usable from within IdeogramBrowser. R will <strong>not</strong>
+     * be usable if {@link ideogram.r.RController#checkVersion()} is not called
+     * at least once.
      * 
      * @return true if R is usable, else false.
      */
     public static boolean rAvailable() {
-        return available;
+	return available;
     }
 
     /**
@@ -225,21 +220,21 @@ public class RController {
      * @return The only instance of RController.
      */
     public static RController getInstance() {
-        return InstanceHolder.INSTANCE;
+	return InstanceHolder.INSTANCE;
     }
 
     /**
-     * Submit a task to be run by {@link RController}'s executor service. 
+     * Submit a task to be run by {@link RController}'s executor service.
      * {@link RController} uses a SingleThreadExecutor. This ensures that only
-     * one R function at a time can be executed. All others will wait in the 
+     * one R function at a time can be executed. All others will wait in the
      * queue.
-     *
+     * 
      * @return Future object containing possible return values.
      */
     public Future<RTask.RTaskResult> submitTask(RTask task) {
-        return executorService.submit(task);
+	return executorService.submit(task);
     }
-    
+
     /**
      * Register a {@link ChangeListener} if no other listener is registered. If
      * you want to register an other listener you must first unregister the old
@@ -248,9 +243,9 @@ public class RController {
      * @param listener
      */
     public void addSingleChangeListener(ChangeListener listener) {
-        if (changeListener == null) {
-            changeListener = listener;
-        }
+	if (changeListener == null) {
+	    changeListener = listener;
+	}
     }
 
     /**
@@ -259,16 +254,16 @@ public class RController {
      * @param listener
      */
     public void removeSingleChangeListener() {
-        changeListener = null;
+	changeListener = null;
     }
 
     /**
      * Notify all registered {@link ChangeListener}s.
      */
     protected void fireStateChanged() {
-        if (changeListener != null) {
-            changeListener.stateChanged(changeEvent);
-        }
+	if (changeListener != null) {
+	    changeListener.stateChanged(changeEvent);
+	}
     }
 
     /**
@@ -277,29 +272,34 @@ public class RController {
      * 
      * @param absoluteFileName
      */
-    public void addRResultFile(String absoluteFileName) {
-        if (rResultFiles == null) {
-            rResultFiles = new ArrayList<String>();
-        }
-        rResultFiles.add(absoluteFileName);
-        fireStateChanged();
+    public synchronized void addRResultFile(String absoluteFileName) {
+	if (rResultFilesSyncList == null) {
+	    rResultFilesSyncList = Collections
+		    .synchronizedList(new ArrayList<String>());
+	}
+	
+	if (!rResultFilesSyncList.contains(absoluteFileName)) {
+	    rResultFilesSyncList.add(absoluteFileName);
+	}
+	
+	fireStateChanged();
     }
 
     /**
      * Return the list of newly available RResult files. Reset it to null
-     * afterwards. If no RResult files are available return null.
-     * It is best, if R takes care of writing those files. This also means that
-     * R has to decide whether to write those files or not.
+     * afterwards. If no RResult files are available return null. It is best, if
+     * R takes care of writing those files. This also means that R has to decide
+     * whether to write those files or not.
      * 
      * @return List of newly available RResult files or null.
      */
-    public ArrayList<String> getRResultFiles() {
-        if (rResultFiles != null) {
-            ArrayList<String> tmp = rResultFiles;
-            rResultFiles = null;
-            return tmp;
-        }
-        return null;
+    public List<String> getRResultFiles() {
+	if (rResultFilesSyncList != null) {
+	    List<String> tmp = rResultFilesSyncList;
+	    rResultFilesSyncList = null;
+	    return tmp;
+	}
+	return null;
     }
 
     /**
@@ -308,55 +308,57 @@ public class RController {
      * @return true when Rengnine is running, else false.
      */
     public boolean engineRunning() {
-        return running;
+	return running;
     }
 
     /**
-     * Output the given message, followed by a newline,  to the R console.
-     *
-     * @param msg The message to write to the R console.
+     * Output the given message, followed by a newline, to the R console.
+     * 
+     * @param msg
+     *                The message to write to the R console.
      */
     public synchronized void toRwriteln(String msg) {
-        try {
-            msg = escapeChars(msg);
-            getEngine().eval("cat('" + msg + "', '\\n')");
-        } catch (RException e) {
-            /*
-             * Exception is thrown, because R is not running. This usually 
-             * indicates a serious error. Therefore print the stack trace. Under
-             * normal conditions this code should be never reached.
-             */
-            e.printStackTrace();
-        }
-         
+	try {
+	    msg = escapeChars(msg);
+	    getEngine().eval("cat('" + msg + "', '\\n')");
+	} catch (RException e) {
+	    /*
+	     * Exception is thrown, because R is not running. This usually
+	     * indicates a serious error. Therefore print the stack trace. Under
+	     * normal conditions this code should be never reached.
+	     */
+	    e.printStackTrace();
+	}
+
     }
-    
+
     /**
      * Output the given message, not followed by a newline, to the R console.
-     *
-     * @param msg The message to write to the R console.
+     * 
+     * @param msg
+     *                The message to write to the R console.
      */
     public synchronized void toRwrite(String msg) {
-        try {
-            msg = escapeChars(msg);
-            getEngine().eval("cat('" + msg + "')");
-        } catch (RException e) {
-            // See catch in toRwriteln
-            e.printStackTrace();
-        }
+	try {
+	    msg = escapeChars(msg);
+	    getEngine().eval("cat('" + msg + "')");
+	} catch (RException e) {
+	    // See catch in toRwriteln
+	    e.printStackTrace();
+	}
     }
-    
+
     /**
      * Escape all characters that have a special meaning in R strings.
-     *
+     * 
      * @param msg
      * @return
      */
     private String escapeChars(String msg) {
-        msg = msg.replaceAll("'", "\\\\'");
-        return msg;
+	msg = msg.replaceAll("'", "\\\\'");
+	return msg;
     }
-    
+
     /**
      * Get the only instance of Rengine. This method will check if the
      * {@link Rengine} is running. If this is not the case, an
@@ -364,16 +366,15 @@ public class RController {
      * 
      * @return The only instance of Rengine.
      * @throws RException
-     *             if Rengine is not running.
+     *                 if Rengine is not running.
      */
     public synchronized Rengine getEngine() throws RException {
-        if (!engineRunning()) {
-            throw new RException("R not running!");
-        }
-        else {
-            return rEngine;
-        }
-        // return engineRunning() ? rEngine : null;
+	if (!engineRunning()) {
+	    throw new RException("R not running!");
+	} else {
+	    return rEngine;
+	}
+	// return engineRunning() ? rEngine : null;
     }
 
     /**
@@ -384,27 +385,27 @@ public class RController {
      * @throws RException
      */
     public boolean startEngine() throws RException {
-        if (!RController.rAvailable()) {
-            throw new RException("R is not usable. Try to call "
-                    + "RController.checkVersion()");
-        }
+	if (!RController.rAvailable()) {
+	    throw new RException("R is not usable. Try to call "
+		    + "RController.checkVersion()");
+	}
 
-        if (!engineRunning()) {
-            // TODO This is only an intermediate version! Add possibility to
-            // set command line arguments for R and create Model seperately!
-            rEngine = new Rengine(new String[] { "--vanilla" }, false,
-                    mainLoopModel);
-            /*
-             * Wait for R process to start. Throw exception if something goes
-             * wrong.
-             */
-            if (!(running = rEngine.waitForR())) {
-                throw new RException("The R process was started, but died"
-                        + "immedeately!");
-            }
-            return true;
-        }
-        return false;
+	if (!engineRunning()) {
+	    // TODO This is only an intermediate version! Add possibility to
+	    // set command line arguments for R and create Model seperately!
+	    rEngine = new Rengine(new String[] { "--vanilla" }, false,
+		    mainLoopModel);
+	    /*
+	     * Wait for R process to start. Throw exception if something goes
+	     * wrong.
+	     */
+	    if (!(running = rEngine.waitForR())) {
+		throw new RException("The R process was started, but died"
+			+ "immedeately!");
+	    }
+	    return true;
+	}
+	return false;
     }
 
     /**
@@ -415,7 +416,7 @@ public class RController {
      *         running.
      */
     public synchronized RMainLoopModel getRMainLoopModel() {
-        return mainLoopModel;
+	return mainLoopModel;
     }
 
     /**
@@ -423,22 +424,22 @@ public class RController {
      * with care! R might be still evaluating an expression!
      * 
      * @deprecated This method causes serious problems. It is not possible to
-     *             restart R after it has been stopped. Somehow loading
-     *             packages then fails. This might be a bug in JRI. As long as
-     *             any uncertainity remains this method is deprecated.
+     *             restart R after it has been stopped. Somehow loading packages
+     *             then fails. This might be a bug in JRI. As long as any
+     *             uncertainity remains this method is deprecated.
      * @return true on success, false if Rengine could not be stopped.
      * @throws RException
-     *             if R is not available.
+     *                 if R is not available.
      */
     @Deprecated
     protected boolean stopEngine() throws RException {
-        if (engineRunning()) {
-            Rengine e = getEngine();
-            e.end();
-            running = e.waitForR();
-            return true;
-        }
-        return false;
+	if (engineRunning()) {
+	    Rengine e = getEngine();
+	    e.end();
+	    running = e.waitForR();
+	    return true;
+	}
+	return false;
     }
 
     /**
@@ -446,16 +447,16 @@ public class RController {
      * 
      * @param libName
      * @throws RException
-     *             if R is not running.
+     *                 if R is not running.
      */
     public synchronized void loadRLibrary(String libName) throws RException {
-        /*
-         * require() is used, as it returns true on success and false on error.
-         */
-        REXP re = getEngine().eval("require('" + libName + "')");
-        if (!re.asBool().isTRUE()) {
-            throw new RException("Error loading the library" + libName + "!");
-        }
+	/*
+	 * require() is used, as it returns true on success and false on error.
+	 */
+	REXP re = getEngine().eval("require('" + libName + "')");
+	if (!re.asBool().isTRUE()) {
+	    throw new RException("Error loading the library" + libName + "!");
+	}
     }
 
     /**
@@ -464,9 +465,9 @@ public class RController {
      * @throws RException
      */
     public void unloadPreviousWrapper() throws RException {
-        if (getLoadedAnalysisWrapper() != null) {
-            loadedAnalysisWrapper.unloadLibrary();
-        }
+	if (getLoadedAnalysisWrapper() != null) {
+	    loadedAnalysisWrapper.unloadLibrary();
+	}
     }
 
     /**
@@ -476,15 +477,14 @@ public class RController {
      * @throws RException
      */
     public void unloadRLibrary(String libName) throws RException {
-        if (engineRunning()) {
-            getEngine().eval(
-                    "cat('Unloading previously loaded library " + libName
-                            + "\n')");
-            getEngine().eval("detach(package: " + libName + ")");
-        }
-        else {
-            throw new RException("R not running!");
-        }
+	if (engineRunning()) {
+	    getEngine().eval(
+		    "cat('Unloading previously loaded library " + libName
+			    + "\n')");
+	    getEngine().eval("detach(package: " + libName + ")");
+	} else {
+	    throw new RException("R not running!");
+	}
     }
 
     /**
@@ -493,7 +493,7 @@ public class RController {
      * @throws RException
      */
     public synchronized void listWorkspace() throws RException {
-        getEngine().eval("cat(ls(), sep='\n')");
+	getEngine().eval("cat(ls(), sep='\n')");
     }
 
     /**
@@ -503,7 +503,7 @@ public class RController {
      * @throws RException
      */
     public synchronized void clearWorkspace() throws RException {
-        getEngine().eval("rm(list=ls())");
+	getEngine().eval("rm(list=ls())");
     }
 
     /**
@@ -511,16 +511,16 @@ public class RController {
      * set already.
      * 
      * @param dsName
-     *            Name of the data set to load.
+     *                Name of the data set to load.
      * @throws RException
-     *             When R is not running, or when an error occured, while
-     *             loading the package.
+     *                 When R is not running, or when an error occured, while
+     *                 loading the package.
      */
     public void loadDataSet(String dsName) throws RException {
-        REXP res = getEngine().eval("data('" + dsName + "')");
-        if (!res.asString().equalsIgnoreCase(dsName)) {
-            throw new RException("Error loading data set " + dsName + "!");
-        }
+	REXP res = getEngine().eval("data('" + dsName + "')");
+	if (!res.asString().equalsIgnoreCase(dsName)) {
+	    throw new RException("Error loading data set " + dsName + "!");
+	}
     }
 
     // protected void unloadDataSet(String dsName) throws RException {
@@ -543,14 +543,14 @@ public class RController {
      * implement an empty Constructor.
      * 
      * @param libName
-     *            Name of the library, e.g. GLAD
+     *                Name of the library, e.g. GLAD
      * @param fullyQualifiedName
-     *            Fully quialified Name of the wrapper class, e.g
-     *            ideogram.r.GLADWrapper
+     *                Fully quialified Name of the wrapper class, e.g
+     *                ideogram.r.GLADWrapper
      */
     public void registerRLibraryWrapper(String libName,
-            String fullyQualifiedName) {
-        availableLibraries.put(libName, fullyQualifiedName);
+	    String fullyQualifiedName) {
+	availableLibraries.put(libName, fullyQualifiedName);
     }
 
     /**
@@ -567,50 +567,50 @@ public class RController {
      * @throws RException
      */
     public RAnalysisWrapper loadRAnalysisWrapper(String name)
-            throws ClassNotFoundException, IllegalArgumentException,
-            InstantiationException, IllegalAccessException,
-            InvocationTargetException, RException {
-        String selClass = availableLibraries.get(name);
-        if (selClass == null)
-            throw new ClassNotFoundException("The " + "RLibraryWrapper "
-                    + name + " must be registered with the " + "RController");
-        Class<?> c = Class.forName(selClass);
-        Constructor<?> ctor = getEmptyConstructor(c);
-        if (ctor == null) {
-            throw new IllegalArgumentException(c.toString()
-                    + " must implement an empty constructor!");
-        }
-        loadedAnalysisWrapper = (RAnalysisWrapper) ctor.newInstance();
-        loadedAnalysisWrapper.loadLibrary();
+	    throws ClassNotFoundException, IllegalArgumentException,
+	    InstantiationException, IllegalAccessException,
+	    InvocationTargetException, RException {
+	String selClass = availableLibraries.get(name);
+	if (selClass == null)
+	    throw new ClassNotFoundException("The " + "RLibraryWrapper " + name
+		    + " must be registered with the " + "RController");
+	Class<?> c = Class.forName(selClass);
+	Constructor<?> ctor = getEmptyConstructor(c);
+	if (ctor == null) {
+	    throw new IllegalArgumentException(c.toString()
+		    + " must implement an empty constructor!");
+	}
+	loadedAnalysisWrapper = (RAnalysisWrapper) ctor.newInstance();
+	loadedAnalysisWrapper.loadLibrary();
 
-        return loadedAnalysisWrapper;
+	return loadedAnalysisWrapper;
     }
 
     /**
-     * Returns null if no wrapper is loaded, else a reference to the instance
-     * of the loaded wrapper is returned.
+     * Returns null if no wrapper is loaded, else a reference to the instance of
+     * the loaded wrapper is returned.
      * 
-     * @return Reference to instance of loaded wrapper, or null if no wrapper
-     *         is loaded.
+     * @return Reference to instance of loaded wrapper, or null if no wrapper is
+     *         loaded.
      */
     public RLibraryWrapper getLoadedAnalysisWrapper() {
-        return loadedAnalysisWrapper;
+	return loadedAnalysisWrapper;
     }
 
     /*
      * Find the empty public constructor.
      */
     private Constructor<?> getEmptyConstructor(Class<?> c) {
-        Constructor<?>[] allConstructors = c.getConstructors();
-        Constructor<?> ret = null;
-        for (Constructor<?> ctor : allConstructors) {
-            if (ctor.getParameterTypes().length == 0) {
-                ret = ctor;
-                break;
-            }
-        }
+	Constructor<?>[] allConstructors = c.getConstructors();
+	Constructor<?> ret = null;
+	for (Constructor<?> ctor : allConstructors) {
+	    if (ctor.getParameterTypes().length == 0) {
+		ret = ctor;
+		break;
+	    }
+	}
 
-        return ret;
+	return ret;
     }
 
     /**
@@ -621,19 +621,19 @@ public class RController {
      *         {@link RLibraryWrapper}s.
      */
     public String[] listLibraryWrappers() {
-        if (!librariesRegistered) {
-            /*
-             * If not already done, register all available libraries first!
-             */
-            for (RLibraryRegistry lib : RLibraryRegistry.values()) {
-                System.out.println(lib.toString());
-                lib.register();
-            }
-            librariesRegistered = true;
-        }
-        String[] keys = new String[availableLibraries.size()];
-        keys = availableLibraries.keySet().toArray(keys);
-        Arrays.sort(keys); // OK, as strings implement Comparable.
-        return keys;
+	if (!librariesRegistered) {
+	    /*
+	     * If not already done, register all available libraries first!
+	     */
+	    for (RLibraryRegistry lib : RLibraryRegistry.values()) {
+		System.out.println(lib.toString());
+		lib.register();
+	    }
+	    librariesRegistered = true;
+	}
+	String[] keys = new String[availableLibraries.size()];
+	keys = availableLibraries.keySet().toArray(keys);
+	Arrays.sort(keys); // OK, as strings implement Comparable.
+	return keys;
     }
 }

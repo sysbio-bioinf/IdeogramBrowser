@@ -1,55 +1,57 @@
 /*
  * File:	InvalidInputException.java
- * Created: 10.12.2007
+ * 
+ * Created: 	10.12.2007
+ * 
  * Author:	Ferdinand Hofherr <ferdinand.hofherr@uni-ulm.de>
  */
 package ideogram.r.exceptions;
-// TODO Comment!!!!
+
 /**
- * INSERT DOCUMENTATION HERE!
- *
+ * TODO INSERT DOCUMENTATION HERE!
+ * 
  * @author Ferdinand Hofherr
- *
+ * 
  */
 public class InvalidInputException extends Exception {
 
     /**
      * INSERT DOCUMENTATION HERE!
-     *
+     * 
      */
     public InvalidInputException() {
-        // TODO Auto-generated constructor stub
+	// TODO Auto-generated constructor stub
     }
 
     /**
      * INSERT DOCUMENTATION HERE!
-     *
+     * 
      * @param message
      */
     public InvalidInputException(String message) {
-        super(message);
-        // TODO Auto-generated constructor stub
+	super(message);
+	// TODO Auto-generated constructor stub
     }
 
     /**
      * INSERT DOCUMENTATION HERE!
-     *
+     * 
      * @param cause
      */
     public InvalidInputException(Throwable cause) {
-        super(cause);
-        // TODO Auto-generated constructor stub
+	super(cause);
+	// TODO Auto-generated constructor stub
     }
 
     /**
      * INSERT DOCUMENTATION HERE!
-     *
+     * 
      * @param message
      * @param cause
      */
     public InvalidInputException(String message, Throwable cause) {
-        super(message, cause);
-        // TODO Auto-generated constructor stub
+	super(message, cause);
+	// TODO Auto-generated constructor stub
     }
 
 }

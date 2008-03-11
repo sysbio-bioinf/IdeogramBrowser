@@ -61,6 +61,7 @@ import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Observable;
 import java.util.Observer;
@@ -2184,7 +2185,7 @@ implements ActionListener, ComponentListener, ChangeListener
             return;
         }
         else if (e.getSource() instanceof RController) {
-            ArrayList<String> rResultFiles = RController.getInstance().getRResultFiles();
+            List<String> rResultFiles = RController.getInstance().getRResultFiles();
             for (String s: rResultFiles) {
                 try {
                     importRResultFile(new File(s), -1);

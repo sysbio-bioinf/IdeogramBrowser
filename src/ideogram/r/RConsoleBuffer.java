@@ -1,6 +1,9 @@
 /*
- * File: StringRingBuffer.java Created: 02.01.2008 Author: Ferdinand Hofherr
- * <ferdinand.hofherr@uni-ulm.de>
+ * File:	StringRingBuffer.java
+ *  
+ * Created: 	02.01.2008 
+ * 
+ * Author: 	Ferdinand Hofherr <ferdinand.hofherr@uni-ulm.de>
  */
 package ideogram.r;
 
@@ -13,28 +16,35 @@ public class RConsoleBuffer {
 
     private char[] buffer;
 
-    /*
-     * Pointers to start and end of buffer. The buffer is considered empty,
-     * when start == end == -1. The buffer must be always read from start to
-     * end!
+    /**
+     * Pointer to start of buffer. The buffer is considered empty, when start ==
+     * end == -1. The buffer must be always read from start to end!
      */
-    private int start, end;
+    private int start;
 
     /**
-     * Create a new empty StringRingBuffer of the given size.
+     * Pointer to end of buffer. The buffer is considered empty, when start ==
+     * end == -1. The buffer must be always read from start to end!
+     */
+    private int end;
+
+    /**
+     * Create a new empty {@link RConsoleBuffer} of the given size.
      * 
      * @param size
+     *                The size of the buffer.
      */
     public RConsoleBuffer(int size) {
-        buffer = new char[size];
-        flush();
+	buffer = new char[size];
+	flush();
     }
 
     /**
      * Empty the buffer.
      */
     public synchronized void flush() {
-        start = end = -1;
+	start = -1;
+	end = -1;
     }
 
     /**
@@ -43,25 +53,25 @@ public class RConsoleBuffer {
      * @return true if buffer empty, else false.
      */
     public synchronized boolean isEmpty() {
-        return start == -1 && end == -1;
+	return (start == -1) && (end == -1);
     }
 
     /**
      * Calculate pointer values.
      */
     private synchronized void calcPointers() {
-        // Initialize buffer if empty.
-        if (isEmpty()) {
-            start = end = 0;
-        }
-        else {
-            // Recalculate end. Assure it is lower than buffer.length.
-            end = (end + 1) % buffer.length;
-            // Buffer overflow. Overwrite old characters.
-            if (end == start) {
-                start = (start + 1) % buffer.length;
-            }
-        }
+	if (isEmpty()) { // Initialize buffer if empty.
+	    start = 0;
+	    end = 0;
+	} else {
+	    // Recalculate end. Assure it is lower than buffer.length.
+	    end = (end + 1) % buffer.length;
+
+	    // Buffer overflow. Overwrite old characters.
+	    if (end == start) {
+		start = (start + 1) % buffer.length;
+	    }
+	}
     }
 
     /**
@@ -70,11 +80,11 @@ public class RConsoleBuffer {
      * @param s
      */
     public synchronized void insert(String s) {
-        char[] sArr = s.toCharArray();
-        for (char c : sArr) {
-            calcPointers();
-            buffer[end] = c;
-        }
+	char[] sArr = s.toCharArray();
+	for (char c : sArr) {
+	    calcPointers();
+	    buffer[end] = c;
+	}
     }
 
     /**
@@ -84,17 +94,17 @@ public class RConsoleBuffer {
      * @return Number of currently stored characters.
      */
     public synchronized int noChars() {
-        if (isEmpty()) {
-            return 0;
-        }
-        else if (start <= end) {
-            // start == end may be the case, when there is only one character
-            // in the buffer.
-            return end - start + 1;
-        }
-        else {
-            return buffer.length - start + end + 1;
-        }
+	if (isEmpty()) {
+	    return 0;
+	} else if (start <= end) {
+	    /*
+	     * start == end may be the case, when there is only one character in
+	     * the buffer.
+	     */
+	    return end - start + 1;
+	} else {
+	    return buffer.length - start + end + 1;
+	}
     }
 
     /*
@@ -104,15 +114,15 @@ public class RConsoleBuffer {
      */
     @Override
     public synchronized String toString() {
-        char[] ca = new char[noChars()];
-        synchronized (this) {
-            int bPointer = start;
-            for (int i = 0; i < ca.length; i++) {
-                ca[i] = buffer[bPointer];
-                bPointer = (bPointer + 1) % buffer.length;
-            }
-        }
-        return new String(ca);
+	char[] ca = new char[noChars()];
+	int bPointer = start;
+
+	for (int i = 0; i < ca.length; i++) {
+	    ca[i] = buffer[bPointer];
+	    bPointer = (bPointer + 1) % buffer.length;
+	}
+	
+	return new String(ca);
     }
 
 }

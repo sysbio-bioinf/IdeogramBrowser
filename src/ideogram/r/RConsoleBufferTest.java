@@ -1,6 +1,9 @@
 /*
- * File: StringRingBufferTest.java Created: 02.01.2008 Author: Ferdinand
- * Hofherr <ferdinand.hofherr@uni-ulm.de>
+ * File: 	StringRingBufferTest.java
+ *  
+ * Created: 	02.01.2008 
+ * 
+ * Author: 	Ferdinand Hofherr <ferdinand.hofherr@uni-ulm.de>
  */
 package ideogram.r;
 
@@ -46,7 +49,7 @@ public class RConsoleBufferTest {
      */
     @Before
     public void setUp() throws Exception {
-        rb = new RConsoleBuffer(10);
+	rb = new RConsoleBuffer(10);
     }
 
     /**
@@ -56,7 +59,7 @@ public class RConsoleBufferTest {
      */
     @After
     public void tearDown() throws Exception {
-        rb = null;
+	rb = null;
     }
 
     /**
@@ -64,10 +67,10 @@ public class RConsoleBufferTest {
      */
     @Test
     public void testFlush() {
-        System.out.println("testFlush()");
-        rb.insert("Hello");
-        rb.flush();
-        assertTrue(rb.isEmpty());
+	System.out.println("testFlush()");
+	rb.insert("Hello");
+	rb.flush();
+	assertTrue(rb.isEmpty());
     }
 
     /**
@@ -75,11 +78,11 @@ public class RConsoleBufferTest {
      */
     @Test
     public void testIsEmpty() {
-        /*
-         * Each test starts with a new empty buffer. If this fails something is
-         * seriously wrong.
-         */
-        assertTrue(rb.isEmpty());
+	/*
+	 * Each test starts with a new empty buffer. If this fails something is
+	 * seriously wrong.
+	 */
+	assertTrue(rb.isEmpty());
     }
 
     /**
@@ -88,10 +91,10 @@ public class RConsoleBufferTest {
      */
     @Test
     public void testInsert1() {
-        System.out.println("\ntestInsert1()");
-        rb.insert("Hello"); // smaller than buffer size
-        System.out.println(rb.toString());
-        assertTrue(rb.toString().equals("Hello"));
+	System.out.println("\ntestInsert1()");
+	rb.insert("Hello"); // smaller than buffer size
+	System.out.println(rb.toString());
+	assertTrue(rb.toString().equals("Hello"));
     }
 
     /**
@@ -100,10 +103,10 @@ public class RConsoleBufferTest {
      */
     @Test
     public void testInsert2() {
-        System.out.println("\ntestInsert2()");
-        rb.insert("HelloHello"); // exactly buffer size
-        System.out.println(rb.toString());
-        assertTrue(rb.toString().equals("HelloHello"));
+	System.out.println("\ntestInsert2()");
+	rb.insert("HelloHello"); // exactly buffer size
+	System.out.println(rb.toString());
+	assertTrue(rb.toString().equals("HelloHello"));
     }
 
     /**
@@ -112,11 +115,11 @@ public class RConsoleBufferTest {
      */
     @Test
     public void testInsert3() {
-        System.out.println("\ntestInsert3()");
-        rb.insert("12345HelloWorld"); // bigger than buffer size, 12345
-        // should be overwritten by World.
-        System.out.println(rb.toString());
-        assertTrue(rb.toString().equals("HelloWorld"));
+	System.out.println("\ntestInsert3()");
+	rb.insert("12345HelloWorld"); // bigger than buffer size, 12345
+	// should be overwritten by World.
+	System.out.println(rb.toString());
+	assertTrue(rb.toString().equals("HelloWorld"));
     }
 
     /**
@@ -125,22 +128,22 @@ public class RConsoleBufferTest {
      */
     @Test
     public void testInsert4() {
-        System.out.println("\ntestInsert4()");
-        rb.insert("1234567890"); // exactly buffer size
-        System.out.println(rb.toString());
-        rb.insert("HelloWorld");
-        System.out.println(rb.toString());
-        assertTrue(rb.toString().equals("HelloWorld"));
+	System.out.println("\ntestInsert4()");
+	rb.insert("1234567890"); // exactly buffer size
+	System.out.println(rb.toString());
+	rb.insert("HelloWorld");
+	System.out.println(rb.toString());
+	assertTrue(rb.toString().equals("HelloWorld"));
     }
 
     @Test
     public void testMuchData() {
-        int size = 1000000;
-        rb = new RConsoleBuffer(size);
-        for (int i = 0; i < size; i++) {
-            rb.insert("c");
-        }
-        System.out.println(rb.toString());
+	int size = 1000000;
+	rb = new RConsoleBuffer(size);
+	for (int i = 0; i < size; i++) {
+	    rb.insert("c");
+	}
+	System.out.println(rb.toString());
     }
 
     /**
@@ -148,10 +151,10 @@ public class RConsoleBufferTest {
      */
     @Test
     public void testToString() {
-        System.out.println("\ntestToString()");
-        rb.insert("HelloWorld"); // exactly buffer size
-        System.out.println(rb.toString());
-        rb.toString().equals("HelloWorld");
+	System.out.println("\ntestToString()");
+	rb.insert("HelloWorld"); // exactly buffer size
+	System.out.println(rb.toString());
+	rb.toString().equals("HelloWorld");
     }
 
 }

@@ -1,6 +1,9 @@
 /*
- * File: RDataSetWrapper.java Created: 08.12.2007 Author: Ferdinand Hofherr
- * <ferdinand.hofherr@uni-ulm.de>
+ * File:	RDataSetWrapper.java 
+ * 
+ * Created: 	08.12.2007
+ *  
+ * Author: 	Ferdinand Hofherr <ferdinand.hofherr@uni-ulm.de>
  */
 package ideogram.r;
 
@@ -24,13 +27,13 @@ public class RDataSetWrapper {
     private List<String> elements;
 
     public RDataSetWrapper(String name) {
-        this.name = name;
-        elements = new ArrayList<String>();
+	this.name = name;
+	elements = new ArrayList<String>();
     }
 
     public RDataSetWrapper(String name, String description) {
-        this(name);
-        this.description = description;
+	this(name);
+	this.description = description;
     }
 
     /**
@@ -39,7 +42,7 @@ public class RDataSetWrapper {
      * @return The data set's name.
      */
     public String getName() {
-        return name;
+	return name;
     }
 
     /**
@@ -48,7 +51,7 @@ public class RDataSetWrapper {
      * @return The data set's description.
      */
     public String getDescription() {
-        return description;
+	return description;
     }
 
     /**
@@ -57,7 +60,7 @@ public class RDataSetWrapper {
      * @param elmName
      */
     public void addElement(String elmName) {
-        elements.add(elmName);
+	elements.add(elmName);
     }
 
     /**
@@ -66,7 +69,7 @@ public class RDataSetWrapper {
      * @return List of element names.
      */
     public List<String> getElements() {
-        return elements;
+	return elements;
     }
 
     /*
@@ -76,6 +79,6 @@ public class RDataSetWrapper {
      */
     @Override
     public String toString() {
-        return name + " - " + description;
+	return name + " - " + description;
     }
 }

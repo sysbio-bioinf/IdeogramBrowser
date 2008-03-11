@@ -1,11 +1,12 @@
 /*
  * File:	RLibraryWrapperReaderTest.java
- * Created: 10.12.2007
+ * 
+ * Created: 	10.12.2007
+ * 
  * Author:	Ferdinand Hofherr <ferdinand.hofherr@uni-ulm.de>
  */
 package ideogram.r.gui;
 
-import static org.junit.Assert.*;
 import ideogram.r.exceptions.RException;
 import ideogram.r.exceptions.RLibraryWrapperException;
 import ideogram.r.rlibwrappers.GLADWrapper;
@@ -18,26 +19,27 @@ import org.junit.Test;
 
 /**
  * INSERT DOCUMENTATION HERE!
- *
+ * 
  * @author Ferdinand Hofherr
- *
+ * 
  */
 public class RAnalysisWrapperReaderTest {
 
     private static RAnalysisWrapperReader rd;
+
     /**
      * INSERT DOCUMENTATION HERE!
-     *
+     * 
      * @throws java.lang.Exception
      */
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
-        rd = new RAnalysisWrapperReader();
+	rd = new RAnalysisWrapperReader();
     }
 
     /**
      * INSERT DOCUMENTATION HERE!
-     *
+     * 
      * @throws java.lang.Exception
      */
     @AfterClass
@@ -46,7 +48,7 @@ public class RAnalysisWrapperReaderTest {
 
     /**
      * INSERT DOCUMENTATION HERE!
-     *
+     * 
      * @throws java.lang.Exception
      */
     @Before
@@ -55,7 +57,7 @@ public class RAnalysisWrapperReaderTest {
 
     /**
      * INSERT DOCUMENTATION HERE!
-     *
+     * 
      * @throws java.lang.Exception
      */
     @After
@@ -63,20 +65,22 @@ public class RAnalysisWrapperReaderTest {
     }
 
     /**
-     * Test method for {@link ideogram.r.gui.RAnalysisWrapperReader#createInputPanel(java.lang.String)}.
-     * @throws ClassNotFoundException 
-     * @throws RException 
-     * @throws RLibraryWrapperException 
+     * Test method for
+     * {@link ideogram.r.gui.RAnalysisWrapperReader#createInputPanel(java.lang.String)}.
+     * 
+     * @throws ClassNotFoundException
+     * @throws RException
+     * @throws RLibraryWrapperException
      */
     @Test
-    public void testCreateInputPanelString() 
-    throws ClassNotFoundException, IllegalArgumentException, RException{
-        rd.createInputPanel(new GLADWrapper());
+    public void testCreateInputPanelString() throws ClassNotFoundException,
+	    IllegalArgumentException, RException {
+	rd.createInputPanel(new GLADWrapper());
     }
 
     @Test
-    public void testCreateInputPanel() 
-    throws IllegalArgumentException, ClassNotFoundException {
-        rd.createInputPanel();
+    public void testCreateInputPanel() throws IllegalArgumentException,
+	    ClassNotFoundException {
+	rd.createInputPanel();
     }
 }
