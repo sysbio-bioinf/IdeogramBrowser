@@ -47,9 +47,6 @@ import javax.swing.JTextField;
  */
 public class RInterfacePanel extends JPanel implements ActionListener {
 
-    private static Logger logger = Logger.getLogger(RInterfacePanel.class
-	    .getName());
-
     // Action commands.
     private static final String SAMPLE_DATA = "sample data";
     private static final String SAMPLE_DATA_SEL = "sample data sel";
@@ -67,9 +64,7 @@ public class RInterfacePanel extends JPanel implements ActionListener {
     private JComboBox sampleDataCombo;
     private MessageDisplay mdp;
     private HashMap<String, JTextField> fileChooserTextFields;
-    private JCheckBox multiVariableMode; // created by
-
-    // createSampleDataPanel().
+    private JCheckBox multiVariableMode; // created by createSampleDataPanel().
 
     /**
      * Create a new RInterfacePanel with the specified wrapper as model. If
@@ -165,10 +160,10 @@ public class RInterfacePanel extends JPanel implements ActionListener {
 	    pnl.add(btn);
 
 	    pnl.add(Box.createHorizontalGlue());
-	    multiVariableMode = new JCheckBox("Create multiple Variables in R");
-	    multiVariableMode.setSelected(true);
-	    pnl.add(multiVariableMode);
-	    pnl.add(Box.createHorizontalGlue());
+//	    multiVariableMode = new JCheckBox("Create multiple Variables in R");
+//	    multiVariableMode.setSelected(true);
+//	    pnl.add(multiVariableMode);
+//	    pnl.add(Box.createHorizontalGlue());
 
 	    btn = new JButton("Clear fields");
 	    btn.setActionCommand(CLEAR_FIELDS_COMMAND);
@@ -268,6 +263,7 @@ public class RInterfacePanel extends JPanel implements ActionListener {
 	    }
 	} else if (cmd.equals(LOAD_FILES_COMMAND)) {
 	    RFileParser parser = loadingController.getParser();
+	    
 	    /*
 	     * Tell the parser about the selected files.
 	     */
@@ -275,16 +271,26 @@ public class RInterfacePanel extends JPanel implements ActionListener {
 	    String[] fileNames;
 	    for (FileTypeRecord ftr : wrapper.getAcceptedFileTypes()) {
 		text = fileChooserTextFields.get(ftr.toString()).getText();
+		
+		/*
+		 * Don't do anything, if no file of this type is selected.
+		 */
+		if (text.equals("")) {
+		    continue;
+		}
+		
 		fileNames = text.split("; ");
 		for (int i = 0; i < fileNames.length; i++) {
 		    parser.addFileName(ftr, fileNames[i]);
 		}
 	    }
 	    try {
-		Method load = parser.getClass().getMethod("loadFiles",
-			new Class[] { boolean.class });
-		RTask task = new RTask(parser, load, multiVariableMode
-			.isSelected());
+		/*
+		 * Look for a method called loadFiles, which has no additional
+		 * parameters.
+		 */
+		Method load = parser.getClass().getMethod("loadFiles");
+		RTask task = new RTask(parser, load);
 		RController.getInstance().submitTask(task);
 	    } catch (SecurityException ex) {
 		// TODO Auto-generated catch block
@@ -293,7 +299,6 @@ public class RInterfacePanel extends JPanel implements ActionListener {
 		// TODO Auto-generated catch block
 		ex.printStackTrace();
 	    }
-
 	} else if (cmd.equals(CLEAR_FIELDS_COMMAND)) {
 	    for (JTextField tf : fileChooserTextFields.values()) {
 		tf.setText("");

@@ -111,6 +111,7 @@ public class RTask implements Callable<RTask.RTaskResult> {
      * a neatly formatted string with the duration of the call.
      */
     public class RTaskResult {
+	
 	/** The function calls return value. */
 	public final Object funcallReturn;
 

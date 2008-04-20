@@ -148,10 +148,13 @@ public class FileLoadingController {
 	if (fileChoosers == null) {
 	    CommonFileFilter ff;
 	    JFileChooser fc;
+
 	    fileChoosers = new HashMap<String, JFileChooser>();
 	    for (FileTypeRecord ft : acceptedFileTypes) {
 		ff = new CommonFileFilter();
 		ff.addExtension(ft.getFileType().extension());
+		ff.setDescription("*."
+			+ ft.getFileType().extension().toLowerCase());
 		fc = new JFileChooser();
 		fc.setAcceptAllFileFilterUsed(false);
 		fc.setFileFilter(ff);

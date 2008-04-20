@@ -504,6 +504,7 @@ public class RController {
      */
     public synchronized void clearWorkspace() throws RException {
 	getEngine().eval("rm(list=ls())");
+	RVariableNameRegistry.getInstance().clearRegistry();
     }
 
     /**

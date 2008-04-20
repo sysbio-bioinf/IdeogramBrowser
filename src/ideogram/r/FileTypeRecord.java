@@ -87,12 +87,12 @@ public class FileTypeRecord {
 	/**
 	 * Affymetrix CEL files.
 	 */
-	CEL("cel", "Select multiple CEL files."),
+	CEL("cel", "Select CEL files."),
 
 	/**
 	 * Affymetrix CDF files.
 	 */
-	CDF("cdf", "Select a single CDF file.");
+	CDF("cdf", "Select CDF files.");
 
 	private final String extension;
 	private final String buttonLabel;

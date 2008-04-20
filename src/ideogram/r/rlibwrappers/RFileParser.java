@@ -46,11 +46,9 @@ public interface RFileParser extends RLibraryWrapper {
      * for each loaded file. If it multipleVariables is set to false the parser
      * will attempt to parse multiple files into a single data structure.
      * 
-     * @param multipleVariables
-     *                Shall the parser create multiple variables in R?
      * @throws RException
      */
-    public void loadFiles(boolean multipleVariables);
+    public void loadFiles();
 
     /**
      * Return the list of variable names that were created in the R process. If
