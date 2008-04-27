@@ -149,6 +149,7 @@ public class AffxparserWrapper implements RFileParser {
 	    readCELFile(s);
 	}
 
+	System.out.println("Number of CDF files: " + cdfFiles.size());
 	for (String s : cdfFiles) {
 	    readCDFFile(s);
 	}
@@ -158,13 +159,16 @@ public class AffxparserWrapper implements RFileParser {
     private void readCDFFile(String s) {
 	String varName = RVariableNameRegistry.createFileContentName(s);
 	String funcall = varName + " <- readCdfUnits('" + s + "', "
-		+ "units=NULL, " + "readXY=TRUE, " + "readBases=TRUE, "
-		+ "readExpos=TRUE, " + "readType=TRUE, "
-		+ "readDirection=TRUE, " + "stratifyBy='nothing', "
+		+ "units=NULL, readXY=TRUE, readBases=TRUE, "
+		+ "readExpos=TRUE, readType=TRUE, "
+		+ "readDirection=TRUE, stratifyBy='nothing', "
 		+ "readIndices=FALSE, verbose=0)";
-
+	
+	System.out.println("Funcall: " + funcall);
 	try {
+	    RController.getInstance().toRwriteln("START");
 	    RController.getInstance().getEngine().eval(funcall);
+	    RController.getInstance().toRwriteln("DONE");
 	} catch (RException e) {
 	    // TODO Auto-generated catch block
 	    e.printStackTrace();

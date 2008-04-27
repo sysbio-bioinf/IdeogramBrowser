@@ -24,5 +24,5 @@ import java.lang.annotation.RetentionPolicy;
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Analysis {
-    String value();
+    String name();
 }

@@ -28,6 +28,8 @@ public class UncaughtExceptionHandler implements
 	if (!(e instanceof RException)) {
 	    e.printStackTrace();
 	}
+//	e.printStackTrace();
+//	System.exit(10);
     }
 
 }

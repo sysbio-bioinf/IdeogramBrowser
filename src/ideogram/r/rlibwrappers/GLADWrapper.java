@@ -61,183 +61,183 @@ public class GLADWrapper extends AbstractAnalysisWrapper {
 
     // Parameters for glad function.
 
-    @Analysis("glad")
+    @Analysis(name = "glad")
     @RDsNameParam(name = "Data set", mandatory = true)
     public String gladDataSet;
 
-    @Analysis("glad")
+    @Analysis(name = "glad")
     @RBoolParam(name = "mediancenter", mandatory = false)
     public String gladMediancenter;
 
-    @Analysis("glad")
+    @Analysis(name = "glad")
     @RBoolParam(name = "base", mandatory = false)
     public String gladBase;
 
-    @Analysis("glad")
+    @Analysis(name = "glad")
     @RBoolParam(name = "verbose", mandatory = false)
     public String gladVerbose;
 
-    @Analysis("glad")
+    @Analysis(name = "glad")
     @RStringParam(name = "smoothfunc", mandatory = false)
     public String gladSmoothfunc;
 
-    @Analysis("glad")
+    @Analysis(name = "glad")
     @RStringParam(name = "model", mandatory = false)
     public String gladModel;
 
-    @Analysis("glad")
+    @Analysis(name = "glad")
     @RStringParam(name = "lkern", mandatory = false)
     public String gladLkern;
 
-    @Analysis("glad")
+    @Analysis(name = "glad")
     @RStringParam(name = "type", mandatory = false)
     public String gladType;
 
-    @Analysis("glad")
+    @Analysis(name = "glad")
     @RStringParam(name = "method", mandatory = false)
     public String gladMethod;
 
-    @Analysis("glad")
+    @Analysis(name = "glad")
     @RNumericParam(name = "bandwidth", mandatory = false)
     public String gladBandwidth;
 
-    @Analysis("glad")
+    @Analysis(name = "glad")
     @RNumericParam(name = "round", mandatory = false)
     public String gladRound;
 
-    @Analysis("glad")
+    @Analysis(name = "glad")
     @RNumericParam(name = "qlambda", mandatory = false)
     public String gladQlambda;
 
-    @Analysis("glad")
+    @Analysis(name = "glad")
     @RNumericParam(name = "lambdabreak", mandatory = false)
     public String gladLambdabreak;
 
-    @Analysis("glad")
+    @Analysis(name = "glad")
     @RNumericParam(name = "lambdacluster", mandatory = false)
     public String gladLambdacluster;
 
-    @Analysis("glad")
+    @Analysis(name = "glad")
     @RNumericParam(name = "lambdaClusterGen", mandatory = false)
     public String gladLambdaClusterGen;
 
-    @Analysis("glad")
+    @Analysis(name = "glad")
     @RNumericParam(name = "param", mandatory = false)
     public String gladParam;
 
-    @Analysis("glad")
+    @Analysis(name = "glad")
     @RNumericParam(name = "alpha", mandatory = false)
     public String gladAlpha;
 
-    @Analysis("glad")
+    @Analysis(name = "glad")
     @RNumericParam(name = "msize", mandatory = false)
     public String gladMsize;
 
-    @Analysis("glad")
+    @Analysis(name = "glad")
     @RNumericParam(name = "nmax", mandatory = false)
     public String gladNmax;
 
-    @Analysis("daglad")
+    @Analysis(name = "daglad")
     @RDsNameParam(name = "Data set", mandatory = true)
     public String dagladDataSet;
 
-    @Analysis("daglad")
+    @Analysis(name = "daglad")
     @RBoolParam(name = "mediancenter", mandatory = false)
     public String dagladMediancenter;
 
-    @Analysis("daglad")
+    @Analysis(name = "daglad")
     @RBoolParam(name = "normalrefcenter", mandatory = false)
     public String dagladNormalrefcenter;
 
-    @Analysis("daglad")
+    @Analysis(name = "daglad")
     @RBoolParam(name = "genomestep", mandatory = false)
     public String dagladGenomestep;
 
-    @Analysis("daglad")
+    @Analysis(name = "daglad")
     @RStringParam(name = "smoothfunc", mandatory = false)
     public String dagladSmoothfunc;
 
-    @Analysis("daglad")
+    @Analysis(name = "daglad")
     @RStringParam(name = "lkern", mandatory = false)
     public String dagladLkern;
 
-    @Analysis("daglad")
+    @Analysis(name = "daglad")
     @RStringParam(name = "model", mandatory = false)
     public String dagladModel;
 
-    @Analysis("daglad")
+    @Analysis(name = "daglad")
     @RNumericParam(name = "qlambda", mandatory = false)
     public String dagladQlambda;
 
-    @Analysis("daglad")
+    @Analysis(name = "daglad")
     @RNumericParam(name = "bandwidth", mandatory = false)
     public String dagladBandwidth;
 
-    @Analysis("daglad")
+    @Analysis(name = "daglad")
     @RBoolParam(name = "base", mandatory = false)
     public String dagladBase;
 
-    @Analysis("daglad")
+    @Analysis(name = "daglad")
     @RNumericParam(name = "round", mandatory = false)
     public String dagladRound;
 
-    @Analysis("daglad")
+    @Analysis(name = "daglad")
     @RNumericParam(name = "lambdabreak", mandatory = false)
     public String dagladLambdabreak;
 
-    @Analysis("daglad")
+    @Analysis(name = "daglad")
     @RNumericParam(name = "lambdaclusterGen", mandatory = false)
     public String dagladLambdaclusterGen;
 
-    @Analysis("daglad")
+    @Analysis(name = "daglad")
     @RNumericParam(name = "param", mandatory = false)
     public String dagladParam;
 
-    @Analysis("daglad")
+    @Analysis(name = "daglad")
     @RNumericParam(name = "alpha", mandatory = false)
     public String dagladAlpha;
 
-    @Analysis("daglad")
+    @Analysis(name = "daglad")
     @RNumericParam(name = "msize", mandatory = false)
     public String dagladMsize;
 
-    @Analysis("daglad")
+    @Analysis(name = "daglad")
     @RStringParam(name = "method", mandatory = false)
     public String dagladMethod;
 
-    @Analysis("daglad")
+    @Analysis(name = "daglad")
     @RNumericParam(name = "nmin", mandatory = false)
     public String dagladNmin;
 
-    @Analysis("daglad")
+    @Analysis(name = "daglad")
     @RNumericParam(name = "nmax", mandatory = false)
     public String dagladNmax;
 
-    @Analysis("daglad")
+    @Analysis(name = "daglad")
     @RNumericParam(name = "amplicon", mandatory = false)
     public String dagladAmplicon;
 
-    @Analysis("daglad")
+    @Analysis(name = "daglad")
     @RNumericParam(name = "deletion", mandatory = false)
     public String dagladDeletion;
 
-    @Analysis("daglad")
+    @Analysis(name = "daglad")
     @RNumericParam(name = "deltaN", mandatory = false)
     public String dagladDeltaN;
 
-    @Analysis("daglad")
+    @Analysis(name = "daglad")
     @RNumericParam(name = "forceGL", mandatory = false)
     public String dagladForceGL;
 
-    @Analysis("daglad")
+    @Analysis(name = "daglad")
     @RNumericParam(name = "nbsigma", mandatory = false)
     public String dagladNbsigma;
 
-    @Analysis("daglad")
+    @Analysis(name = "daglad")
     @RNumericParam(name = "MinBkbWeight", mandatory = false)
     public String dagladMinBkpWeight;
 
-    @Analysis("daglad")
+    @Analysis(name = "daglad")
     @RBoolParam(name = "CheckBkpPos", mandatory = false)
     public String dagladCheckBkpPos;
 
@@ -481,7 +481,7 @@ public class GLADWrapper extends AbstractAnalysisWrapper {
      * @return
      * @throws RException
      */
-    @Analysis("glad")
+    @Analysis(name = "glad")
     public String useGladFunction() throws RException {
 	RController rc = RController.getInstance();
 
@@ -510,7 +510,7 @@ public class GLADWrapper extends AbstractAnalysisWrapper {
 	return evalAndWriteFuncall(funcall);
     }
 
-    @Analysis("daglad")
+    @Analysis(name = "daglad")
     public String useDagladFunction() throws RException {
 	RController rc = RController.getInstance();
 
@@ -550,7 +550,9 @@ public class GLADWrapper extends AbstractAnalysisWrapper {
      * 
      */
     private void loadWriterFunction() throws RException {
-	RController rc = RController.getInstance();
-	rc.getEngine().eval(RES_WRITER);
+	if (!writerFunctionLoaded) {
+	    RController rc = RController.getInstance();
+	    rc.getEngine().eval(RES_WRITER);
+	}
     }
 }

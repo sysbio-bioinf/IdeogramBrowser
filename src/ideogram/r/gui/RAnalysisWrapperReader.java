@@ -145,8 +145,8 @@ public class RAnalysisWrapperReader {
 
 	for (Method m : analysisMethods) {
 	    aAnalysis = m.getAnnotation(Analysis.class);
-	    builder.createAnalysisInterface(aAnalysis.value());
-	    callBuildMethods(annotatedFields, aAnalysis.value(), wrapper, m);
+	    builder.createAnalysisInterface(aAnalysis.name());
+	    callBuildMethods(annotatedFields, aAnalysis.name(), wrapper, m);
 	}
 
 	return builder.getRInterfacePanel();
@@ -185,7 +185,7 @@ public class RAnalysisWrapperReader {
 	for (Iterator<Field> it = annotatedFields.iterator(); it.hasNext();) {
 	    f = it.next();
 	    aAnalysis = f.getAnnotation(Analysis.class);
-	    if (!aAnalysis.value().equals(funcname)) {
+	    if (!aAnalysis.name().equals(funcname)) {
 		// No more annotated fields for this function left.
 		break;
 	    }
@@ -277,7 +277,7 @@ public class RAnalysisWrapperReader {
 	    Analysis a1, a2;
 	    a1 = o1.getAnnotation(Analysis.class);
 	    a2 = o2.getAnnotation(Analysis.class);
-	    return a1.value().compareTo(a2.value());
+	    return a1.name().compareTo(a2.name());
 	}
 
     }
