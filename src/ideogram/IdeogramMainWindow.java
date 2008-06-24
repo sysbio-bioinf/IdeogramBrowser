@@ -107,6 +107,16 @@ import com.lowagie.text.pdf.DefaultFontMapper;
 import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfTemplate;
 import com.lowagie.text.pdf.PdfWriter;
+
+/*
+ * TODO: When using newer Versions of Eclipse the following three imports might
+ * lead to access restrictions. This problem may be fixed by clicking 
+ * Project -> Properties in the Eclipse menu. In the dialog shown now select
+ * the "Java Build Path" entry on the left. Then click on the "Libraries" tab
+ * in the right part of the dialog. Scroll to the entry named something like 
+ * "JRE System Library [J2SE-1.5]". Unfold it and edit the "Accessrules" entry.
+ * Add a access rule which allows access to "com/sun/image/codec/**".
+ */
 import com.sun.image.codec.jpeg.JPEGCodec;
 import com.sun.image.codec.jpeg.JPEGEncodeParam;
 import com.sun.image.codec.jpeg.JPEGImageEncoder;
