@@ -455,7 +455,7 @@ public class RController {
 	 */
 	REXP re = getEngine().eval("require('" + libName + "')");
 	if (!re.asBool().isTRUE()) {
-	    throw new RException("Error loading the library" + libName + "!");
+	    throw new RException("Error loading the library " + libName + "!");
 	}
     }
 
