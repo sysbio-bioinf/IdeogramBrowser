@@ -45,12 +45,10 @@ import java.awt.print.PageFormat;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -73,6 +71,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -1836,6 +1835,7 @@ public class IdeogramMainWindow extends javax.swing.JFrame implements
 		progressDialog.setText("starting ...");
 
 		IdeogramMainWindow frame = new IdeogramMainWindow();
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		boolean success = true;
 		frame.setShowLabels(false);
