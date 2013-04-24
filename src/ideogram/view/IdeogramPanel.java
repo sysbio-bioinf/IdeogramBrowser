@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import javax.swing.BorderFactory;
 import javax.swing.JToolTip;
 
+import util.GlobalConfig;
+
 /**
  * Visual representation of a single ideogram.
  * To show the ideogram a database has to be loaded or attached
@@ -123,9 +125,10 @@ public class IdeogramPanel extends AbstractChromosomalPanel
 	 */
 	public void setChromosome(byte chromosome)
 	{        
-		if (chromosome < 1 || chromosome > 24)
+		byte nChr = GlobalConfig.getInstance().getChromosomeCount();
+		if (chromosome < 1 || chromosome > nChr)
 			throw new IllegalArgumentException(
-				"chromosome has to be in the range 1..24 '" + chromosome + "'");
+				"chromosome has to be in the range 1.."+ nChr +" '" + chromosome + "'");
 		if( chromosome != this.chromosome )
 		{
 			this.chromosome = (byte) chromosome;

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="create_run_jar" name="Create Runnable Jar for Project IdeogramBrowser">
+    <!--this file was created by Eclipse Runnable JAR Export Wizard-->
+    <!--ANT 1.7 is required                                        -->
+    <target name="create_run_jar">
+        <jar destfile="/home/behrens/git/IdeogramBrowser/ideogram.jar" filesetmanifest="mergewithoutmain">
+            <manifest>
+                <attribute name="Main-Class" value="ideogram.MainApp"/>
+                <attribute name="Class-Path" value="."/>
+            </manifest>
+            <fileset dir="/home/behrens/git/IdeogramBrowser/bin"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/behrens/git/IdeogramBrowser/lib/itext.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/behrens/git/IdeogramBrowser/lib/JRI.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/behrens/git/IdeogramBrowser/lib/junit.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/behrens/git/IdeogramBrowser/lib/xpp3.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/behrens/git/IdeogramBrowser/lib/xstream.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/behrens/git/IdeogramBrowser/lib/batik/lib/batik-ext.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/behrens/git/IdeogramBrowser/lib/batik/lib/batik-dom.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/behrens/git/IdeogramBrowser/lib/batik/lib/batik-css.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/behrens/git/IdeogramBrowser/lib/batik/lib/batik-svg-dom.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/behrens/git/IdeogramBrowser/lib/batik/lib/batik-gvt.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/behrens/git/IdeogramBrowser/lib/batik/lib/batik-parser.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/behrens/git/IdeogramBrowser/lib/batik/lib/batik-script.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/behrens/git/IdeogramBrowser/lib/batik/lib/batik-bridge.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/behrens/git/IdeogramBrowser/lib/batik/lib/batik-transcoder.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/behrens/git/IdeogramBrowser/lib/batik/lib/batik-awt-util.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/behrens/git/IdeogramBrowser/lib/batik/lib/batik-util.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/behrens/git/IdeogramBrowser/lib/batik/lib/batik-xml.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/behrens/git/IdeogramBrowser/lib/batik/lib/xerces_2_5_0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/behrens/git/IdeogramBrowser/lib/batik/lib/xml-apis.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/behrens/git/IdeogramBrowser/lib/batik/lib/pdf-transcoder.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/behrens/git/IdeogramBrowser/lib/batik/lib/js.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/behrens/git/IdeogramBrowser/lib/batik/batik-rasterizer.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/behrens/git/IdeogramBrowser/lib/batik/lib/batik-swing.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/behrens/git/IdeogramBrowser/lib/batik/lib/batik-gui-util.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/behrens/git/IdeogramBrowser/lib/batik/batik-slideshow.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/behrens/git/IdeogramBrowser/lib/batik/batik-squiggle.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/behrens/git/IdeogramBrowser/lib/batik/batik-svgpp.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/behrens/git/IdeogramBrowser/lib/batik/lib/batik-svggen.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/behrens/git/IdeogramBrowser/lib/batik/batik-ttf2svg.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/behrens/git/IdeogramBrowser/lib/batik/batik.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/behrens/git/IdeogramBrowser/lib/batik/lib/batik-extension.jar"/>
+        </jar>
+    </target>
+</project>

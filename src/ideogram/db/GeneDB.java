@@ -5,6 +5,7 @@
 package ideogram.db;
 
 import util.FileFormatException;
+import util.GlobalConfig;
 import ideogram.Marker;
 import ideogram.MarkerCollection;
 import ideogram.IProgressNotifier;
@@ -27,7 +28,6 @@ import java.util.zip.GZIPInputStream;
  */
 public class GeneDB
 {
-	public static final int NUM_CHROMOSOMES = 24; // = number of chromosoms
 	
 	protected MarkerCollection[] genes;
     
@@ -47,7 +47,7 @@ public class GeneDB
 	 */
 	public void clear()
 	{
-		genes =  new MarkerCollection[NUM_CHROMOSOMES];
+		genes =  new MarkerCollection[GlobalConfig.getInstance().getChromosomeCount()];
 		for(int i=0; i<genes.length; ++i)
 		{
 			genes[i] = new MarkerCollection();
@@ -95,19 +95,21 @@ public class GeneDB
 			}
 			line.trim();
 			
-			String[] L = line.split("\t");
+			String[] splitLine = line.split("\t");
 			
-			if( L.length < 13 )
+			if( splitLine.length < 13 )
 			    throw new FileFormatException("Not enough columns in line " + in.getLineNumber() );
 			
-			if( L[11].compareToIgnoreCase("GENE")==0 && L[12].compareToIgnoreCase("reference")==0)
+			//CHROMO make this somehow dynamic. originally looking for "GENE" in colmn 11 and "reference" in colmn 12.
+
+			if( splitLine[11].compareToIgnoreCase("GENE")==0 && splitLine[12].compareToIgnoreCase(GlobalConfig.getInstance().getGeneReferenceString())==0)
 			{
                 long gene_id;
                 String gene_name;
                 Interval interval;
                 
 			    // parse line
-                String[] lst = L[1].split("[|]");
+                String[] lst = splitLine[1].split("[|]");
                 if( lst.length != 1 )
                     continue;
                 
@@ -121,12 +123,12 @@ public class GeneDB
                 }
                     
                 interval = new Interval();
-			    interval.from	= Long.parseLong(L[2]);
-			    interval.to		= Long.parseLong(L[3]);
-			    if( ! L[10].startsWith("GeneID:") )
+			    interval.from	= Long.parseLong(splitLine[2]);
+			    interval.to		= Long.parseLong(splitLine[3]);
+			    if( ! splitLine[10].startsWith("GeneID:") )
 			        throw new FileFormatException("Error in line "+in.getLineNumber()+" illegal gene id");				    
-			    gene_id 		= Long.parseLong(L[10].split(":")[1]);
-			    gene_name		= L[9];
+			    gene_id 		= Long.parseLong(splitLine[10].split(":")[1]);
+			    gene_name		= splitLine[9];
 				
 				// insert new gene
 			    if( band.chromosome < 1 || band.chromosome > genes.length )

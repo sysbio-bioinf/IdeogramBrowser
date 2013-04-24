@@ -12,9 +12,12 @@ import java.util.LinkedList;
 import java.util.TreeSet;
 
 import util.FileFormatException;
+import util.GlobalConfig;
 
 public class TabbedTextReaderModel extends AbstractCopyNumberDataModel 
 {
+
+	
 	private TreeSet<CopyNumberRecord>	 data;
 	CopyNumberRecord[]					cache;
 
@@ -121,8 +124,8 @@ public class TabbedTextReaderModel extends AbstractCopyNumberDataModel
             
         	CopyNumberRecord record = new CopyNumberRecord();
         	
-      	  if(L[0].equals("X")) record.locus.chromosome=23;
-       	  else if(L[0].equals("Y")) record.locus.chromosome=24;
+      	  if(L[0].equals("X")) record.locus.chromosome=GlobalConfig.getInstance().getXChromosomeNr();
+       	  else if(L[0].equals("Y")) record.locus.chromosome=GlobalConfig.getInstance().getYChromosomeNr();
        	  else record.locus.chromosome =  Byte.parseByte(L[0]) ;
 
         	if( record.locus.chromosome == 0 )

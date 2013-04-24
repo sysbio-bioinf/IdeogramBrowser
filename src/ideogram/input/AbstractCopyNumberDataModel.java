@@ -14,6 +14,7 @@ import ideogram.tree.Interval;
 import javax.swing.event.ChangeListener;
 
 import util.ChangeNotifier;
+import util.GlobalConfig;
 
 /**
  * @author mueller
@@ -32,7 +33,7 @@ public abstract class AbstractCopyNumberDataModel implements ICopyNumberModel
      */
     public AbstractCopyNumberDataModel()
     {
-        mc = new MarkerCollection[IdeogramMainWindow.NUM_OF_CHROMOSOMES];
+        mc = new MarkerCollection[GlobalConfig.getInstance().getChromosomeCount()];
         changeNotifier = new ChangeNotifier();
     }
 

@@ -19,6 +19,7 @@ import java.util.TreeSet;
 import javax.swing.JOptionPane;
 
 import util.FileFormatException;
+import util.GlobalConfig;
 
 
 /**
@@ -213,6 +214,7 @@ public class AffymetrixCntReaderModel extends AbstractIdeogramDataModel
 	private enum State { SINGLE_CN, SINGLE_LOH, BOTH, FINISH_CN, FINISH_LOH };
 	
 	protected static final int	MAX_CHARACTERS = 4096;
+
 
 	protected long 					dataset_id;
 	protected TreeSet<AffyCntRecord> data;
@@ -504,6 +506,11 @@ public class AffymetrixCntReaderModel extends AbstractIdeogramDataModel
         
 	protected  void readElements(Reader filereader) throws IOException, FileFormatException {
 			
+		
+
+		byte xChr = GlobalConfig.getInstance().getXChromosomeNr();
+		byte yChr = GlobalConfig.getInstance().getYChromosomeNr();
+		
 		invalidate();
 		
 		inCN = new LineNumberReader( filereader );
@@ -671,7 +678,7 @@ public class AffymetrixCntReaderModel extends AbstractIdeogramDataModel
 		
 		Byte chr;
 		AffyCntRecord record;
-		
+
 		while (inCN.ready()) {
 			String line = inCN.readLine();
 			line = line.trim();
@@ -695,9 +702,9 @@ public class AffymetrixCntReaderModel extends AbstractIdeogramDataModel
 					if (iChromosome >= 0) {
 						chr = 0;
 						if(v[iChromosome].equalsIgnoreCase("X")) {
-							chr = 23;
+							chr = xChr;
 						} else if (v[iChromosome].equalsIgnoreCase("Y")) {
-							chr = 24;
+							chr = yChr;
 						} else {
 							try {
 								chr = Byte.parseByte(v[iChromosome]);
@@ -826,6 +833,10 @@ public class AffymetrixCntReaderModel extends AbstractIdeogramDataModel
 	}
 	
 	protected void readElements(Reader fileReaderCN, Reader fileReaderLOH) throws IOException, FileFormatException {
+		
+
+		byte xChr = GlobalConfig.getInstance().getXChromosomeNr();
+		byte yChr = GlobalConfig.getInstance().getYChromosomeNr();
 		
 		invalidate();
 		
@@ -1117,9 +1128,9 @@ public class AffymetrixCntReaderModel extends AbstractIdeogramDataModel
 					locCN.setPosition(Long.parseLong(v1[iPositionCN]));
 					chrCN = 0;
 					if(v1[iChromosomeCN].equalsIgnoreCase("X")) {
-						chrCN = 23;
+						chrCN = xChr;
 					} else if (v1[iChromosomeCN].equalsIgnoreCase("Y")) {
-						chrCN = 24;
+						chrCN = yChr;
 					} else {
 						try {
 							chrCN = Byte.parseByte(v1[iChromosomeCN]);
@@ -1135,9 +1146,9 @@ public class AffymetrixCntReaderModel extends AbstractIdeogramDataModel
 		
 					chrLOH = 0;
 					if(v2[iChromosomeLOH].equalsIgnoreCase("X")) {
-						chrLOH = 23;
+						chrLOH = xChr;
 					} else if (v2[iChromosomeLOH].equalsIgnoreCase("Y")) {
-						chrLOH = 24;
+						chrLOH = yChr;
 					} else {
 						try {
 							chrLOH = Byte.parseByte(v2[iChromosomeLOH]);
