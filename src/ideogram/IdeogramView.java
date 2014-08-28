@@ -82,7 +82,8 @@ public class IdeogramView extends JComponent // JPanel
 	/**
 	 * Maximum view, basepairs (=zoomed out).
 	 */
-	public static final long MAX_BASEPAIRS = 250000000;
+//	public static final long MAX_BASEPAIRS = 250000000; //human
+	public static final long MAX_BASEPAIRS = 200000000; //mouse
 
 	/**
 	 * Minimum view, basepairs (=zoomed in)

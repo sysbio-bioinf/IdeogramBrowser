@@ -236,7 +236,8 @@ public class MainApp {
 		if (args.length > 0) {
 			speciesString = args[0];
 		} else {
-			speciesString = "homo_sapiens";
+			//speciesString = "homo_sapiens";
+			speciesString = "mus_musculus";
 		}
 
 		// put datadir into global config

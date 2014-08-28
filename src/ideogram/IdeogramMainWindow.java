@@ -542,6 +542,12 @@ public class IdeogramMainWindow extends javax.swing.JFrame implements
 		zoomButtons.add(but);
 		sub.add(but);
 
+		but = new JRadioButtonMenuItem("500%");
+		but.setActionCommand("zoom:500");
+		but.addActionListener(this);
+		zoomButtons.add(but);
+		sub.add(but);
+
 		menu.add(sub);
 
 		return menu;
@@ -1369,20 +1375,24 @@ public class IdeogramMainWindow extends javax.swing.JFrame implements
 		g2.dispose();
 		cb.addTemplate(tp, 0, 0);
 
-		/*
-		 * for( int i=0; i<ideograms.length; ++i ) { int w =
-		 * ideograms[i].getWidth(), h = ideograms[i].getHeight();
-		 * 
-		 * PdfTemplate tp = cb.createTemplate(w, h); Graphics2D g2 =
-		 * tp.createGraphics(w, h, mapper); Rectangle r =
-		 * document.getPageSize(); g2.scale(r.width()/2, r.height()/2);
-		 * 
-		 * ideograms[i].paintBackgroundSelections(g2);
-		 * ideograms[i].directPaint(g2); //, w, h);
-		 * 
-		 * g2.dispose(); cb.addTemplate(tp, 0, 0); if( i+1 < ideograms.length )
-		 * document.newPage(); }
-		 */
+		
+		 //for( int i=0; i<ideograms.length; ++i ) { int w =
+		 //ideograms[i].getWidth(), h = ideograms[i].getHeight();
+		 //
+		 //PdfTemplate tpi = cb.createTemplate(w, h);
+		 //Graphics2D g2i = tpi.createGraphics(w, h, mapper);
+		 //Rectangle ri = document.getPageSize();
+		 //g2i.scale(ri.width()/2, ri.height()/2);
+		 //
+		 //ideograms[i].paintBackgroundSelections(g2i);
+		 //ideograms[i].directPaint(g2i); //, w, h);
+		 //
+		 //g2i.dispose();
+		 //cb.addTemplate(tpi, 0, 0);
+		 //if( i+1 < ideograms.length )
+		 //document.newPage();
+		 //}
+		 
 
 		document.close();
 	}
